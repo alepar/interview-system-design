@@ -70,4 +70,25 @@ for arch in "High-throughput read systems" "Fan-out" "Real-time messaging" \
   assert_grep "$arch" "docs/coach/archetypes.md"
 done
 
+# patterns 3A-3E
+assert_file "docs/coach/patterns/3A-core-concepts.md"
+assert_grep "Definition" "docs/coach/patterns/3A-core-concepts.md"
+assert_grep "Production systems|Canonical use" "docs/coach/patterns/3A-core-concepts.md"
+
+assert_file "docs/coach/patterns/3B-networking-transport.md"
+assert_grep "Definition" "docs/coach/patterns/3B-networking-transport.md"
+assert_grep "Production systems|Canonical use" "docs/coach/patterns/3B-networking-transport.md"
+
+assert_file "docs/coach/patterns/3C-load-balancing.md"
+assert_grep "Definition" "docs/coach/patterns/3C-load-balancing.md"
+assert_grep "Production systems|Canonical use" "docs/coach/patterns/3C-load-balancing.md"
+
+assert_file "docs/coach/patterns/3D-storage-databases.md"
+assert_grep "Definition" "docs/coach/patterns/3D-storage-databases.md"
+assert_grep "Production systems|Canonical use" "docs/coach/patterns/3D-storage-databases.md"
+
+assert_file "docs/coach/patterns/3E-caching.md"
+assert_grep "Definition" "docs/coach/patterns/3E-caching.md"
+assert_grep "Production systems|Canonical use" "docs/coach/patterns/3E-caching.md"
+
 echo "Phase 1 foundation tests passed."
