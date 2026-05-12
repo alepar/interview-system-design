@@ -155,4 +155,23 @@ assert_grep "Category 12" "docs/research/staff-engineer-study-guide.md"
 assert_grep "Front.End|Front End" "docs/research/staff-engineer-study-guide.md"
 assert_grep "RADIO" "docs/research/staff-engineer-study-guide.md"
 
+# problems: tinyurl, ticketmaster, dropbox
+for problem in tinyurl ticketmaster dropbox; do
+  f="docs/coach/problems/${problem}.md"
+  assert_file "$f"
+  assert_yaml_field "slug" "$f"
+  assert_yaml_field "archetype" "$f"
+  assert_section "Bar anchors" "$f"
+  assert_section "Canonical decomposition" "$f"
+  assert_section "Requirements" "$f"
+  assert_section "Core entities" "$f"
+  assert_section "API" "$f"
+  assert_section "HLD" "$f"
+  assert_section "Deep dives" "$f"
+  assert_section "Known failure modes" "$f"
+  assert_grep "Mid-level" "$f"
+  assert_grep "Senior" "$f"
+  assert_grep "Staff" "$f"
+done
+
 echo "Phase 1 foundation tests passed."
