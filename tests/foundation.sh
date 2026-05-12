@@ -47,4 +47,11 @@ assert_grep "Thinking" "docs/coach/protocols.md"
 assert_grep "functional requirements" "docs/coach/protocols.md"
 assert_grep "non-functional" "docs/coach/protocols.md"
 
+# personas/coach.md
+assert_file "docs/coach/personas/coach.md"
+assert_grep "collaborative" "docs/coach/personas/coach.md"
+assert_grep "no over-praise|no.+praise" "docs/coach/personas/coach.md"
+assert_grep "great question" "docs/coach/personas/coach.md"
+assert_grep "trailing question|trailing-question" "docs/coach/personas/coach.md"
+
 echo "Phase 1 foundation tests passed."
