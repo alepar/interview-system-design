@@ -54,4 +54,11 @@ assert_grep "no over-praise|no.+praise" "docs/coach/personas/coach.md"
 assert_grep "great question" "docs/coach/personas/coach.md"
 assert_grep "trailing question|trailing-question" "docs/coach/personas/coach.md"
 
+# personas/interviewer.md
+assert_file "docs/coach/personas/interviewer.md"
+assert_grep "neutral" "docs/coach/personas/interviewer.md"
+assert_grep "adversarial" "docs/coach/personas/interviewer.md"
+assert_grep "time.boxing|time-box" "docs/coach/personas/interviewer.md"
+assert_grep "category of gap" "docs/coach/personas/interviewer.md"
+
 echo "Phase 1 foundation tests passed."
