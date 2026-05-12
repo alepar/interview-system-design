@@ -174,4 +174,23 @@ for problem in tinyurl ticketmaster dropbox; do
   assert_grep "Staff" "$f"
 done
 
+# problems: twitter-timeline, uber
+for problem in twitter-timeline uber; do
+  f="docs/coach/problems/${problem}.md"
+  assert_file "$f"
+  assert_yaml_field "slug" "$f"
+  assert_yaml_field "archetype" "$f"
+  assert_section "Bar anchors" "$f"
+  assert_section "Canonical decomposition" "$f"
+  assert_section "Requirements" "$f"
+  assert_section "Core entities" "$f"
+  assert_section "API" "$f"
+  assert_section "HLD" "$f"
+  assert_section "Deep dives" "$f"
+  assert_section "Known failure modes" "$f"
+  assert_grep "Mid-level" "$f"
+  assert_grep "Senior" "$f"
+  assert_grep "Staff" "$f"
+done
+
 echo "Phase 1 foundation tests passed."
