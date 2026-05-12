@@ -91,4 +91,25 @@ assert_file "docs/coach/patterns/3E-caching.md"
 assert_grep "Definition" "docs/coach/patterns/3E-caching.md"
 assert_grep "Production systems|Canonical use" "docs/coach/patterns/3E-caching.md"
 
+# patterns 3F-3J
+assert_file "docs/coach/patterns/3F-async-streaming.md"
+assert_grep "Definition" "docs/coach/patterns/3F-async-streaming.md"
+assert_grep "Production systems|Canonical use" "docs/coach/patterns/3F-async-streaming.md"
+
+assert_file "docs/coach/patterns/3G-consistency-coordination.md"
+assert_grep "Definition" "docs/coach/patterns/3G-consistency-coordination.md"
+assert_grep "Production systems|Canonical use" "docs/coach/patterns/3G-consistency-coordination.md"
+
+assert_file "docs/coach/patterns/3H-data-structures.md"
+assert_grep "Definition" "docs/coach/patterns/3H-data-structures.md"
+assert_grep "Production systems|Canonical use" "docs/coach/patterns/3H-data-structures.md"
+
+assert_file "docs/coach/patterns/3I-api-idempotency.md"
+assert_grep "Definition" "docs/coach/patterns/3I-api-idempotency.md"
+assert_grep "Production systems|Canonical use" "docs/coach/patterns/3I-api-idempotency.md"
+
+assert_file "docs/coach/patterns/3J-architectural.md"
+assert_grep "Definition" "docs/coach/patterns/3J-architectural.md"
+assert_grep "Production systems|Canonical use" "docs/coach/patterns/3J-architectural.md"
+
 echo "Phase 1 foundation tests passed."
