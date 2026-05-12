@@ -1,12 +1,12 @@
 # Deep Research Brief: AI System-Design Interview Coach — Gaps & Foundations
 
-*For Claude.ai Research, with `guide.md` attached.*
+*For Claude.ai Research, with `staff-engineer-study-guide.md` attached.*
 
 ---
 
 ## Context
 
-I'm building a Claude Code–based AI coaching system for FAANG / AI-lab system-design interviews. Existing content is in the attached `guide.md`, which already covers: a 100-question shortlist across 10 archetype categories; four universal evaluation competencies and level expectations from L3 through L7+; company-specific rubric mechanics for Meta, Google, Amazon as of October 2025; ~30 distributed-systems patterns; and a 5-phase study plan.
+I'm building a Claude Code–based AI coaching system for FAANG / AI-lab system-design interviews. Existing content is in the attached `staff-engineer-study-guide.md`, which already covers: a 100-question shortlist across 10 archetype categories; four universal evaluation competencies and level expectations from L3 through L7+; company-specific rubric mechanics for Meta, Google, Amazon as of October 2025; ~30 distributed-systems patterns; and a 5-phase study plan.
 
 The coach will run as **Claude Code skills**, with three workflows / slash commands:
 
@@ -18,7 +18,7 @@ The coach will run as **Claude Code skills**, with three workflows / slash comma
 
 ## Goal of this research
 
-Identify what I am currently missing or under-treating across the six areas below, so I can design the coach prompts and supporting state schema with full information. **Deliverable: a long-form survey report with citations** that I will mine myself. Lean toward concrete examples — transcripts, rubric anchors, specific products' features and failure modes, real prior-art repos — over generic principles. Where `guide.md` is outdated, contradicted by recent reports, or wrong, **call it out explicitly**.
+Identify what I am currently missing or under-treating across the six areas below, so I can design the coach prompts and supporting state schema with full information. **Deliverable: a long-form survey report with citations** that I will mine myself. Lean toward concrete examples — transcripts, rubric anchors, specific products' features and failure modes, real prior-art repos — over generic principles. Where `staff-engineer-study-guide.md` is outdated, contradicted by recent reports, or wrong, **call it out explicitly**.
 
 For each substantive claim, mark **CONFIRMED** (multiple recent primary sources) / **REPORTED** (single source or anecdote) / **SPECULATED** (your inference).
 
@@ -62,18 +62,18 @@ What does great system-design interview coaching actually look like in practice?
 - **Scaffolding for the "watch me design" mode** (workflow #2): how should an expert externalize reasoning so a learner internalizes the *process*, not the answer? See think-aloud protocols, cognitive apprenticeship (Collins / Brown / Newman), and worked-example research (Sweller, Renkl).
 - **AI-tutor anti-patterns.** Specifically for LLM-based tutors — over-praise, premature reveal, generic "great question!" filler, sycophancy collapse, losing the thread on long context, lecturing instead of dialog. What mitigations have been published or empirically shown?
 - **Mock-interviewer persona calibration** (workflow #3): real human interviewers vary widely. What persona produces the best *learning* outcomes vs the most *realistic* experience, and how do those goals trade off?
-- **Spaced repetition / interleaving / mastery learning applied to design patterns** (not flashcard facts). What's known about spacing for procedural + conceptual knowledge of the kind in `guide.md` Section 3?
+- **Spaced repetition / interleaving / mastery learning applied to design patterns** (not flashcard facts). What's known about spacing for procedural + conceptual knowledge of the kind in `staff-engineer-study-guide.md` Section 3?
 - **Learner-state-driven recommendations.** What signals from past sessions actually predict skill gaps? How do human coaches decide "drill X next"? What metadata is worth persisting (mistake categories, timing, deep-dive depth, per-pattern confidence)?
 
 ---
 
 ## Area 2 — Content depth the guide may be missing
 
-Where is `guide.md` thin, outdated, or behind 2025–2026 reality?
+Where is `staff-engineer-study-guide.md` thin, outdated, or behind 2025–2026 reality?
 
 - **AI / ML lab interview prompts.** OpenAI, Anthropic, Mistral, xAI, DeepMind hire heavily and ask atypical prompts: agent loops, MCP-style tool servers, distributed inference (KV-cache sharding, speculative decoding, batched serving), RAG pipelines at scale, eval pipelines, prompt-caching infrastructure, model-routing layers. What's been reported, and what patterns are unique to this category?
 - **Recent infra patterns missing or under-treated.** ScyllaDB migrations, CockroachDB / TiDB consistency models, lakehouse architectures (Iceberg / Delta / Hudi), ClickHouse for real-time OLAP, vector DB internals (HNSW vs IVF-PQ trade-offs), service-mesh failure modes, Wasm at the edge.
-- **Front-end / client system design.** Increasingly asked at Meta, Airbnb, Google. Not in `guide.md` at all.
+- **Front-end / client system design.** Increasingly asked at Meta, Airbnb, Google. Not in `staff-engineer-study-guide.md` at all.
 - **LLD / API-design-flavored prompts at L4 / L5** — parking lot, payment processor, etc. — that aren't pure system design but show up in loops.
 - **Meta's AI-assisted coding round (Oct 2025) and adjacent changes.** What's been reported since the guide was written? Any design-round changes too?
 
