@@ -148,4 +148,11 @@ for pat in "RADIO" "Virtualized lists" "Optimistic UI" "IndexedDB" \
   assert_grep "$pat" "docs/coach/patterns/frontend.md"
 done
 
+# staff-engineer-study-guide.md additions
+assert_grep "Category 11" "docs/research/staff-engineer-study-guide.md"
+assert_grep "AI.Infrastructure|AI Infrastructure" "docs/research/staff-engineer-study-guide.md"
+assert_grep "Category 12" "docs/research/staff-engineer-study-guide.md"
+assert_grep "Front.End|Front End" "docs/research/staff-engineer-study-guide.md"
+assert_grep "RADIO" "docs/research/staff-engineer-study-guide.md"
+
 echo "Phase 1 foundation tests passed."

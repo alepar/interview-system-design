@@ -153,6 +153,38 @@ Sources surveyed: Hello Interview's 28 published breakdowns and community list; 
 | 10.11 | Design a Distributed Locking Service (Chubby/ZooKeeper) | Google | Cat 10 + Cat 4 |
 | 10.12 | Design a Code Deployment / Blue-Green system | Generic | AlgoMaster Hard |
 
+### Category 11 — AI Infrastructure
+| # | Prompt | Companies | Notes |
+|---|---|---|---|
+| 11.1 | Design an Inference-batching API for a GPU cluster | Anthropic, OpenAI | Priority queues + streaming; continuous batching; KV-cache routing |
+| 11.2 | Design Distributed Search over a billion documents at millions of QPS | Anthropic | Vector + BM25 hybrid; ANN; prefix caching of queries |
+| 11.3 | Design a Safety / Moderation Pipeline layered with inference | Anthropic, OpenAI | Parallel rule-based + ML classifiers; <50ms total |
+| 11.4 | Design a Model-Router Gateway | OpenAI, Anthropic | Route by complexity/length/cost class; semantic caching |
+| 11.5 | Design an Eval Pipeline as a Production System | Anthropic, DeepMind | Golden datasets; regression detection; LLM-as-judge in deployment |
+| 11.6 | Design Prompt-Caching Infrastructure | Anthropic, OpenAI | Prefix tree; LRU eviction by prefix length; break-even analysis |
+| 11.7 | Design an RLHF Data Pipeline with compliance | Anthropic | High-fidelity event logging; PII redaction; audit |
+| 11.8 | Design KV-cache-Aware Request Routing | Anthropic | Sticky-by-prefix; cache-affinity load balancing |
+| 11.9 | Design a Distributed Training Orchestrator | DeepMind, Anthropic | FSDP / pipeline + tensor + data parallelism; all-reduce |
+| 11.10 | Design an LLM Agent Runtime with tool calls | OpenAI, Anthropic | Tool registry; sandboxed execution; trace+replay |
+
+**Distinctive constraints.** Safety and cost are first-class SLIs (Anthropic: *"a system that is fast but produces harmful outputs is considered broken"*). Format is 50–55 min vs the standard 45. Problems are *often novel* — interviewer may not have a single correct answer in mind.
+
+### Category 12 — Front-End / client system design
+| # | Prompt | Companies | Notes |
+|---|---|---|---|
+| 12.1 | Design an Image Carousel | Meta, Airbnb | Virtualization; lazy-load; prefetch |
+| 12.2 | Design Autocomplete with keyboard navigation | Meta, Google | Debounce; cancel in-flight; ARIA |
+| 12.3 | Design a Collaborative Spreadsheet (Sheets) | Google, Airbnb | CRDT/OT; virtualized grid; formula evaluation |
+| 12.4 | Design an Email Client (Outlook-style) | Meta, Microsoft | IndexedDB; sync; offline |
+| 12.5 | Design a Chat Client (Slack/Messenger) | Meta, Atlassian | WebSocket; presence; threading |
+| 12.6 | Design Figma's design tool | Figma, Meta | CRDT; multiplayer cursors; selection sync |
+| 12.7 | Design Spotify-style audio streaming with offline | Spotify, Apple | Service worker; cache strategies; DRM |
+| 12.8 | Design a News Feed (infinite scroll) | Meta, Pinterest | Virtualization; cursor pagination; image lazy-load |
+| 12.9 | Design a Stock Trading dashboard with real-time prices | Robinhood | WebSocket; throttling; chart rendering |
+| 12.10 | Design a File Uploader with progress and resumability | Dropbox, Google | Chunked upload; resume on disconnect |
+
+**Canonical framework.** RADIO — **R**equirements, **A**rchitecture, **D**ata model, **I**nterface, **O**ptimization. Companies asking: Meta, Airbnb, Google, Atlassian, Uber, Apple.
+
 ### Cross-category meta-questions
 - **"Design for 10× traffic"** — appears as a follow-up on Amazon SDE2/SDE3 loops.
 - **"Reverse system design"** — Meta occasionally asks candidates to critique an existing architecture rather than build one (interviewing.io reports this for E6).
