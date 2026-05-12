@@ -133,4 +133,19 @@ assert_file "docs/coach/patterns/3O-tradeoffs.md"
 assert_grep "Definition" "docs/coach/patterns/3O-tradeoffs.md"
 assert_grep "vs " "docs/coach/patterns/3O-tradeoffs.md"
 
+# patterns ai-infra and frontend
+assert_file "docs/coach/patterns/ai-infra.md"
+for pat in "Continuous batching" "PagedAttention" "Prefix caching" "KV-cache" \
+           "Speculative decoding" "Model.router" "Mixture-of-Experts|MoE" \
+           "Semantic caching" "Eval pipeline" "Safety pipeline" "FSDP|distributed training"; do
+  assert_grep "$pat" "docs/coach/patterns/ai-infra.md"
+done
+
+assert_file "docs/coach/patterns/frontend.md"
+for pat in "RADIO" "Virtualized lists" "Optimistic UI" "IndexedDB" \
+           "Service worker" "WebSocket" "Code.splitting|code-splitting" \
+           "CRDT|OT" "intersection observer|lazy.load"; do
+  assert_grep "$pat" "docs/coach/patterns/frontend.md"
+done
+
 echo "Phase 1 foundation tests passed."
