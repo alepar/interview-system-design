@@ -61,4 +61,13 @@ assert_grep "adversarial" "docs/coach/personas/interviewer.md"
 assert_grep "time.boxing|time-box" "docs/coach/personas/interviewer.md"
 assert_grep "category of gap" "docs/coach/personas/interviewer.md"
 
+# archetypes.md
+assert_file "docs/coach/archetypes.md"
+for arch in "High-throughput read systems" "Fan-out" "Real-time messaging" \
+            "Concurrent access" "User-generated content" "Geo" "Search" \
+            "Conflict resolution" "ML-in-the-loop" "Infrastructure primitives" \
+            "AI-Infrastructure" "Front-End"; do
+  assert_grep "$arch" "docs/coach/archetypes.md"
+done
+
 echo "Phase 1 foundation tests passed."
