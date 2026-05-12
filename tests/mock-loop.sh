@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib.sh"
+
+PROMPT=".claude/commands/mock-loop.md"
+assert_file "$PROMPT"
+assert_grep "personas/interviewer.md" "$PROMPT"
+assert_grep "protocols.md" "$PROMPT"
+assert_grep "rubric.md" "$PROMPT"
+assert_grep "Requirements" "$PROMPT"
+assert_grep "Core Entities" "$PROMPT"
+assert_grep "API Design" "$PROMPT"
+assert_grep "HLD" "$PROMPT"
+assert_grep "Deep Dives" "$PROMPT"
+assert_grep "constraint-injection" "$PROMPT"
+assert_grep "hint-injection" "$PROMPT"
+assert_grep "adversarial" "$PROMPT"
+assert_grep "calibration" "$PROMPT"
+assert_grep "pivotal moment" "$PROMPT"
+assert_grep "What was correct" "$PROMPT"
+assert_grep "What was wrong" "$PROMPT"
+assert_grep "state/sessions" "$PROMPT"
+assert_grep "Practice mode" "$PROMPT"
+
+echo "Phase 4 /mock-loop static tests passed."
