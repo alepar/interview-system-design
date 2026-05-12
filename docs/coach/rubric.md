@@ -9,7 +9,7 @@ Sources: Hello Interview problem breakdowns and per-level essays; the four-dimen
 1. **Problem Navigation** — clarifying questions, requirements gathering, prioritization, identifying the hard part before drawing boxes.
 2. **Solution Design** — workable architecture meeting requirements; balancing performance, scalability, maintainability, cost.
 3. **Technical Excellence** — depth of knowledge, concrete technology choice with justification, CAP/PACELC reasoning, failure modes, dive-deep on 2–3 components.
-4. **Communication & Collaboration** — clear explanation, responsiveness to feedback, hint-receptivity without defensiveness, legible diagrams.
+4. **Technical Communication & Collaboration** — clear explanation, responsiveness to feedback, hint-receptivity without defensiveness, legible diagrams.
 
 ## Per-level bars
 
@@ -17,7 +17,7 @@ For each dimension below, the per-level Bar anchors quote material from public s
 
 ### Problem Navigation
 - **Mid-level (L4/E4):** > *"Feedback about requirements gathering and prioritization is the #1 most common feedback given to mid-level mock interview participants on Hello Interview and stays in the top 3 even for Senior+ engineers."* > *"A common mistake is to be overbroad ('the system should be highly available!' or 'the system should be highly consistent!') when the reality is that availability and consistency usually imply tradeoffs which can be made differently for different parts of the system. 'Ordering needs to be consistent to avoid double orders', 'Search can be eventually consistent within 30s'."* — Hello Interview, hellointerview.com/blog/system-design-requirements
-- **Senior (L5/E5):** *"expectations shift towards more in-depth knowledge — about 60% breadth and 40% depth."* — Evan King, "The System Design Interview: What is Expected at Each Level" (hellointerview.com/blog/the-system-design-interview-what-is-expected-at-each-level). At senior level, requirements are gathered with specificity and prioritization driven by the candidate, not the interviewer.
+- **Senior (L5/E5):** *"expectations shift towards more in-depth knowledge — about 60% breadth and 40% depth."* — Hello Interview, YouTube Top-K Videos problem breakdown (hellointerview.com/learn/system-design/problem-breakdowns/top-k). At senior level, requirements are gathered with specificity and prioritization driven by the candidate, not the interviewer.
 - **Staff+ (L6/E6+):** *"Good staff-level engineers design simple systems that solve problems elegantly. A very common response to a challenge is 'let me see if [a more sophisticated approach] is actually required' whereas a senior engineer will try to solve the complex flavor. Interviewer: You need location search over a set of places. Staff Candidate: How many places are we talking about here? Interviewer: 10,000 Staff Candidate: Are they updated frequently? Interviewer: No, not really. Staff Candidate: Great, let's sync periodically and search in memory."* — Stefan Mai, "5 Keys to Staff-Level System Design Interviews" (hellointerview.com/blog/staff-level-system-design)
 
 ### Solution Design
@@ -30,7 +30,7 @@ For each dimension below, the per-level Bar anchors quote material from public s
 - **Senior:** *"I start the interview with the presumption that candidates have a thorough understanding of the fundamentals… when you introduce technical elements like a load balancer or an API gateway, I won't probe into their basic functionalities unless you expose a lack of understanding."* — Evan King, "The System Design Interview: What is Expected at Each Level" (hellointerview.com/blog/the-system-design-interview-what-is-expected-at-each-level)
 - **Staff+:** *"a candidate might introduce Temporal.io as a solution to address specific challenges like distributed system orchestration or workflow management… If this is a technology I'm less acquainted with, a great staff candidate would skillfully elucidate its functionalities… effectively broadening my understanding."* — Evan King, "The System Design Interview: What is Expected at Each Level" (hellointerview.com/blog/the-system-design-interview-what-is-expected-at-each-level)
 
-### Communication & Collaboration
+### Technical Communication & Collaboration
 - **Mid-level:** Communicates clearly; accepts hints; does not get defensive when challenged. (Synthesized from the four-dimension framework in `staff-engineer-study-guide.md` §2.)
 - **Senior:** *"'I'm going to go with Postgres here because I need transactions across tables and durability. I don't think this is going to be a scaling bottleneck but we can come back to this later if needed.' is a great response… a. Make the decision. Don't just outline options. b. Justify your decisions, but don't attempt to make an airtight case."* — Stefan Mai, "5 Keys to Staff-Level System Design Interviews" (hellointerview.com/blog/staff-level-system-design)
 - **Staff+:** *"At this level, the candidate is often seen as a peer in the conversation, contributing significantly to the discussion with insights that may even enlighten the interviewer."* — Evan King, "The System Design Interview: What is Expected at Each Level" (hellointerview.com/blog/the-system-design-interview-what-is-expected-at-each-level)
