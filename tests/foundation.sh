@@ -112,4 +112,25 @@ assert_file "docs/coach/patterns/3J-architectural.md"
 assert_grep "Definition" "docs/coach/patterns/3J-architectural.md"
 assert_grep "Production systems|Canonical use" "docs/coach/patterns/3J-architectural.md"
 
+# patterns 3K-3O
+assert_file "docs/coach/patterns/3K-reliability-observability.md"
+assert_grep "Definition" "docs/coach/patterns/3K-reliability-observability.md"
+assert_grep "Production systems|Canonical use" "docs/coach/patterns/3K-reliability-observability.md"
+
+assert_file "docs/coach/patterns/3L-security-privacy.md"
+assert_grep "Definition" "docs/coach/patterns/3L-security-privacy.md"
+assert_grep "Production systems|Canonical use" "docs/coach/patterns/3L-security-privacy.md"
+
+assert_file "docs/coach/patterns/3M-ml-specific.md"
+assert_grep "Definition" "docs/coach/patterns/3M-ml-specific.md"
+assert_grep "Production systems|Canonical use" "docs/coach/patterns/3M-ml-specific.md"
+
+assert_file "docs/coach/patterns/3N-papers.md"
+assert_grep "Definition" "docs/coach/patterns/3N-papers.md"
+assert_grep "Paxos|Raft|Spanner|MapReduce" "docs/coach/patterns/3N-papers.md"
+
+assert_file "docs/coach/patterns/3O-tradeoffs.md"
+assert_grep "Definition" "docs/coach/patterns/3O-tradeoffs.md"
+assert_grep "vs " "docs/coach/patterns/3O-tradeoffs.md"
+
 echo "Phase 1 foundation tests passed."
