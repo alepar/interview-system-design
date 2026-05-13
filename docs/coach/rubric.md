@@ -33,6 +33,9 @@ For each dimension below, the per-level Bar anchors quote material from public s
 ### Technical Communication & Collaboration
 - **Mid-level:** Communicates clearly; accepts hints; does not get defensive when challenged. (Synthesized from the four-dimension framework in `staff-engineer-study-guide.md` §2.)
 - **Senior:** *"'I'm going to go with Postgres here because I need transactions across tables and durability. I don't think this is going to be a scaling bottleneck but we can come back to this later if needed.' is a great response… a. Make the decision. Don't just outline options. b. Justify your decisions, but don't attempt to make an airtight case."* — Stefan Mai, "5 Keys to Staff-Level System Design Interviews" (hellointerview.com/blog/staff-level-system-design)
+
+  **Calibration note.** This anchor applies to *implementation* decisions (e.g., "I'd use Postgres because…") where deferring to options is pure avoidance. For *empirical calibration* decisions — celebrity thresholds, sharding cutoffs, cache size targets, etc. — the Staff+ bar is **anchor + method**, not magic-number. See `docs/coach/protocols.md` § Tone and feedback discipline / Numeric-commit calibration for the grading detail.
+
 - **Staff+:** *"At this level, the candidate is often seen as a peer in the conversation, contributing significantly to the discussion with insights that may even enlighten the interviewer."* — Evan King, "The System Design Interview: What is Expected at Each Level" (hellointerview.com/blog/the-system-design-interview-what-is-expected-at-each-level)
 
 ## Drive vs wait (pivotal cross-cutting moment)

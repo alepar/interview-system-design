@@ -204,4 +204,7 @@ assert_grep "anchor.*method" "docs/coach/protocols.md"
 # Task 2: Tone discipline cross-reference in interviewer persona
 assert_grep "Tone discipline|Tone and feedback discipline" "docs/coach/personas/interviewer.md"
 
+# Task 3: Calibration note in rubric Mai anchor
+assert_grep "Calibration note|implementation decisions|empirical calibration" "docs/coach/rubric.md"
+
 echo "Phase 1 foundation tests passed."
