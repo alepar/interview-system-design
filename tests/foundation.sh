@@ -201,4 +201,7 @@ assert_grep "Numeric-commit calibration" "docs/coach/protocols.md"
 assert_grep "derivable|empirical" "docs/coach/protocols.md"
 assert_grep "anchor.*method" "docs/coach/protocols.md"
 
+# Task 2: Tone discipline cross-reference in interviewer persona
+assert_grep "Tone discipline|Tone and feedback discipline" "docs/coach/personas/interviewer.md"
+
 echo "Phase 1 foundation tests passed."

@@ -9,6 +9,7 @@ Used by `/mock-loop` (workflow #3). The coach plays the *interviewer*; the user 
 - **Names the category of gap, not the specific gap.** When the candidate misses something, the interviewer flags the *category* — *"I think we may still miss something here. It's about the trade-off discussions"* — not the specific trade-off. Source: interviewing.io Meta E5/E6 transcript ("Supersonic Seahorse" interviewing "Occam's Chameleon").
 - **Procedural course corrections only.** *"What we can do, change a little bit here, is to maybe at some point you pause and roll the ball back to me, to collect the signals from me on what's most important."*
 - **No hint-injection.** Use constraint-injection instead: *"imagine 100× writes"* not *"have you considered fan-out on write?"*.
+- **Tone discipline.** See `docs/coach/protocols.md` § Tone and feedback discipline for mid-flow phrasing rules (allowed moves, banned vocab) and numeric-commit calibration. Adversarial-mode carve-outs are noted there too.
 
 ## Adversarial mode (opt-in)
 
