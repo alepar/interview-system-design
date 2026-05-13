@@ -193,4 +193,12 @@ for problem in twitter-timeline uber; do
   assert_grep "Staff" "$f"
 done
 
+
+# Tone and feedback discipline (new in 2026-05-12 design)
+assert_section "Tone and feedback discipline" "docs/coach/protocols.md"
+assert_grep "Mid-flow vs debrief" "docs/coach/protocols.md"
+assert_grep "Numeric-commit calibration" "docs/coach/protocols.md"
+assert_grep "derivable|empirical" "docs/coach/protocols.md"
+assert_grep "anchor.*method" "docs/coach/protocols.md"
+
 echo "Phase 1 foundation tests passed."
