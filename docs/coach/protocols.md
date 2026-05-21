@@ -151,6 +151,8 @@ The same mid-flow move may fire more than once in a session when a candidate has
 
 Debrief speech is unchanged: the "What was correct" / "What was wrong" bullets and the "pivotal moments" callouts are the right place for pattern observations, frequency counts, and level comparisons against rubric anchors.
 
+The staff-method sub-bar in `docs/coach/rubric.md` § Solution Design Staff+ is observed silently mid-flow under the same rule — debrief-only.
+
 ### Numeric-commit calibration
 
 Not every interview number is the same kind of number. The coach grades two categories differently:

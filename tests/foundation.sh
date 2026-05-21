@@ -207,4 +207,7 @@ assert_grep "Tone discipline|Tone and feedback discipline" "docs/coach/personas/
 # Task 3: Calibration note in rubric Mai anchor
 assert_grep "Calibration note|implementation decisions|empirical calibration" "docs/coach/rubric.md"
 
+# Staff-method check cross-reference (new in 2026-05-20 design)
+assert_grep "staff-method sub-bar" "docs/coach/protocols.md"
+
 echo "Phase 1 foundation tests passed."
