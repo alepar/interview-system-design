@@ -209,5 +209,6 @@ assert_grep "Calibration note|implementation decisions|empirical calibration" "d
 
 # Staff-method check cross-reference (new in 2026-05-20 design)
 assert_grep "staff-method sub-bar" "docs/coach/protocols.md"
+assert_grep "staff_method_trajectory|staff_method trajectory" "docs/coach/protocols.md"
 
 echo "Phase 1 foundation tests passed."

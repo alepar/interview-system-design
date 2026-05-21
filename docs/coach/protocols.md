@@ -102,6 +102,15 @@ Executed at session end by the coach:
 4. Update drive-vs-wait ratio: count of last 10 turn-initiators in the most recent `/mock-loop`.
 5. Update prediction-vs-score delta: mean over last 5 `/mock-loop` sessions where calibration was captured.
 6. Update scaffolding level: decrease by 1 after 3 consecutive sessions in archetype demonstrating ≥ target level.
+7. Update staff_method trajectory: count `demonstrated` / `missed` for `simple_to_bottleneck_arc` and `commit_with_criteria` across the last 5 `/mock-loop` sessions where each slot was graded (sessions with `not_graded` excluded from the denominator). Record `breadth_menu_count` as count-of-demonstrated over the same window. The "Recommended next session" line may bias toward archetypes where `commit_with_criteria` is recurring `missed`. Field shape in `observed.md`:
+
+   ```yaml
+   staff_method_trajectory:
+     window_sessions: 5
+     simple_to_bottleneck_arc: "3/4 demonstrated"
+     commit_with_criteria: "2/4 demonstrated"
+     breadth_menu_count: 1
+   ```
 
 ## Problem selection (for /mock-loop)
 
