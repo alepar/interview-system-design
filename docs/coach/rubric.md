@@ -25,6 +25,16 @@ For each dimension below, the per-level Bar anchors quote material from public s
 - **Senior:** *"[Senior] expectations shift towards more in-depth knowledge — about 60% breadth and 40% depth."* — Hello Interview, YouTube Top-K Videos problem breakdown (hellointerview.com/learn/system-design/problem-breakdowns/top-k)
 - **Staff+:** *"[Staff+] I'm looking for about 40% breadth and 60% depth in your understanding."* — Hello Interview, YouTube Top-K Videos problem breakdown (hellointerview.com/learn/system-design/problem-breakdowns/top-k)
 
+  **Method sub-bar (Staff+).** A Staff+ design progresses top-down: simplest workable baseline → name the bottleneck → describe ways to resolve → state criteria guiding the tech selection → commit to one choice. Optionally enumerate 2–3 candidate technologies with one-line pro/con before committing (breadth bonus, not required). The anti-pattern is naming a specific technology (*"I'd use DynamoDB"*) without surfacing the criteria that led there. Per Stefan Mai's option-listing principle (see Communication anchor), the commit is required even when the menu is shown — never kick the decision back to the interviewer.
+
+  | Target level | Simple→bottleneck arc | Commit-with-criteria | Breadth menu (optional) |
+  |---|---|---|---|
+  | L4 (Mid) | not graded | not graded | demonstrated → above-bar signal |
+  | L5 (Senior) | demonstrated → above-bar; missed → neutral | at-bar expectation | demonstrated → above-bar signal |
+  | L6+ (Staff+) | required (missed → below-bar) | required (missed → below-bar) | demonstrated → above-bar bonus |
+
+  This check is observed silently mid-flow per `docs/coach/protocols.md` § Tone and feedback discipline / Mid-flow vs debrief; it surfaces only in the closing assessment.
+
 ### Technical Excellence
 - **Mid-level:** *"If you introduce an API gateway, for example, expect that I may ask you what it does and why it's needed in your design."* — Evan King, "The System Design Interview: What is Expected at Each Level" (hellointerview.com/blog/the-system-design-interview-what-is-expected-at-each-level)
 - **Senior:** *"I start the interview with the presumption that candidates have a thorough understanding of the fundamentals… when you introduce technical elements like a load balancer or an API gateway, I won't probe into their basic functionalities unless you expose a lack of understanding."* — Evan King, "The System Design Interview: What is Expected at Each Level" (hellointerview.com/blog/the-system-design-interview-what-is-expected-at-each-level)

@@ -23,4 +23,10 @@ assert_grep "What was wrong" "$PROMPT"
 assert_grep "state/sessions" "$PROMPT"
 assert_grep "Practice mode" "$PROMPT"
 
+# Staff-method sub-bar (new in 2026-05-20 design)
+assert_grep "Method sub-bar.*Staff" "docs/coach/rubric.md"
+assert_grep "simplest workable baseline.*bottleneck" "docs/coach/rubric.md"
+assert_grep "commit to one choice" "docs/coach/rubric.md"
+assert_grep "Target level.*Simple.*bottleneck arc.*Commit-with-criteria.*Breadth menu" "docs/coach/rubric.md"
+
 echo "Phase 4 /mock-loop static tests passed."
