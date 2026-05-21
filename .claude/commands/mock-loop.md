@@ -77,11 +77,27 @@ When time is up (or user signals done), in this exact order:
    - 1–2 **pivotal moments**, each with a one-sentence rationale.
    - Recommended next session.
 
+5. **Fill staff_method.** Before writing the session artifact, classify each slot from the transcript:
+
+   - `simple_to_bottleneck_arc`: `demonstrated` if HLD or Deep-Dive showed simple-baseline → named-bottleneck → resolution arc; `missed` if depth dives happened with no baseline-bottleneck framing; `not_graded` if target_level is L4 and the marker was absent.
+   - `commit_with_criteria`: `demonstrated` if at least one tech choice stated criteria and committed to one option; `missed` if a tech was named without surfacing criteria; `not_graded` if target_level is L4 and the marker was absent.
+   - `breadth_menu`: `demonstrated` if the candidate enumerated 2–3 candidates with one-line pro/con before committing on any decision; `absent` otherwise (never penalized — only the positive case is recorded).
+
+   Cite the Staff+ method sub-bar anchor in any "What was correct" / "What was wrong" bullet derived from these slots.
+
 Grading: use the reference answer in `docs/coach/problems/<slug>.md` if a catalog problem; binary or 3-pt ordinal per Zheng et al. Never free-form 1–10.
 
 ## Session end
 
-1. Write `state/sessions/YYYY-MM-DD-mock-<slug>.md` with the common header + the closing assessment sections + the user's calibration prediction + any bluff_flags + pivotal moments.
+1. Write `state/sessions/YYYY-MM-DD-mock-<slug>.md` with the common header + the closing assessment sections + the user's calibration prediction + any bluff_flags + pivotal moments + the `staff_method` field with shape:
+
+   ```yaml
+   staff_method:
+     simple_to_bottleneck_arc: demonstrated | missed | not_graded
+     commit_with_criteria: demonstrated | missed | not_graded
+     breadth_menu: demonstrated | absent
+     notes: "one-line free text — what triggered the call, or which depth-area decision"
+   ```
 2. Update `state/observed.md` per protocols.md.
 3. Append transcript to `state/archive/<date>-mock-<slug>.md`.
 4. Commit: `git add state && git commit -m "Mock interview: <slug>"`.

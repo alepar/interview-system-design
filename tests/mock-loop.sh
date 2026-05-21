@@ -29,4 +29,10 @@ assert_grep "simplest workable baseline.*bottleneck" "docs/coach/rubric.md"
 assert_grep "commit to one choice" "docs/coach/rubric.md"
 assert_grep "Target level.*Simple.*bottleneck arc.*Commit-with-criteria.*Breadth menu" "docs/coach/rubric.md"
 
+# Staff-method closing-assessment sub-step and schema (new in 2026-05-20 design)
+assert_grep "Fill staff_method" ".claude/commands/mock-loop.md"
+assert_grep "simple_to_bottleneck_arc.*demonstrated.*missed.*not_graded" ".claude/commands/mock-loop.md"
+assert_grep "commit_with_criteria" ".claude/commands/mock-loop.md"
+assert_grep "breadth_menu.*demonstrated.*absent" ".claude/commands/mock-loop.md"
+
 echo "Phase 4 /mock-loop static tests passed."
