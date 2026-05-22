@@ -107,10 +107,18 @@ Executed at session end by the coach:
    ```yaml
    staff_method_trajectory:
      window_sessions: 5
-     simple_to_bottleneck_arc: "3/4 demonstrated"
-     commit_with_criteria: "2/4 demonstrated"
-     breadth_menu_count: 1
+     simple_to_bottleneck_arc: "2.9/4 demonstrated"
+     commit_with_criteria: "1.6/4 demonstrated"
+     breadth_menu_count_weighted: 0.6
    ```
+8. Apply the difficulty modifier to per-session contributions. For each session in the trajectory windows used by steps 2, 5, 6, 7:
+   - Hard sessions count at weight 1.0.
+   - Medium sessions count at weight 0.6.
+   - Easy sessions count at weight 0.3.
+
+   Numerators stay fractional. Denominators stay integer (count of graded sessions in the window). Round displayed values to one decimal place. Example: 2 demonstrated at hard + 1 at medium + 0 at easy across 4 sessions → numerator = 2·1.0 + 1·0.6 + 0·0.3 = 2.6, displayed as `2.6/4 demonstrated`.
+
+   Sessions written before this design landed (no `difficulty` block) are treated as `hard` (weight 1.0). This preserves trajectory continuity.
 
 ## Problem selection (for /mock-loop)
 

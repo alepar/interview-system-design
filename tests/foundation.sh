@@ -216,4 +216,8 @@ assert_section "Difficulty levels" "docs/coach/personas/interviewer.md"
 assert_grep "easy.*medium.*hard|Easy.*Medium.*Hard" "docs/coach/personas/interviewer.md"
 assert_grep "Drive-vs-wait logging by difficulty|Drive vs wait at non-hard" "docs/coach/personas/interviewer.md"
 
+# Difficulty modifier in observed.md update protocol (new in 2026-05-21 design)
+assert_grep "difficulty modifier|trajectory weight" "docs/coach/protocols.md"
+assert_grep "weight 1.0|weight 0.6|weight 0.3" "docs/coach/protocols.md"
+
 echo "Phase 1 foundation tests passed."
