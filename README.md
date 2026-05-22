@@ -84,11 +84,23 @@ The coach plays the *interviewer* through a 5-phase finite-state-machine that mi
 
 **Invocation:**
 
-- `/mock-loop` — coach picks a problem matched to your `focus_areas` and weakest archetype.
-- `/mock-loop ticketmaster` — you pick.
+- `/mock-loop` — coach picks a problem matched to your `focus_areas` and weakest archetype, and recommends a difficulty (see below).
+- `/mock-loop ticketmaster` — you pick the problem; coach still recommends a difficulty.
+- `/mock-loop ticketmaster medium` — pick a difficulty explicitly (`easy` / `medium` / `hard`).
+- `/mock-loop ticketmaster hard adversarial` — difficulty and `adversarial` are orthogonal axes; any combination is valid.
 - `/mock-loop ticketmaster adversarial` — adversarial persona (pushes back, occasionally lets you go down a wrong path); gated on 3+ prior sessions in the same archetype.
 
-**Opening:** the coach announces the time budget aloud (45 min: 40 collect signals, 5 debrief), the persona mode, the problem, and a one-line honor reminder.
+**Difficulty.** Three named levels control how proactively the coach drives the conversation:
+
+- **Easy** — the coach suggests rough FR/NFR areas during Requirements, offers a one-sentence focus prompt at the start of HLD, and announces the deep-dive topics up-front. Use when you're early in prep or learning an unfamiliar archetype.
+- **Medium** — the coach is silent through Requirements / Entities / API / HLD, then picks **one** deep-dive topic to ensure a named bottleneck area is covered. Use when you can drive the breadth and want pressure on depth.
+- **Hard** — the coach is silent across all five phases, intervening only on the four existing rules (time warnings, stuck-prompts, bluff markers, category-level gap flags). Closest approximation of a real interview.
+
+If you omit the difficulty, the coach recommends one based on your last three `/mock-loop` sessions — ≥2 demonstrating Solution Design **and** Technical Excellence at your target level → `hard`; 1 → `medium`; 0 → `easy`. Fewer than three prior sessions falls back to `medium`. You can override mid-session by typing `easy`, `medium`, or `hard` after the opening.
+
+Per-session contributions to `observed.md` mastery trajectories are **weighted by difficulty** (hard 1.0, medium 0.6, easy 0.3), so demonstrated signals at easy don't masquerade as the same evidence as hard. The drive-vs-wait pivotal moment is logged fully at hard, partially at medium (only on signals the coach didn't drive), and not at easy.
+
+**Opening:** the coach announces the time budget aloud (45 min: 40 collect signals, 5 debrief), the persona mode, the difficulty level (recommendation or explicit choice), the problem, and a one-line honor reminder.
 
 **During the session:** the coach announces each phase transition (*"we're at the deep-dive phase now"*) and is mostly silent within phases. It interjects **only** when (a) time is running out in the current phase, (b) you're visibly stuck for 2+ turns, or (c) one of the bluff markers from `protocols.md` trips. Interventions are procedural (*"we have 2 min left"*) or constraint-injection (*"imagine 100× writes"*) — never hint-injection (*"have you considered fan-out on write?"*).
 
