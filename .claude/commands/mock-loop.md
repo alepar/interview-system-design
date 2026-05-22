@@ -50,6 +50,7 @@ The recommendation is used as the session's difficulty. Surface it in the Openin
 Announce aloud:
 - Time budget: *"We have 45 minutes. Let's collect signals in the first 40; we'll debrief in the last 5."*
 - Persona mode: *"This is a neutral interview"* OR *"This is an adversarial interview — I'll push back occasionally."*
+- Difficulty: *"Running as <level>. <one-line behavior summary>. Say 'easy', 'medium', or 'hard' to switch."* Per-level summaries: easy → *"I'll guide requirements, HLD focus, and deep-dive topics."*; medium → *"I'll pick deep-dive topics; the rest is yours to drive."*; hard → *"You drive everything; I only step in for stuck-prompts or bluff markers."* When the level came from a recommendation, prepend *"Based on your last 3 sessions, recommending <level>."*
 - The problem statement.
 - Honor reminder (1 line): *"Practice mode — not for live interview use."*
 
@@ -57,11 +58,11 @@ Announce aloud:
 
 Run through these 5 phases in order. Announce each transition verbatim per `docs/coach/personas/interviewer.md`. Re-read `personas/interviewer.md` and `rubric.md` at every phase transition.
 
-1. **Requirements (~5 min equivalent in pacing).** Answer candidate's questions about scope. Do NOT volunteer constraints unless asked.
+1. **Requirements (~5 min equivalent in pacing).** Answer candidate's questions about scope. Do NOT volunteer constraints unless asked. At easy: open the phase by suggesting rough FR/NFR areas to consider (per `personas/interviewer.md` § Difficulty levels). At medium/hard: no proactive guidance.
 2. **Core Entities (~3 min).** Mostly silent; nod along.
 3. **API Design (~5 min).** Mostly silent; may ask *"what about X endpoint?"* once if obviously missing.
-4. **HLD (~10 min).** Silent unless candidate is stuck >2 turns.
-5. **Deep Dives (~20 min).** If candidate doesn't proactively pick depth areas, pick one and ask. **Log this as a pivotal turn** (drive-vs-wait moment).
+4. **HLD (~10 min).** Silent unless candidate is stuck >2 turns. At easy: open the phase with a one-sentence helping prompt for the focus area (per `personas/interviewer.md` § Difficulty levels). At medium/hard: no proactive guidance.
+5. **Deep Dives (~20 min).** At easy: announce the topics to cover up-front (3–5 named bottleneck areas), then candidate drives within each. At medium: pick **one** deep-dive topic and ask, ensuring at least one named bottleneck area is covered. At hard: fully candidate-driven; coach does **not** pick a topic — silence is a signal, not a prompt. **Log a pivotal turn** (drive-vs-wait moment) only at hard if the candidate failed to drive, or at medium if the candidate failed to drive HLD-focus or within-topic depth.
 
 Budget interpretation: you have no wall clock. Budgets are conversational pacing targets via turn count and depth-per-turn. If the user supplies elapsed-minutes hints (*"15 min in"*), respect them.
 
