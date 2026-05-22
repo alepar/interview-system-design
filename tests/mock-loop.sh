@@ -35,4 +35,8 @@ assert_grep "simple_to_bottleneck_arc.*demonstrated.*missed.*not_graded" ".claud
 assert_grep "commit_with_criteria" ".claude/commands/mock-loop.md"
 assert_grep "breadth_menu.*demonstrated.*absent" ".claude/commands/mock-loop.md"
 
+# Difficulty knob — CLI grammar + recommendation (new in 2026-05-21 design)
+assert_grep "Difficulty recommendation" ".claude/commands/mock-loop.md"
+assert_grep "easy\|medium\|hard" ".claude/commands/mock-loop.md"
+
 echo "Phase 4 /mock-loop static tests passed."

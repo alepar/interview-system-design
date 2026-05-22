@@ -24,10 +24,26 @@ Per `docs/coach/protocols.md` "Honor attestation":
 
 ## Problem selection and FSM setup
 
-5. Parse `$ARGUMENTS`:
-   - Empty → pick a problem per the priority in protocols.md "Problem selection (for /mock-loop)".
-   - `<slug>` → load `docs/coach/problems/<slug>.md`. If missing, fall back to freeform mode.
-   - `<slug> adversarial` → check the adversarial gate (3+ prior sessions in the archetype in `state/observed.md`). If gate not met, decline and explain.
+5. Parse `$ARGUMENTS` (positional, order-insensitive after slug):
+   - Tokens: `<slug>`, one of `easy|medium|hard`, optional `adversarial`.
+   - Empty / no slug → pick a problem per the priority in protocols.md "Problem selection (for /mock-loop)".
+   - No difficulty token → compute recommendation per § Difficulty recommendation below.
+   - Difficulty token present → use it directly; skip the recommendation.
+   - `adversarial` → check the adversarial gate (3+ prior sessions in the archetype in `state/observed.md`). If gate not met, decline and explain.
+
+## Difficulty recommendation
+
+Run only if `$ARGUMENTS` did not include a difficulty token.
+
+1. Read `state/observed.md` and count `/mock-loop` sessions in the trajectory window.
+2. If fewer than 3 prior `/mock-loop` sessions exist: recommend `medium`.
+3. Otherwise, for the last 3 sessions, count **passes** — a session passes if both `level_demonstrated.solution_design` and `level_demonstrated.technical_excellence` are `≥ profile.target_level`.
+4. Map pass count → recommendation:
+   - 2 or 3 passes → `hard`
+   - 1 pass → `medium`
+   - 0 passes → `easy`
+
+The recommendation is used as the session's difficulty. Surface it in the Opening announcement so the user can override mid-session by typing `easy`, `medium`, or `hard`.
 
 ## Opening (verbatim phrasing)
 
