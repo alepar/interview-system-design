@@ -211,4 +211,9 @@ assert_grep "Calibration note|implementation decisions|empirical calibration" "d
 assert_grep "staff-method sub-bar" "docs/coach/protocols.md"
 assert_grep "staff_method_trajectory|staff_method trajectory" "docs/coach/protocols.md"
 
+# Difficulty levels section in interviewer.md (new in 2026-05-21 design)
+assert_section "Difficulty levels" "docs/coach/personas/interviewer.md"
+assert_grep "easy.*medium.*hard|Easy.*Medium.*Hard" "docs/coach/personas/interviewer.md"
+assert_grep "Drive-vs-wait logging by difficulty|Drive vs wait at non-hard" "docs/coach/personas/interviewer.md"
+
 echo "Phase 1 foundation tests passed."
