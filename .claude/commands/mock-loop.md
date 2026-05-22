@@ -92,6 +92,7 @@ When time is up (or user signals done), in this exact order:
 4. **Overall** — short summary:
    - Level demonstrated per dimension (from `level_demonstrated` in the session header).
    - 1–2 **pivotal moments**, each with a one-sentence rationale.
+   - *"Difficulty: <level> (<source>)."* — one line stating the level and how it was chosen.
    - Recommended next session.
 
 5. **Fill staff_method.** Before writing the session artifact, classify each slot from the transcript:
@@ -102,11 +103,17 @@ When time is up (or user signals done), in this exact order:
 
    Cite the Staff+ method sub-bar anchor in any "What was correct" / "What was wrong" bullet derived from these slots.
 
+6. **Fill difficulty record.** Before writing the session artifact, populate:
+
+   - `difficulty.level`: `easy | medium | hard` — the level actually run (after any mid-session overrides via the user typing `easy`/`medium`/`hard`).
+   - `difficulty.source`: `cli | recommended | overridden_mid_session` — how this level was chosen. `cli` if it came from `$ARGUMENTS`; `recommended` if from § Difficulty recommendation and accepted; `overridden_mid_session` if the user switched after the opening.
+   - `difficulty.drive_vs_wait_logged`: `true | false` — `true` at hard (always), `true` at medium (only if HLD-focus or within-topic-depth signals fired), `false` at easy.
+
 Grading: use the reference answer in `docs/coach/problems/<slug>.md` if a catalog problem; binary or 3-pt ordinal per Zheng et al. Never free-form 1–10.
 
 ## Session end
 
-1. Write `state/sessions/YYYY-MM-DD-mock-<slug>.md` with the common header + the closing assessment sections + the user's calibration prediction + any bluff_flags + pivotal moments + the `staff_method` field with shape:
+1. Write `state/sessions/YYYY-MM-DD-mock-<slug>.md` with the common header + the closing assessment sections + the user's calibration prediction + any bluff_flags + pivotal moments + the `staff_method` field + the `difficulty` block. Shapes:
 
    ```yaml
    staff_method:
@@ -114,6 +121,11 @@ Grading: use the reference answer in `docs/coach/problems/<slug>.md` if a catalo
      commit_with_criteria: demonstrated | missed | not_graded
      breadth_menu: demonstrated | absent
      notes: "one-line free text — what triggered the call, or which depth-area decision"
+
+   difficulty:
+     level: easy | medium | hard
+     source: cli | recommended | overridden_mid_session
+     drive_vs_wait_logged: true | false
    ```
 2. Update `state/observed.md` per protocols.md.
 3. Append transcript to `state/archive/<date>-mock-<slug>.md`.
