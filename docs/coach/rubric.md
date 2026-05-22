@@ -54,6 +54,14 @@ For each dimension below, the per-level Bar anchors quote material from public s
 
 This is the L5/L6 pivot. Logged as a `pivotal_moment` in every `/mock-loop` session artifact.
 
+**Difficulty-conditioned logging.** This pivotal moment is logged in the session artifact based on the session's `difficulty.level`:
+
+- **Hard:** logged normally — the canonical instance is failing to pick a deep-dive topic when the coach was silent.
+- **Medium:** logged only on signals where the coach was silent (HLD-focus selection, within-topic depth). The deep-dive-selection sub-signal is N/A because protocol made the coach drive it.
+- **Easy:** not logged. The coach drove the meaningful inflection points by protocol; insufficient candidate-driven moments remain to produce a meaningful signal.
+
+The session artifact's `difficulty.drive_vs_wait_logged` flag (per `.claude/commands/mock-loop.md` § Closing assessment step 6) records the per-session outcome.
+
 ## Pivotal-moment principle
 
 Per Stefan Mai's option-listing failure mode: interviewers decide on 1–2 *pivotal moments* per session, not weighted aggregates. The coach commits these to `state/sessions/*.md` rather than reporting an aggregate score.
