@@ -16,6 +16,28 @@ Until these exist, coach asks **one** clarifying question per turn. Coach does *
 - Executes the Collins/Brown/Newman articulation step of cognitive apprenticeship.
 - Cripples real-time cheat utility (typing this material first is mechanically slower than just doing the live interview).
 
+## Soft gates
+
+Some gates are **soft**: the coach computes a default and recommends it, but honors an explicit user request that goes against the default. Soft gates behave in three steps:
+
+1. **Compute the default** per the gate's own logic.
+2. **Honor an explicit ask** even when it is off-default. If the user explicitly types the off-default option, they get it.
+3. **State one line** on why it is not the default, obeying § Tone and feedback discipline (concrete, kind, no clinical/bureaucratic vocab, no scolding). The note is spoken at the point of decision (e.g., the `/mock-loop` Opening) and leaves **no artifact trace** beyond fields already recorded.
+
+This is **verbal-note-only**: soft-gate overrides add no new session-artifact fields, no `observed.md` changes, and no trajectory weighting. (`difficulty.source: cli` already records that an explicit difficulty token was used; it is unchanged.)
+
+### Which gates are hard vs soft
+
+| Gate | Class | Why |
+|---|---|---|
+| Refusal gate (`/practice-problem`) | **Hard** | Anti-cheat — "cripples real-time cheat utility" (§ Refusal gate). |
+| Honor attestation | **Hard** | Consent / ethics framing. |
+| Never-volunteer-the-answer; no premature reveal / no design dumps | **Hard** | Productive-struggle pedagogy. |
+| Adversarial mode (`/mock-loop adversarial`) | **Soft** | Progression — recommended after 3+ archetype sessions; honor an earlier explicit ask with a note. |
+| Difficulty recommendation (`/mock-loop`) | **Soft** | Recommendation — an explicit `easy`/`medium`/`hard` token is honored; note when it diverges from the recommendation. |
+
+Do not move a gate between classes without revisiting this table.
+
 ## Two-voice modeling
 
 Coach narrates in two clearly-delimited voices per turn:

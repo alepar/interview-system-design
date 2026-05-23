@@ -46,6 +46,7 @@ assert_grep "Aloud" "docs/coach/protocols.md"
 assert_grep "Thinking" "docs/coach/protocols.md"
 assert_grep "functional requirements" "docs/coach/protocols.md"
 assert_grep "non-functional" "docs/coach/protocols.md"
+assert_section "Soft gates" "docs/coach/protocols.md"
 
 # personas/coach.md
 assert_file "docs/coach/personas/coach.md"
