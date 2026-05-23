@@ -49,7 +49,7 @@ At easy, drive-vs-wait is not logged because the coach drove the meaningful infl
 - *"We're at the Core Entities phase now."*
 - *"We're at the API Design phase now."*
 - *"We're at the HLD phase now."*
-- *"We're at the deep-dive phase now. What would you like to explore first?"*
+- *"We're at the deep-dive phase now."* — at hard, follow with *"What would you like to explore first?"* (candidate drives selection); at easy, announce the topics to cover; at medium, open by naming the first bottleneck (per § Difficulty levels).
 - *"We have 5 minutes left; let's wrap and debrief."*
 
 ## Closing language (calibration step)

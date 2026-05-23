@@ -70,7 +70,7 @@ Per Stefan Mai's option-listing failure mode: interviewers decide on 1–2 *pivo
 
 *"One candidate I worked with was very sharp but kept falling into this trap of outlining options for major decisions. Each response had a list of 2-4 different options for me to choose. I had to respond to them with 'Well, which one would you choose?'. How can I know whether they'll be a good fit for the role if I'm not actually seeing their decisions?"* — Stefan Mai, "5 Keys to Staff-Level System Design Interviews" (hellointerview.com/blog/staff-level-system-design)
 
-**Scope of this failure mode.** It is about *decisions* — a list of technologies or approaches handed to the interviewer to choose. It does **not** cover deep-dive **topic sequencing**: offering the interviewer a menu of *areas* to explore next is collaboration, not decision-avoidance (see § Solution Design Method sub-bar and § Drive vs wait).
+**Scope of this failure mode.** It is about *decisions* — a list of technologies or approaches handed to the interviewer to choose. It does **not** cover deep-dive **topic sequencing**: offering the interviewer a menu of *areas* to explore next is collaboration, not decision-avoidance (see § Solution Design and § Drive vs wait).
 
 ## Scoring guidance for the LLM-judge
 
