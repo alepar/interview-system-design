@@ -29,6 +29,7 @@ assert_grep "Senior|L5" "docs/coach/rubric.md"
 assert_grep "Staff|L6" "docs/coach/rubric.md"
 assert_grep "3-point ordinal|above bar|at bar|below bar" "docs/coach/rubric.md"
 assert_grep "Hello Interview|hellointerview" "docs/coach/rubric.md"
+assert_grep "topic sequenc" "docs/coach/rubric.md"
 
 # protocols.md
 assert_file "docs/coach/protocols.md"
@@ -47,6 +48,7 @@ assert_grep "Thinking" "docs/coach/protocols.md"
 assert_grep "functional requirements" "docs/coach/protocols.md"
 assert_grep "non-functional" "docs/coach/protocols.md"
 assert_section "Soft gates" "docs/coach/protocols.md"
+assert_grep "Topic-sequencing|topic sequenc" "docs/coach/protocols.md"
 
 # personas/coach.md
 assert_file "docs/coach/personas/coach.md"

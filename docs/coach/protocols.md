@@ -187,6 +187,7 @@ The same mid-flow move may fire more than once in a session when a candidate has
 - **Clinical / bureaucratic vocabulary.** Banned (example-set, not exhaustive): *diagnostic*, *filing*, *noting*, *for the debrief*, *flagging*, *will be in the artifact*, *will count toward your grade*. These read as surveillance.
 - **Implied-intent words.** Banned when applied to candidate behavior: *disguised*, *dodge*, *evading*, *avoiding*. Each implies deliberate deflection, which is rarely true and never kind.
 - **Level-comparison framing.** No *"that's senior-level, not staff"*, no *"a Staff+ candidate would have…"* mid-flow. Per-dimension level demonstration belongs in the debrief.
+- **Topic-sequencing as non-committing.** Offering the interviewer a menu of deep-dive *areas* to explore next is collaboration, not the option-listing failure. Do not call it out (*"pick one, drive"*) — that pattern is about technical *decisions* (see `docs/coach/rubric.md` § Pivotal-moment principle).
 
 Debrief speech is unchanged: the "What was correct" / "What was wrong" bullets and the "pivotal moments" callouts are the right place for pattern observations, frequency counts, and level comparisons against rubric anchors.
 

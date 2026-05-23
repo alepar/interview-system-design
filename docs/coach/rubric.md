@@ -25,7 +25,7 @@ For each dimension below, the per-level Bar anchors quote material from public s
 - **Senior:** *"[Senior] expectations shift towards more in-depth knowledge — about 60% breadth and 40% depth."* — Hello Interview, YouTube Top-K Videos problem breakdown (hellointerview.com/learn/system-design/problem-breakdowns/top-k)
 - **Staff+:** *"[Staff+] I'm looking for about 40% breadth and 60% depth in your understanding."* — Hello Interview, YouTube Top-K Videos problem breakdown (hellointerview.com/learn/system-design/problem-breakdowns/top-k)
 
-  **Method sub-bar (Staff+).** A Staff+ design progresses top-down: simplest workable baseline → name the bottleneck → describe ways to resolve → state criteria guiding the tech selection → commit to one choice. Optionally enumerate 2–3 candidate technologies with one-line pro/con before committing (breadth bonus, not required). The anti-pattern is naming a specific technology (*"I'd use DynamoDB"*) without surfacing the criteria that led there. Per Stefan Mai's option-listing principle (see Communication anchor), the commit is required even when the menu is shown — never kick the decision back to the interviewer.
+  **Method sub-bar (Staff+).** A Staff+ design progresses top-down: simplest workable baseline → name the bottleneck → describe ways to resolve → state criteria guiding the tech selection → commit to one choice. Optionally enumerate 2–3 candidate technologies with one-line pro/con before committing (breadth bonus, not required). The anti-pattern is naming a specific technology (*"I'd use DynamoDB"*) without surfacing the criteria that led there. Per Stefan Mai's option-listing principle (see Communication anchor), the commit is required even when the menu is shown — never kick the decision back to the interviewer. This applies to **technical/design decisions** (which datastore, which concurrency strategy) — not to deep-dive **topic sequencing**: enumerating the critical bottleneck areas and asking the interviewer which to explore next is legitimate scoping, never the option-listing failure (see § Drive vs wait).
 
   | Target level | Simple→bottleneck arc | Commit-with-criteria | Breadth menu (optional) |
   |---|---|---|---|
@@ -56,17 +56,21 @@ This is the L5/L6 pivot. Logged as a `pivotal_moment` in every `/mock-loop` sess
 
 **Difficulty-conditioned logging.** This pivotal moment is logged in the session artifact based on the session's `difficulty.level`:
 
-- **Hard:** logged normally — the canonical instance is failing to pick a deep-dive topic when the coach was silent.
+- **Hard:** logged normally — the canonical *failure* instance is the candidate going **silent / passively waiting** for the coach to drive. Enumerating the critical bottleneck areas and asking the coach which to explore next is **not** a failure (the drive was demonstrated by the enumeration); the coach may pick the next area in response.
 - **Medium:** logged only on signals where the coach was silent (HLD-focus selection, within-topic depth). The deep-dive-selection sub-signal is N/A because protocol made the coach drive it.
 - **Easy:** not logged. The coach drove the meaningful inflection points by protocol; insufficient candidate-driven moments remain to produce a meaningful signal.
 
 The session artifact's `difficulty.drive_vs_wait_logged` flag (per `.claude/commands/mock-loop.md` § Closing assessment step 6) records the per-session outcome.
+
+**Positive instance (any level).** Enumerating the full critical set of deep-dive bottleneck areas — even when the candidate then asks the interviewer to pick the order — demonstrates Problem Navigation (identifying the hard parts). Log it as an above-bar Problem-Navigation signal in "What was correct", not as a non-committing pattern.
 
 ## Pivotal-moment principle
 
 Per Stefan Mai's option-listing failure mode: interviewers decide on 1–2 *pivotal moments* per session, not weighted aggregates. The coach commits these to `state/sessions/*.md` rather than reporting an aggregate score.
 
 *"One candidate I worked with was very sharp but kept falling into this trap of outlining options for major decisions. Each response had a list of 2-4 different options for me to choose. I had to respond to them with 'Well, which one would you choose?'. How can I know whether they'll be a good fit for the role if I'm not actually seeing their decisions?"* — Stefan Mai, "5 Keys to Staff-Level System Design Interviews" (hellointerview.com/blog/staff-level-system-design)
+
+**Scope of this failure mode.** It is about *decisions* — a list of technologies or approaches handed to the interviewer to choose. It does **not** cover deep-dive **topic sequencing**: offering the interviewer a menu of *areas* to explore next is collaboration, not decision-avoidance (see § Solution Design Method sub-bar and § Drive vs wait).
 
 ## Scoring guidance for the LLM-judge
 
