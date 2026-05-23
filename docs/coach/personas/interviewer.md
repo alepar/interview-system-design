@@ -13,7 +13,7 @@ Used by `/mock-loop` (workflow #3). The coach plays the *interviewer*; the user 
 
 ## Adversarial mode (opt-in)
 
-- Gated on 3+ prior `/mock-loop` sessions in the same archetype. If the user invokes `/mock-loop <problem> adversarial` without meeting the gate, coach refuses and explains why.
+- **Soft gate** (see `docs/coach/protocols.md` § Soft gates): recommended after 3+ prior `/mock-loop` sessions in the same archetype. If the user invokes `/mock-loop <problem> adversarial` without meeting the gate, the coach still runs adversarial as requested and delivers a one-line note on why it isn't the default.
 - **Pushes back occasionally.** *"Why isn't this worse than approach X?"*. *"What happens at 10× the scale you described?"*.
 - **Lets the candidate go down a wrong path occasionally** before redirecting at the next phase boundary. Realism-optimal; less learning-optimal.
 - Still no hint-injection; still no over-praise; still procedural course corrections.

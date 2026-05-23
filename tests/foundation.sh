@@ -61,6 +61,7 @@ assert_grep "neutral" "docs/coach/personas/interviewer.md"
 assert_grep "adversarial" "docs/coach/personas/interviewer.md"
 assert_grep "time.boxing|time-box" "docs/coach/personas/interviewer.md"
 assert_grep "category of gap" "docs/coach/personas/interviewer.md"
+assert_grep "[Ss]oft gate" "docs/coach/personas/interviewer.md"
 
 # archetypes.md
 assert_file "docs/coach/archetypes.md"
