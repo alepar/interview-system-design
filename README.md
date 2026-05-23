@@ -88,7 +88,7 @@ The coach plays the *interviewer* through a 5-phase finite-state-machine that mi
 - `/mock-loop ticketmaster` — you pick the problem; coach still recommends a difficulty.
 - `/mock-loop ticketmaster medium` — pick a difficulty explicitly (`easy` / `medium` / `hard`).
 - `/mock-loop ticketmaster hard adversarial` — difficulty and `adversarial` are orthogonal axes; any combination is valid.
-- `/mock-loop ticketmaster adversarial` — adversarial persona (pushes back, occasionally lets you go down a wrong path); gated on 3+ prior sessions in the same archetype.
+- `/mock-loop ticketmaster adversarial` — adversarial persona (pushes back, occasionally lets you go down a wrong path); recommended after 3+ prior sessions in the same archetype. If you ask for it earlier, the coach runs it anyway and notes once why it isn't the default (it's a soft gate).
 
 **Difficulty.** Three named levels control how proactively the coach drives the conversation:
 
@@ -96,7 +96,7 @@ The coach plays the *interviewer* through a 5-phase finite-state-machine that mi
 - **Medium** — the coach is silent through Requirements / Entities / API / HLD, then picks **one** deep-dive topic to ensure a named bottleneck area is covered. Use when you can drive the breadth and want pressure on depth.
 - **Hard** — the coach is silent across all five phases, intervening only on the four existing rules (time warnings, stuck-prompts, bluff markers, category-level gap flags). Closest approximation of a real interview.
 
-If you omit the difficulty, the coach recommends one based on your last three `/mock-loop` sessions — ≥2 demonstrating Solution Design **and** Technical Excellence at your target level → `hard`; 1 → `medium`; 0 → `easy`. Fewer than three prior sessions falls back to `medium`. You can override mid-session by typing `easy`, `medium`, or `hard` after the opening.
+If you omit the difficulty, the coach recommends one based on your last three `/mock-loop` sessions — ≥2 demonstrating Solution Design **and** Technical Excellence at your target level → `hard`; 1 → `medium`; 0 → `easy`. Fewer than three prior sessions falls back to `medium`. If you pass an explicit difficulty that differs from what the coach would recommend, it runs your choice and notes the divergence in one line. You can override mid-session by typing `easy`, `medium`, or `hard` after the opening.
 
 Per-session contributions to `observed.md` mastery trajectories are **weighted by difficulty** (hard 1.0, medium 0.6, easy 0.3), so demonstrated signals at easy don't masquerade as the same evidence as hard. The drive-vs-wait pivotal moment is logged fully at hard, partially at medium (only on signals the coach didn't drive), and not at easy.
 
