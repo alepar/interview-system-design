@@ -43,7 +43,7 @@ Compute the recommendation in all cases. When `$ARGUMENTS` did not include a dif
    - 1 pass → `medium`
    - 0 passes → `easy`
 
-The recommendation is used as the session's difficulty. Surface it in the Opening announcement so the user can override mid-session by typing `easy`, `medium`, or `hard`.
+When no difficulty token was supplied, the recommendation becomes the session's difficulty. Surface it in the Opening announcement so the user can override mid-session by typing `easy`, `medium`, or `hard`.
 
 ## Opening (verbatim phrasing)
 
