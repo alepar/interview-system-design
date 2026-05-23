@@ -42,5 +42,6 @@ assert_grep "Running as.*level|Say.*easy.*medium.*hard" ".claude/commands/mock-l
 assert_grep "Fill difficulty record" ".claude/commands/mock-loop.md"
 assert_grep "difficulty\.source|difficulty_source" ".claude/commands/mock-loop.md"
 assert_grep "drive_vs_wait_logged" ".claude/commands/mock-loop.md"
+assert_grep "[Ss]oft gate" ".claude/commands/mock-loop.md"
 
 echo "Phase 4 /mock-loop static tests passed."

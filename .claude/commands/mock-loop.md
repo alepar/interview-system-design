@@ -28,12 +28,12 @@ Per `docs/coach/protocols.md` "Honor attestation":
    - Tokens: `<slug>`, one of `easy|medium|hard`, optional `adversarial`.
    - Empty / no slug → pick a problem per the priority in protocols.md "Problem selection (for /mock-loop)".
    - No difficulty token → compute recommendation per § Difficulty recommendation below.
-   - Difficulty token present → use it directly; skip the recommendation.
-   - `adversarial` → check the adversarial gate (3+ prior sessions in the archetype in `state/observed.md`). If gate not met, decline and explain.
+   - Difficulty token present → use it directly, but still compute the recommendation (§ Difficulty recommendation) to detect divergence; if the explicit token differs from the recommendation, deliver the soft-gate note in the Opening.
+   - `adversarial` → check the adversarial gate (3+ prior sessions in the archetype in `state/observed.md`). This is a **soft gate** (see `docs/coach/protocols.md` § Soft gates): if the gate is not met, still run adversarial as requested, and deliver the soft-gate note in the Opening (§ Opening).
 
 ## Difficulty recommendation
 
-Run only if `$ARGUMENTS` did not include a difficulty token.
+Compute the recommendation in all cases. When `$ARGUMENTS` did not include a difficulty token, the recommendation becomes the session difficulty. When a token was supplied, the recommendation is used only to detect divergence for the soft-gate note (`docs/coach/protocols.md` § Soft gates) — the explicit token still wins.
 
 1. Read `state/observed.md` and count `/mock-loop` sessions in the trajectory window.
 2. If fewer than 3 prior `/mock-loop` sessions exist: recommend `medium`.
@@ -49,8 +49,8 @@ The recommendation is used as the session's difficulty. Surface it in the Openin
 
 Announce aloud:
 - Time budget: *"We have 45 minutes. Let's collect signals in the first 40; we'll debrief in the last 5."*
-- Persona mode: *"This is a neutral interview"* OR *"This is an adversarial interview — I'll push back occasionally."*
-- Difficulty: *"Running as <level>. <one-line behavior summary>. Say 'easy', 'medium', or 'hard' to switch."* Per-level summaries: easy → *"I'll guide requirements, HLD focus, and deep-dive topics."*; medium → *"I'll pick deep-dive topics; the rest is yours to drive."*; hard → *"You drive everything; I only step in for stuck-prompts or bluff markers."* When the level came from a recommendation, prepend *"Based on your last 3 sessions, recommending <level>."*
+- Persona mode: *"This is a neutral interview"* OR *"This is an adversarial interview — I'll push back occasionally."* If adversarial was requested but the adversarial gate was not met (soft gate — see `docs/coach/protocols.md` § Soft gates), first deliver the note: *"One thing — adversarial usually lands better once you've run this archetype a few times neutrally, since pushback only helps if you can tell it from real signal. Running it adversarial since you asked."*
+- Difficulty: *"Running as <level>. <one-line behavior summary>. Say 'easy', 'medium', or 'hard' to switch."* Per-level summaries: easy → *"I'll guide requirements, HLD focus, and deep-dive topics."*; medium → *"I'll pick deep-dive topics; the rest is yours to drive."*; hard → *"You drive everything; I only step in for stuck-prompts or bluff markers."* When the level came from a recommendation, prepend *"Based on your last 3 sessions, recommending <level>."* When the level came from an explicit token that diverges from the computed recommendation (soft gate — see `docs/coach/protocols.md` § Soft gates), instead prepend *"Based on your last 3 sessions I'd usually start at <rec>, but running <chosen> as you asked."* When the explicit token equals the recommendation, add no extra note.
 - The problem statement.
 - Honor reminder (1 line): *"Practice mode — not for live interview use."*
 
