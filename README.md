@@ -93,7 +93,7 @@ The coach plays the *interviewer* through a 5-phase finite-state-machine that mi
 **Difficulty.** Three named levels control how proactively the coach drives the conversation:
 
 - **Easy** — the coach suggests rough FR/NFR areas during Requirements, offers a one-sentence focus prompt at the start of HLD, and announces the deep-dive topics up-front. Use when you're early in prep or learning an unfamiliar archetype.
-- **Medium** — the coach is silent through Requirements / Entities / API / HLD, then picks **one** deep-dive topic to ensure a named bottleneck area is covered. Use when you can drive the breadth and want pressure on depth.
+- **Medium** — the coach is silent through Requirements / Entities / API / HLD, then runs a deep-dive **coverage loop**: it opens with one bottleneck, lets you drive the depth and asks follow-up questions to fill gaps, then moves to the next bottleneck until all the critical ones are covered. Use when you can drive the breadth and want every bottleneck aired.
 - **Hard** — the coach is silent across all five phases, intervening only on the four existing rules (time warnings, stuck-prompts, bluff markers, category-level gap flags). Closest approximation of a real interview.
 
 If you omit the difficulty, the coach recommends one based on your last three `/mock-loop` sessions — ≥2 demonstrating Solution Design **and** Technical Excellence at your target level → `hard`; 1 → `medium`; 0 → `easy`. Fewer than three prior sessions falls back to `medium`. If you pass an explicit difficulty that differs from what the coach would recommend, it runs your choice and notes the divergence in one line. You can override mid-session by typing `easy`, `medium`, or `hard` after the opening.
