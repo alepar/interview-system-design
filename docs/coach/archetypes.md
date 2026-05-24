@@ -32,7 +32,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Patterns.** See `docs/coach/patterns/networking-transport.md`.
 
-**Problems in catalog.** *(none yet)*.
+**Problems in catalog.** `whatsapp` · `messenger-multi-device-sync` · `telegram` · `discord-presence` · `discord-channels` · `discord-voice` · `slack` · `twitch-streaming` · `twitch-chat` · `youtube-live` · `zoom` · `webrtc-sfu` · `signal-protocol` · `mls-group` · `audio-rooms` · `twilio` · `push-notification` · `matrix` · `mqtt-broker`.
 
 ## 4. Concurrent access to limited resources
 
