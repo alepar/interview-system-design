@@ -1,0 +1,85 @@
+---
+slug: kafka
+archetype: infra-primitives
+sources:
+  linkedin_engineering: engineering.linkedin.com (LinkedIn 7T messages/day, 4000+ brokers, 100K topics, 7M partitions, 2019)
+  netflix_keystone: zhenzhongxu.com/the-four-innovation-phases-of-netflixs-trillions-scale-real-time-data-infrastructure-2370938d7f01
+  kip_447: cwiki.apache.org/confluence/display/KAFKA/KIP-447:+Producer+scalability+for+exactly+once+semantics
+  kip_429: cwiki.apache.org/confluence/display/KAFKA/KIP-429:+Kafka+Consumer+Incremental+Rebalance+Protocol
+  confluent_transactions: confluent.io/blog/transactions-apache-kafka/
+  kafka_paper: notes.stephenholiday.com/Kafka.pdf
+---
+
+# Apache Kafka (distributed append-only log + exactly-once)
+
+## Bar anchors
+- **Mid-level (L4/E4):** Produces a basic broker design: topics partitioned across brokers; producers write to a leader per partition; consumers in a consumer group, each consumer assigned to one or more partitions. Names "at-least-once delivery" as the default. Knows about replication factor but doesn't articulate ISR semantics. Discusses retention as time- or size-based. Doesn't address exactly-once, consumer rebalance protocols, or partition-count scaling ceilings unprompted.
+- **Senior (L5/E5):** Names ISR (In-Sync Replicas) with `acks=all` + `min.insync.replicas=2` as the durability config; understands `unclean.leader.election.enable=false` for the availability-vs-durability lever. Articulates partition-as-the-unit-of-parallelism: ordering is per-partition not global, consumer parallelism caps at partition count. Discusses log compaction vs time-based retention. Knows about idempotent producers (PID + sequence number) and transactional producers at category level. Identifies consumer rebalance as a real operational concern but may not name cooperative-sticky vs eager protocols.
+- **Staff+ (L6/E6+):** Drives proactively. Quantifies scale: LinkedIn 7T messages/day across 4000+ brokers / 100K topics / 7M partitions (2019); Netflix 1T events/day in 2017, 20× by 2021 per Zhenzhong Xu. Names ISR-based replication with explicit failure modes (`unclean.leader.election.enable=false` accepts ISR-empty unavailability to preserve durability). Articulates exactly-once semantics with KIP-447 (producer-per-input-partition pre-447 was a memory ceiling; 447 unblocks Kafka Streams EoS at scale): idempotent producer (PID + sequence-per-partition) + transactional producer (`transactional.id`) + `read_committed` consumer + 2PC sink for end-to-end EoS to external stores. Names KIP-429 cooperative-sticky rebalance (Kafka 2.4+) as the production answer to k8s rebalance storms; also names static membership (`group.instance.id`) for graceful rolling restart. Quantifies single-broker throughput (~605 MB/s on i3en.2xlarge with NVMe, ack=all, RF=3). Pre-KRaft partition ceiling ~200K/cluster; KRaft (Kafka 4.0+, ZooKeeper removed) unlocks 10M+ partitions/cluster. Stretch (Sr Staff bar): names consumer-scaling proxy patterns when partition count alone can't scale consumption — Wix gRPC fan-out proxy (4× consumption reduction reported), Uber uForwarder, Robinhood kafkaproxy. Discusses tiered storage (KIP-405) for retention beyond local disk. Acknowledges EoS limitation: Kafka EoS only covers Kafka-to-Kafka topologies; external sinks require either idempotent writes or 2PC sinks (Flink TwoPhaseCommitSinkFunction).
+
+## Canonical decomposition
+
+### Requirements
+**Functional:**
+- Producers publish messages to partitioned topics; messages durably stored with configurable retention
+- Consumers in consumer groups, each partition assigned to exactly one consumer in the group
+- Ordering preserved per-partition (not globally); key-based partitioning for per-key ordering
+- At-least-once delivery default; exactly-once delivery available via idempotent + transactional producers
+- Multi-broker replication for durability across broker / AZ failure
+- Log compaction for changelog topics (key-value materialized state); time/size retention for event topics
+
+**Non-functional (with numbers):**
+- 1M messages/sec/topic sustained throughput target
+- Single-broker throughput ceiling ~605 MB/s on i3en.2xlarge with NVMe (Confluent benchmark)
+- LinkedIn production scale anchor: 7T msg/day across 4000+ brokers, 100K topics, 7M partitions
+- Replication factor 3 default; `min.insync.replicas=2` with `acks=all` survives 1 broker loss without data loss
+- Retention 7 days default for event topics; indefinite for compacted topics
+- 99.99% durability across AZ failure with replicas spread across 3 AZs
+- Pre-KRaft partition ceiling ~200K/cluster; KRaft 10M+ partitions
+
+### Core entities
+- **Topic:** topic_name, partition_count, replication_factor, retention_ms / retention_bytes, cleanup_policy (delete | compact), `min.insync.replicas`
+- **Partition:** partition_id, leader_broker_id, ISR (in-sync replica set), log_segments (on disk), high_watermark, last_stable_offset
+- **Broker:** broker_id, hosted_partition_leaders, hosted_partition_replicas, disk_capacity, network_capacity
+- **ConsumerGroup:** group_id, member_consumers, partition_assignment, committed_offsets (per partition), session_state (heartbeat-driven)
+- **Producer:** producer_id (PID for idempotent), transactional_id (for transactional), sequence_number_per_partition
+- **TransactionCoordinator:** broker-resident component tracking open transactions; writes commit/abort markers
+
+### API
+- Producer: `send(topic, key, value, headers, callback)` → record metadata (partition, offset, timestamp)
+- Idempotent producer: `enable.idempotence=true` → automatic PID + sequence-number tracking; `max.in.flight.requests.per.connection=5` while preserving order
+- Transactional producer: `init_transactions()` → bind to coordinator; `begin_transaction()` → `send(...)` × N → `send_offsets_to_transaction(consumer_group)` → `commit_transaction()` or `abort_transaction()`
+- Consumer: `subscribe([topics])` → `poll(timeout_ms)` → batch of records; `commit_sync()` or `commit_async()` to advance offsets
+- `isolation_level=read_committed` skips messages from open/aborted transactions
+- Admin: `create_topics`, `alter_partition_reassignments`, `describe_log_dirs` for operational management
+
+### HLD
+Producers write to **partition leaders** (one leader per partition; brokers host both leaders and followers). The leader writes to its local log, replicates to **followers in the ISR (In-Sync Replicas)** asynchronously; on `acks=all`, the leader waits for all ISR members to acknowledge before returning success to the producer. **`min.insync.replicas`** is the floor: if ISR shrinks below this (e.g., due to slow follower or broker failure), producer requests fail rather than risk data loss. **`unclean.leader.election.enable=false`** prevents promoting an out-of-ISR replica to leader on full ISR loss — accepts availability hit to preserve durability.
+
+**Consumer groups** distribute partitions across members; the **group coordinator** (a broker) tracks membership via heartbeats (default `session.timeout.ms=45s`, `heartbeat.interval.ms=3s`). On consumer join/leave, partitions reassign via **eager rebalance** (stop-the-world: all consumers revoke all partitions, get new assignment, resume — catastrophic for stateful apps under k8s churn) or **cooperative-sticky rebalance** (KIP-429, Kafka 2.4+: only the partitions that move pause; others keep processing). **Static membership** (`group.instance.id`) eliminates rebalance on graceful restart — major win for stateful consumers.
+
+**Exactly-once semantics (EoS)** combines: (1) **idempotent producer** — broker assigns PID at init, dedupes by `(PID, partition, sequence_number)` so retries don't double-write within a session; (2) **transactional producer** — `transactional.id` enables multi-partition atomic writes; coordinator writes BEGIN/PREPARE/COMMIT or ABORT markers to the transaction log, then writes commit markers to each touched partition; consumers with `isolation_level=read_committed` skip messages from open/aborted txns; (3) **consume-transform-produce** — atomic commit of (output messages, consumed offsets) via `send_offsets_to_transaction`. **KIP-447** (Kafka 2.5+) was the breakthrough: pre-KIP-447 EoS required one producer per input partition (memory-blowup at scale); KIP-447 enables producer-per-thread, unblocking Kafka Streams at large partition counts.
+
+**Replication architecture choice (ISR vs Raft vs ensemble-quorum):** ISR (Kafka's pattern): commit on all in-sync replicas, variable group size, tunable via `min.insync.replicas`. Pros: fastest median latency (no slow-replica blocking). Cons: ISR can shrink to 1 (data-loss risk under unclean election). Raft (KRaft, Kafka 4.0+): majority quorum, strict reasoning, simpler operational model. Cons: write latency = median of majority, not fastest of ISR. BookKeeper ensemble-quorum (Pulsar): striped writes across E bookies with Qw write-quorum and Qa ack-quorum — most flexible, decouples durability from latency. The Kafka community moved from ISR-with-ZooKeeper to KRaft over Kafka 3.x; Pulsar uses BookKeeper. Trade-off depends on workload latency profile.
+
+### Deep dives
+1. **Partitioning, ordering, and the rebalance protocol.** Each topic is N partitions; messages with the same key hash to the same partition, preserving per-key order. Repartitioning is hard: changing `num_partitions` breaks the key→partition mapping; either add partitions without rehashing (new keys distribute, old keys stay put) or do offline re-keying (expensive). Consumer rebalance triggers: member join/leave, heartbeat timeout, `max.poll.interval.ms` exceeded (default 5min — consumer not calling `poll()` fast enough). Slow rebalance → more heartbeat timeouts → more rebalances (feedback loop). Production fix: cooperative-sticky rebalance (KIP-429) + static membership (KIP-345 / `group.instance.id`). Documented production case: 100-consumer group, 25-pod rolling restart caused 45-min outage under eager rebalance; same workload under cooperative-sticky + static membership had sub-second pause per pod. Staff+ commit: partition-count sizing (one per concurrent consumer + headroom; max useful = #partitions), rebalance protocol choice, what triggers eager-rebalance fallback.
+
+2. **Exactly-once semantics (EoS) and KIP-447.** Three components: (a) idempotent producer with `enable.idempotence=true` (default since Kafka 3.0) — broker dedupes by `(PID, partition, sequence)`, solves within-session retry duplicates; (b) transactional producer with `transactional.id` — registers with Transaction Coordinator, gets epoch (fences zombies from prior incarnations), can atomically write to multiple partitions + commit consumer offsets in one transaction; (c) consumer with `isolation_level=read_committed` — skips uncommitted/aborted messages. The hard part is the read-process-write loop in Kafka Streams: the producer's `transactional.id` must be a stable function of the input partition (not the consumer instance) because rebalances reassign partitions and the new owner must fence the prior producer. **Pre-KIP-447:** producer-per-input-partition was required (each partition's processing thread held its own producer + transactional.id). At 1000 partitions, this meant 1000 producers per consumer instance → memory ceiling. **KIP-447:** producer-per-thread enabled by having the coordinator track per-(transactional.id, input-partition) state, fencing on partition reassignment. Unblocks EoS at large scale. **Critical limitation:** Kafka EoS only covers Kafka-to-Kafka pipelines. For external sinks (DB, S3, search index): use idempotent writes (UPSERT keyed by message ID) OR 2PC sinks (Flink TwoPhaseCommitSinkFunction integrates external commit into Flink's checkpoint barrier). "Exactly-once everywhere" without one of these is at-least-once + dedup at the edge. Staff+ commit: explicit acknowledgement that EoS is end-to-end only if both endpoints participate; cost is ~3% throughput overhead per Confluent benchmark and latency floor = transaction commit interval (~100ms typical).
+
+3. **Consumer scaling beyond partition count.** Kafka's hard limit: useful consumer parallelism caps at partition count. Adding more consumers than partitions means idle consumers. When per-partition processing rate < incoming rate, options: (a) increase partitions (re-partition penalty), (b) increase per-partition throughput via batching/async processing, (c) **proxy fan-out pattern** — a single consumer per partition pulls from Kafka, then fans out to N downstream worker pods via gRPC/HTTP. Named production implementations: **Wix gRPC fan-out proxy** (reported 4× consumption reduction, 30% Kafka cost reduction), **Uber uForwarder**, **Robinhood kafkaproxy**. Trade-off: proxy adds a hop (latency); now you need to manage the fan-out reliability separately (worker failure → message loss unless the proxy implements ack semantics). Staff+ commit: when partition-count is sufficient vs when proxy fan-out is needed; ack semantics across the proxy; backpressure handling.
+
+## Known failure modes
+1. **Unclean leader election loses committed data.** Full ISR loss (all replicas of a partition unavailable simultaneously) with `unclean.leader.election.enable=true`: an out-of-ISR replica is promoted to leader, accepts new writes; when the original leader returns, its committed offsets are ahead of the new leader → data divergence, committed data lost. Production answer: `unclean.leader.election.enable=false` (Kafka 2.0+ default) — accept partition unavailability until at least one ISR member returns, rather than risk data loss; pair with rack-awareness (`broker.rack`) so replicas spread across AZs to make correlated ISR loss unlikely; alerting on ISR shrinkage as a leading indicator.
+
+2. **Consumer rebalance storm under k8s churn.** Rolling deploy with eager rebalance: each pod restart triggers a full rebalance (all consumers stop, reassign, resume); 10 pods rolling = 10 rebalances stacked up; throughput goes to zero for minutes. Production answer: cooperative-sticky rebalance (KIP-429) + static membership (`group.instance.id` set to a stable identifier per pod) eliminates rebalance on graceful restart; for non-graceful restarts, only affected partitions pause. Documented case: 100-consumer group went from 45-min outage to sub-second per-pod pause after enabling both.
+
+3. **Transaction coordinator overload from short/frequent transactions.** Kafka's transaction coordinator (a broker-resident component) handles BEGIN/PREPARE/COMMIT/ABORT for transactional producers. Many small transactions (e.g., per-message commit) → coordinator saturates writing transaction-log markers. Production answer: batch external sink writes to lengthen transaction window (e.g., 100ms commit interval batches ~10K messages per transaction); monitor coordinator-side latency; if multiple transactional.ids hash to the same coordinator, partition the `__transaction_state` topic to spread load.
+
+## Notes for the coach
+- **This is the canonical message-queue interview prompt.** Asked-confirmed at LinkedIn Staff per Glassdoor; on every infra interview-prep list (ByteByteGo Vol 2; Hello Interview; Educative; IGotAnOffer FAANG). LinkedIn's published 7-trillion-messages/day numbers are the headline anchor; Netflix's "1T events/day in 2017 then 20× by 2021" is the modern complement.
+- **The pub/sub fan-out variant is folded as a deep-dive within this problem.** If the candidate steers toward "design WhatsApp delivery" or "design notifications fan-out at 1M subscribers/topic," the coach pivots to the per-subscription-state vs offset-tracking architectural fork: Kafka's offset model caps at partition count; SQS/Pub-Sub-style per-subscription queues (with visibility timeouts, SQS's 120K in-flight ceiling, push-vs-pull delivery models) is the alternative architecture for unbounded fan-out. This is NOT a separate problem — it's a depth probe within Kafka.
+- **KIP-447 is the Sr Staff EoS literacy signal.** A candidate who only says "use transactional producer" without articulating the pre-447 producer-per-partition memory ceiling and how 447 resolved it is at Senior; the candidate who explicitly cites the change is at Sr Staff.
+- **The honest EoS acknowledgement is the bar.** EoS is end-to-end only Kafka-to-Kafka. Most candidates claim "exactly-once across the pipeline" without acknowledging external sinks. The Staff+ candidate names this limitation and proposes idempotent sinks (offset-keyed UPSERT) or Flink-class 2PC sinks.
+- **Consumer scaling proxy pattern (Wix, Uber, Robinhood) is the 2024+ literacy signal.** Candidates anchoring only on "increase partition count" are missing the modern production pattern when partition count would otherwise need to grow into the thousands.
+- **Cross-coverage with AI-infra `inference-batching` queue:** the iteration-level continuous-batching pattern shares admission-control semantics but is a fundamentally different primitive (no durable log, no consumer groups). Don't let the candidate drift into AI-infra framing in this generic version.

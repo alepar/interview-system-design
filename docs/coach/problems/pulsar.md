@@ -1,0 +1,83 @@
+---
+slug: pulsar
+archetype: infra-primitives
+sources:
+  bookkeeper_concepts: bookkeeper.apache.org/docs/getting-started/concepts/
+  vanlightly_survey: jack-vanlightly.com/blog/2025/3/13/log-replication-disaggregation-survey-apache-pulsar-and-bookkeeper
+  pulsar_overview: pulsar.apache.org/docs/concepts-architecture-overview/
+  splunk_bookkeeper_tla: medium.com/splunk-maas/a-guide-to-the-bookkeeper-replication-protocol-tla-series-part-2-29f3371fe395
+---
+
+# Apache Pulsar / BookKeeper (distributed log + storage-compute disaggregation)
+
+## Bar anchors
+- **Mid-level (L4/E4):** Would likely struggle — this is the deep-cut after the candidate has already designed Kafka. May know about Pulsar as "Kafka alternative" but not articulate the architectural difference. Doesn't address E/Qw/Qa, fence-and-recover, or stateless brokers unprompted.
+- **Senior (L5/E5):** Names Pulsar as having "separated compute from storage" at category level; identifies brokers as stateless with BookKeeper as the durable storage tier. Discusses ensemble replication at category level. May not articulate the LAC (Last Add Confirmed) vs LAP (Last Add Pushed) distinction or the fence-and-recover protocol details.
+- **Staff+ (L6/E6+):** Drives proactively. Names the **E/Qw/Qa replication model** explicitly: ensemble E = pool of bookies for a ledger; write quorum Qw ≤ E = bookies each entry is striped to; ack quorum Qa ≤ Qw = bookies that must ack before commit. When E > Qw, consecutive entries use different writesets (striping for throughput). Cites typical config: E=3, Qw=3, Qa=2 (tolerates 1 bookie failure). Quantifies BookKeeper performance: 1.5M msgs/sec on 3 bare-metal nodes with NVMe; ~0.02ms journal fdatasync on dedicated NVMe; 25 Gbps network as the practical throughput ceiling. Articulates the **storage-compute disaggregation win**: brokers are stateless (own topic ownership but persist nothing locally); all persistence in BookKeeper bookies; broker failover = ms-scale ownership change with no data movement. Names **fence-and-recover protocol** explicitly: when a writer fails, the new client takes over by fencing the old writer (sending fence requests to (Qw - Qa + 1) bookies, ensuring old writer cannot reach Qa quorum); then recovery scans LAC+1 forward, replicates partial entries to Qw, closes the ledger in ZK metadata with the highest committed entry; new ledger opens for new writes. Distinguishes **LAC (Last Add Confirmed — highest entry durably acked by Qa) vs LAP (Last Add Pushed — highest entry sent to bookies, may not be acked)**. Discusses **I/O isolation in bookies**: journal on dedicated NVMe (write-path latency-critical), entry log on separate disk (sequential bulk writes), per-ledger index (random reads). Names **Pulsar tiered storage** offloading closed ledgers to S3/GCS for ~10× cost reduction vs BK 3× replication. Stretch (Sr Staff bar): articulates segment-based storage as the killer architectural feature (Pulsar topics auto-scale by opening new segments on different bookies — no rebalance required when adding bookies, unlike Kafka's partition reassignment); cites Yahoo Pulsar deployment at 2M+ topics per cluster (vs Kafka pre-KRaft 200K partitions).
+
+## Canonical decomposition
+
+### Requirements
+**Functional:**
+- Append-only durable log primitive consumable by higher-level services (message queue brokers, database WALs, state-machine replication layers)
+- Per-ledger configurable replication: E (ensemble size), Qw (write quorum), Qa (ack quorum)
+- Single-writer-per-ledger guarantee with fence-and-recover on writer failure
+- Segment-based ledger rolling — closing one ledger and opening a new one on broker failover (enables stateless brokers)
+- Tiered storage: hot data on bookie SSDs, cold data offloaded to object storage (S3/GCS)
+
+**Non-functional (with numbers):**
+- 1.5M msgs/sec per 3-node bookie cluster (Pulsar published benchmark)
+- ~0.02ms fdatasync on dedicated NVMe journal
+- 25 Gbps network is the throughput ceiling
+- Default config: E=3, Qw=3, Qa=2 (tolerates 1 bookie failure, no read disruption)
+- Stateless broker failover: ms-scale ownership change (vs Kafka's seconds-to-minutes partition reassignment)
+- 2M+ topics per cluster (Yahoo Pulsar production; vs Kafka pre-KRaft 200K partitions)
+- Recovery latency: <1s for sub-GB ledgers (fence + scan + close)
+
+### Core entities
+- **Ledger:** append-only sequence of entries with one writer; identified by ledger_id; metadata in ZooKeeper (ensemble, Qw, Qa, LAC, status)
+- **Bookie:** the storage node running BookKeeper; hosts segments from many ledgers; has three I/O components (journal, entry log, per-ledger index)
+- **Broker (Pulsar):** stateless service tier above bookies; owns topic-to-ledger mapping; routes producer/consumer traffic; persists nothing locally
+- **Segment / Managed Ledger:** a Pulsar topic is a sequence of BookKeeper ledgers; each segment can have a different ensemble (different bookies)
+- **Ensemble:** the set of E bookies chosen for a ledger
+- **LAC (Last Add Confirmed):** highest entry id durably acked by Qa bookies — readers only see entries ≤ LAC
+- **LAP (Last Add Pushed):** highest entry id sent to bookies (may not be acked yet)
+
+### API
+- **BookKeeper-level:** `createLedger(ensemble_size, write_quorum, ack_quorum)` → ledger_id; `addEntry(ledger_id, data)` → entry_id; `readEntries(ledger_id, start, end)` → entries; `closeLedger(ledger_id)` → finalizes with last LAC
+- **Pulsar-level:** `subscribe(topic, subscription, subscription_type)` → consumer; `produce(topic, message)` → message_id; `acknowledge(message_id)` → consumer ack
+- Recovery (internal): `fence(ledger_id)` → mark ledger non-writable at bookies; `recover(ledger_id)` → scan from LAC forward, replicate to Qw, close
+
+### HLD
+A **Pulsar topic** is a logical append-only stream backed by a sequence of BookKeeper ledgers (segments). The **Pulsar broker** owns the topic — routes incoming producer messages to the active ledger's bookies, serves consumer reads from any ledger in the sequence. The broker is **stateless**: topic ownership is held via a ZooKeeper-or-Raft lock; broker state (current ledger, in-flight messages, subscription positions) is rebuilt from BookKeeper + ZK on failover.
+
+A **BookKeeper ledger** is the primitive: a single-writer, multi-reader, append-only log with configurable replication. On `createLedger`, the writer chooses an ensemble of E bookies + ack quorum Qa; for each `addEntry`, the writer parallel-writes to Qw of the E (with striping if E > Qw — consecutive entries use different writesets), waits for Qa acks before considering the entry committed. The **LAC (Last Add Confirmed)** is the highest entry id that reached Qa acks — only LAC-and-below is readable (entries above LAC may not have committed). Bookies piggyback LAC updates on subsequent writes; readers learn LAC from any ensemble bookie.
+
+The **fence-and-recover protocol** handles writer failure. When the Pulsar broker that owned the topic crashes (or its ZK session expires), another broker takes ownership. The new broker fences the current ledger: sends fence requests to (Qw - Qa + 1) bookies in the ensemble. By the math, this ensures the old writer cannot reach Qa acks (Qa of the Qw bookies must be unfenced; fencing (Qw-Qa+1) leaves at most Qa-1 unfenced bookies — old writer's writes silently fail). Then recovery: scan from LAC+1 forward (reading from any bookie that has the entry), find the highest entry id that achieved Qw replication, replicate any partial entries to Qw, close the ledger in ZK metadata with the new LAC. A new ledger opens for new writes — the topic's segment list grows by one.
+
+The **I/O isolation in a bookie** is a critical engineering pattern. A bookie has three storage components: **journal** on a dedicated NVMe disk — receives synchronous fsynced writes for low-latency durability (~0.02ms fdatasync); **entry log** on a separate disk — receives async bulk writes (deferred flush from journal) for sequential I/O throughput; **per-ledger index** — random-read I/O pattern for serving reads. Isolating journal disk from entry-log disk decouples write latency from read load. Anti-pattern: collapsing all three onto one disk → journal latency dominated by entry-log writes + read I/O.
+
+**Pulsar tiered storage**: closed ledgers (immutable after recovery) can be asynchronously offloaded to S3/GCS for ~10× cost reduction vs BookKeeper's 3× replication. Reads remain transparent — broker checks ledger metadata for storage tier; reads from offloaded ledgers go to S3 (hundreds of ms latency vs ms for hot bookies). The killer feature: infinite retention without paying BookKeeper storage cost — Kafka added similar via KIP-405 (Tiered Storage) in 2023; Pulsar pioneered it via segment-based architecture.
+
+### Deep dives
+1. **E/Qw/Qa replication model and the BookKeeper sweet spot.** Most replicated logs use one of two patterns: ISR (Kafka — "commit on all in-sync replicas," variable group size, tunable via min.insync.replicas) or majority quorum (Raft — "commit on majority of fixed N"). BookKeeper introduces **three dimensions**: E (ensemble = bookies eligible), Qw (write quorum = bookies each entry replicated to), Qa (ack quorum = bookies that must ack). When E = Qw = Qa, this collapses to "all-acks." When Qa < Qw, the writer can ack as soon as Qa bookies confirm (the slowest Qw-Qa bookies don't gate write latency). When E > Qw, consecutive entries can stripe across different writesets within the ensemble — entry 1 writes to bookies {1,2,3}, entry 2 to {2,3,4}, entry 3 to {3,4,5}, etc. Striping spreads load: 5 bookies share the load but each entry only lands on 3, so a slow bookie only stalls 3-of-5 entries on average. This **decouples durability (Qw) from latency (Qa) and from load distribution (E)** — beating both ISR's "every replica gets every message" and Raft's "wait for slowest of majority." Cost: more complex metadata + recovery protocol. Staff+ commit: pick E/Qw/Qa with criteria for the workload (high-throughput → E=5, Qw=3, Qa=2 for striped writes; low-latency → E=3, Qw=3, Qa=2; high-durability cold-archive → E=5, Qw=5, Qa=3).
+
+2. **Fence-and-recover: the canonical safe writer-handoff protocol.** When the writer fails and a new writer takes over, the protocol must prevent a "zombie writer" scenario (old writer wakes up, attempts to write, succeeds because Qa unfenced bookies remain — corrupts the ledger). BookKeeper's protocol: (1) new writer sends fence request to (Qw - Qa + 1) bookies in the ensemble; (2) those bookies mark the ledger as fenced — refuse new writes from any writer; (3) by the math, with (Qw-Qa+1) fenced, at most (Qa-1) are unfenced — old writer cannot reach Qa acks → its writes fail. (4) New writer reads from any bookie to find the highest entry committed (scanning forward from LAC+1, looking for the highest entry reaching Qw replication); replicates any partial entries to Qw; updates LAC in ZK metadata; closes the ledger. The ledger is now immutable. A new ledger opens for new writes. **Why this beats raw Raft**: Raft requires the new leader to have the longest committed log; if no replica is fully caught up, the cluster stalls. BookKeeper's fence-and-recover bounds recovery cost (sub-second for small ledgers) and doesn't require any single bookie to be authoritative. Staff+ commit: fence math justification, recovery latency budget, what happens if the new writer itself fails mid-recovery (the next writer fences again + restarts recovery — idempotent because fenced bookies stay fenced).
+
+3. **Storage-compute disaggregation and Pulsar's stateless brokers.** Kafka's brokers are stateful: each broker hosts the leader replica for some partitions. Adding a broker requires reassigning partitions (slow + data movement). Broker failover requires electing a new leader from in-sync replicas. Pulsar disaggregates: brokers own topic ownership (via ZK/Raft lock) but persist nothing locally; all data is in BookKeeper bookies. Adding a broker = topic ownership rebalances (millisecond ZK operation). Broker failover = another broker grabs the lock + fence-recovers the active ledger + opens a new one for writes. **Why segment-based architecture enables this**: when a broker fails mid-ledger, the new broker opens a new ledger on a (potentially different) ensemble of bookies, so it doesn't need access to the old broker's local disk — the previous ledger lives on bookies, the new ledger lives on whichever bookies the new broker chooses. The topic is a sequence of segments; segment N may be on bookies {1,2,3}; segment N+1 may be on {4,5,6}. **Trade-off**: more ZK metadata operations (per-ledger metadata) and more network hops (broker → bookies for every write); compute layer becomes elastic but storage layer becomes the throughput bottleneck. Staff+ commit: when disaggregation is worth the complexity (high broker-churn environments, very large topic counts, tiered-storage requirements), when Kafka's collocated model is sufficient (simpler ops at scales <10K partitions).
+
+## Known failure modes
+1. **Slow bookie in the ensemble drags p99.** With Qa < Qw, the writer waits for the Qa-th bookie's ack; one slow bookie drags writes whose write set includes it. Production answer: **EnsembleChange** — BookKeeper detects a slow bookie via timeout/latency thresholds and silently swaps it out of the ensemble for that ledger (writes go to a replacement bookie); the slow bookie is also rate-limited cluster-wide if it's persistently slow. Anti-pattern: leave the slow bookie in; one bad disk drags p99 for every ledger striping through it.
+
+2. **Split-brain writer post network partition.** New broker fences the old, but a partial fence (network blip during fence requests) leaves some bookies unfenced; old writer reaches Qa on the unfenced set → ledger corruption. Production answer: fencing is **mandatory and idempotent** — the new writer retries fence requests until (Qw-Qa+1) confirmations arrive; bookies remain fenced until the ledger is closed; ZK metadata records the fenced state so partial fence followed by writer crash is recoverable by the next writer.
+
+3. **Garbage collection of deleted ledgers races with active readers.** A subscription consumer is lagging and is still reading from a ledger marked for deletion (subscription positions all past that ledger). Background GC scans for ledgers with no active subscriptions + past retention → deletes; if a slow reader is still reading, it gets ledger-not-found errors. Production answer: **reference counting** — ledgers track active reader sessions; GC only deletes when refcount = 0 + retention exceeded; delayed GC (e.g., 24h grace period after subscriptions all advance past the ledger) to handle slow readers.
+
+## Notes for the coach
+- **This is the "deep cut after Kafka" problem.** Surface this only after the candidate has already designed Kafka cleanly — it tests whether they understand why Pulsar made different architectural choices, not whether they can re-derive Kafka from scratch. If the candidate hasn't designed Kafka, redirect to that problem first.
+- **The E/Qw/Qa model is the L7 literacy signal.** Most candidates know ISR (Kafka) and majority quorum (Raft); naming E/Qw/Qa as a third distinct replication pattern with concrete trade-offs is the differentiation moment. Cite Jack Vanlightly's published survey for the canonical exposition.
+- **The fence-and-recover protocol is the safety-property anchor.** A candidate who hand-waves "the new writer takes over" without articulating fencing is missing the split-brain defense; surface as a category-level gap.
+- **The storage-compute disaggregation win (stateless brokers) is the architectural-vision flex.** Connecting this to Pulsar's 2M+ topics per cluster vs Kafka's 200K-partition limit pre-KRaft demonstrates production-system literacy.
+- **Tiered storage is the cost-architecture stretch.** Pulsar pioneered S3 offload of closed ledgers; Kafka caught up via KIP-405 (Tiered Storage) in 2023. Naming both shows current-frontier literacy.
+- **No direct AI-infra counterpart** — BookKeeper is a low-level log primitive used by many higher-level systems (Pulsar, DistributedLog, Pravega, Salesforce's internal storage). The closest AI-infra analog is the durable WAL underneath training-checkpoint stores, but the framing is generic infra.
+- **Cross-coverage:** sits below `kafka` (alternative messaging architecture), `spanner` (replicated log substrate pattern), `aurora` (log-is-the-database with similar redo-log-shipping pattern). When other problems mention "durable distributed log substrate," this is the canonical reference.
