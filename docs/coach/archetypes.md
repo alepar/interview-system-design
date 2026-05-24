@@ -104,7 +104,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Problems in catalog.** `stripe-rate-limiter` · `kafka` · `dynamodb` · `zookeeper` · `memcached` · `kubernetes-scheduler` · `s3` · `stripe-payments` · `pulsar` · `spanner` · `aurora` · `google-pubsub` · `etcd` · `snowflake-id` · `prometheus` · `colossus` · `ad-click-aggregator`.
 
-## 11. AI-Infrastructure (new for v1)
+## 11. AI-Infrastructure
 
 **Summary.** Inference-serving + training infrastructure. Asked at Anthropic, OpenAI, DeepMind, Mistral. 50–55 min round (vs standard 45). **Safety and cost are first-class SLIs** — *"a system that is fast but produces harmful outputs is considered broken."*
 
@@ -116,7 +116,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Problems in catalog.** `inference-batching` · `billion-doc-rag` · `gpu-cluster-scheduler` · `agentic-tool-orchestrator` · `safety-moderation-pipeline` · `training-cluster-fault-tolerance` · `sandboxed-agent-execution` · `prefill-decode-disaggregation` · `prompt-cache-infrastructure` · `model-cascade-router` · `embedding-service-at-scale` · `multi-tenant-lora-serving` · `long-context-kv-management` · `eval-pipeline-at-scale` · `multimodal-realtime-serving` · `ai-gateway-token-quota` · `moe-serving`.
 
-## 12. Front-End / client system design (new for v1)
+## 12. Front-End / client system design
 
 **Summary.** Client-side system design. Asked at Meta, Airbnb, Google, Atlassian, Uber, Apple. Canonical framework: **RADIO** (Requirements, Architecture, Data model, Interface, Optimization).
 
