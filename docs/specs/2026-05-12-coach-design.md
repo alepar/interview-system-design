@@ -55,7 +55,7 @@ Three slash commands, one per workflow, sharing repo-root state files. Coach ref
 │   │   │   ├── coach.md            # base coach persona (collaborative tutor)
 │   │   │   └── interviewer.md      # /mock-loop interviewer persona (neutral default)
 │   │   ├── archetypes.md           # index of 10 + AI-Infra + Front-End; points to study guide
-│   │   ├── patterns/               # one file per Section-3 subsection (3A-3O) + ai-infra.md + frontend.md
+│   │   ├── patterns/               # one file per Section-3 subsection (A-3O) + ai-infra.md + frontend.md
 │   │   └── problems/               # v1: 5 reference answers (TinyURL, Twitter, Uber, Ticketmaster, Dropbox)
 │   ├── research/                   # existing
 │   └── specs/                      # this file

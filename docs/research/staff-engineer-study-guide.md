@@ -389,7 +389,7 @@ Each pattern is tagged with the categories (1–10) where it most commonly appli
 
 **Phase 1 — Foundations (weeks 1-2).** Read the donnemartin/system-design-primer index and Hello Interview's "System Design in a Hurry" core concepts; memorize Jeff Dean's latency numbers; do 3 back-of-envelope estimation drills daily. Threshold to move on: you can describe consistent hashing, CAP/PACELC, LSM-tree vs B-tree, and the four cache-write strategies from memory without notes.
 
-**Phase 2 — Pattern fluency (weeks 3-4).** Work through Section 3 above one subsection at a time, writing your own one-paragraph summary of each pattern with one concrete system that uses it. Threshold: for every pattern in 3D-3H, you can name a real production system that uses it and one alternative pattern.
+**Phase 2 — Pattern fluency (weeks 3-4).** Work through Section 3 above one subsection at a time, writing your own one-paragraph summary of each pattern with one concrete system that uses it. Threshold: for every pattern in D-3H, you can name a real production system that uses it and one alternative pattern.
 
 **Phase 3 — Question bank (weeks 5-8).** Solve the top-15 problems first: TinyURL, Twitter, WhatsApp, Uber, Ticketmaster, Dropbox, YouTube, Instagram, Google Docs, web crawler, rate limiter, key-value store, news feed, Yelp, ad click aggregator. For each, do it cold on a whiteboard, then read Hello Interview's or Alex Xu's solution, then redo it explaining the trade-offs aloud. Threshold to move on: you finish a problem end-to-end in 35 minutes with at least one deep-dive on a self-identified hardest component.
 
@@ -399,7 +399,7 @@ Each pattern is tagged with the categories (1–10) where it most commonly appli
 
 **Benchmarks that should change your plan:**
 - If after Phase 3 you cannot finish a problem in 35 minutes, you have a *time-management* problem, not a knowledge problem — practice with a strict timer and aggressive scope-cutting.
-- If you can build the architecture but freeze on deep dives, your *Technical Excellence* dimension is weak — drill Section 3D-3H and 3M.
+- If you can build the architecture but freeze on deep dives, your *Technical Excellence* dimension is weak — drill Section D-3H and 3M.
 - If mock-interview feedback consistently flags "didn't drive the conversation," you are mis-calibrated for your target level — explicitly study the L5 vs L6 grading examples on Design Gurus Substack.
 
 ---
