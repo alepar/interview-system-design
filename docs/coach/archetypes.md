@@ -10,7 +10,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design TinyURL · Design a Distributed Cache · Design Search Autocomplete.
 
-**Patterns.** See `docs/coach/patterns/E-caching.md` and `B-networking-transport.md`.
+**Patterns.** See `docs/coach/patterns/caching.md` and `networking-transport.md`.
 
 **Problems in catalog.** `tinyurl`.
 
@@ -20,7 +20,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design Twitter timeline · Design Facebook News Feed · Design Instagram feed.
 
-**Patterns.** See `docs/coach/patterns/F-async-streaming.md`.
+**Patterns.** See `docs/coach/patterns/async-streaming.md`.
 
 **Problems in catalog.** `twitter-timeline`.
 
@@ -30,7 +30,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design WhatsApp · Design Discord · Design a Live Streaming service.
 
-**Patterns.** See `docs/coach/patterns/B-networking-transport.md`.
+**Patterns.** See `docs/coach/patterns/networking-transport.md`.
 
 **Problems in catalog.** *(none yet)*.
 
@@ -40,7 +40,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design Ticketmaster · Design a Flash Sale system · Design an Online Auction.
 
-**Patterns.** See `docs/coach/patterns/G-consistency-coordination.md` and `I-api-idempotency.md`.
+**Patterns.** See `docs/coach/patterns/consistency-coordination.md` and `api-idempotency.md`.
 
 **Problems in catalog.** `ticketmaster`.
 
@@ -50,7 +50,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design YouTube · Design Dropbox · Design Instagram upload.
 
-**Patterns.** See `docs/coach/patterns/D-storage-databases.md`.
+**Patterns.** See `docs/coach/patterns/storage-databases.md`.
 
 **Problems in catalog.** `dropbox`.
 
@@ -60,7 +60,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design Uber · Design Yelp · Design Find My Friends.
 
-**Patterns.** See `docs/coach/patterns/H-data-structures.md`.
+**Patterns.** See `docs/coach/patterns/data-structures.md`.
 
 **Problems in catalog.** `uber`.
 
@@ -70,7 +70,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design Google Search · Design a Web Crawler · Design Twitter Search.
 
-**Patterns.** See `docs/coach/patterns/H-data-structures.md`.
+**Patterns.** See `docs/coach/patterns/data-structures.md`.
 
 **Problems in catalog.** *(none yet)*.
 
@@ -80,7 +80,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design Google Docs · Design Figma · Design a Wiki.
 
-**Patterns.** See `docs/coach/patterns/G-consistency-coordination.md`.
+**Patterns.** See `docs/coach/patterns/consistency-coordination.md`.
 
 **Problems in catalog.** *(none yet)*.
 
@@ -90,7 +90,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design a YouTube recommendation engine · Design CTR prediction · Design Ad Click Aggregator.
 
-**Patterns.** See `docs/coach/patterns/M-ml-specific.md`.
+**Patterns.** See `docs/coach/patterns/ml-specific.md`.
 
 **Problems in catalog.** *(none yet)*.
 
@@ -100,7 +100,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design a Distributed Rate Limiter · Design a Distributed Message Queue · Design a Distributed Key-Value Store.
 
-**Patterns.** See `docs/coach/patterns/D-storage-databases.md` and `J-architectural.md`.
+**Patterns.** See `docs/coach/patterns/storage-databases.md` and `architectural.md`.
 
 **Problems in catalog.** `stripe-rate-limiter` · `kafka` · `dynamodb` · `zookeeper` · `memcached` · `kubernetes-scheduler` · `s3` · `stripe-payments` · `pulsar` · `spanner` · `aurora` · `google-pubsub` · `etcd` · `snowflake-id` · `prometheus` · `colossus` · `ad-click-aggregator`.
 

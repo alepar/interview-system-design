@@ -673,7 +673,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design TinyURL · Design a Distributed Cache · Design Search Autocomplete.
 
-**Patterns.** See `docs/coach/patterns/E-caching.md` and `B-networking-transport.md`.
+**Patterns.** See `docs/coach/patterns/caching.md` and `networking-transport.md`.
 
 ## 2. Fan-out / feed systems
 
@@ -681,7 +681,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design Twitter timeline · Design Facebook News Feed · Design Instagram feed.
 
-**Patterns.** See `docs/coach/patterns/F-async-streaming.md`.
+**Patterns.** See `docs/coach/patterns/async-streaming.md`.
 
 ## 3. Real-time messaging / streaming
 
@@ -689,7 +689,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design WhatsApp · Design Discord · Design a Live Streaming service.
 
-**Patterns.** See `docs/coach/patterns/B-networking-transport.md`.
+**Patterns.** See `docs/coach/patterns/networking-transport.md`.
 
 ## 4. Concurrent access to limited resources
 
@@ -697,7 +697,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design Ticketmaster · Design a Flash Sale system · Design an Online Auction.
 
-**Patterns.** See `docs/coach/patterns/G-consistency-coordination.md` and `I-api-idempotency.md`.
+**Patterns.** See `docs/coach/patterns/consistency-coordination.md` and `api-idempotency.md`.
 
 ## 5. User-generated content pipelines
 
@@ -705,7 +705,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design YouTube · Design Dropbox · Design Instagram upload.
 
-**Patterns.** See `docs/coach/patterns/D-storage-databases.md`.
+**Patterns.** See `docs/coach/patterns/storage-databases.md`.
 
 ## 6. Geo / proximity systems
 
@@ -713,7 +713,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design Uber · Design Yelp · Design Find My Friends.
 
-**Patterns.** See `docs/coach/patterns/H-data-structures.md`.
+**Patterns.** See `docs/coach/patterns/data-structures.md`.
 
 ## 7. Search and indexing
 
@@ -721,7 +721,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design Google Search · Design a Web Crawler · Design Twitter Search.
 
-**Patterns.** See `docs/coach/patterns/H-data-structures.md`.
+**Patterns.** See `docs/coach/patterns/data-structures.md`.
 
 ## 8. Conflict resolution / collaborative systems
 
@@ -729,7 +729,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design Google Docs · Design Figma · Design a Wiki.
 
-**Patterns.** See `docs/coach/patterns/G-consistency-coordination.md`.
+**Patterns.** See `docs/coach/patterns/consistency-coordination.md`.
 
 ## 9. ML-in-the-loop serving
 
@@ -737,7 +737,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design a YouTube recommendation engine · Design CTR prediction · Design Ad Click Aggregator.
 
-**Patterns.** See `docs/coach/patterns/M-ml-specific.md`.
+**Patterns.** See `docs/coach/patterns/ml-specific.md`.
 
 ## 10. Infrastructure primitives
 
@@ -745,7 +745,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Top-3 prompts.** Design a Distributed Rate Limiter · Design a Distributed Message Queue · Design a Distributed Key-Value Store.
 
-**Patterns.** See `docs/coach/patterns/D-storage-databases.md` and `J-architectural.md`.
+**Patterns.** See `docs/coach/patterns/storage-databases.md` and `architectural.md`.
 
 ## 11. AI-Infrastructure (new for v1)
 
@@ -811,88 +811,88 @@ assert_grep "Definition" "docs/coach/patterns/3X-<slug>.md"
 assert_grep "Production systems|Canonical use" "docs/coach/patterns/3X-<slug>.md"
 ```
 
-### Task 9: `docs/coach/patterns/A-core-concepts.md`
+### Task 9: `docs/coach/patterns/core-concepts.md`
 
 **Files:**
-- Create: `docs/coach/patterns/A-core-concepts.md`
+- Create: `docs/coach/patterns/core-concepts.md`
 - Modify: `tests/foundation.sh`
 
 - [ ] **Step 1: Append failing test**
 
 ```bash
-assert_file "docs/coach/patterns/A-core-concepts.md"
-assert_grep "## (Scalability|CAP|PACELC|SPOF)" "docs/coach/patterns/A-core-concepts.md"
-assert_grep "Definition" "docs/coach/patterns/A-core-concepts.md"
+assert_file "docs/coach/patterns/core-concepts.md"
+assert_grep "## (Scalability|CAP|PACELC|SPOF)" "docs/coach/patterns/core-concepts.md"
+assert_grep "Definition" "docs/coach/patterns/core-concepts.md"
 ```
 
 - [ ] **Step 2: Run, verify FAIL**
 
-- [ ] **Step 3: Write `docs/coach/patterns/A-core-concepts.md` following the template above, covering the patterns in `staff-engineer-study-guide.md` §3A** (Scalability, CAP/PACELC, Latency vs Throughput vs Bandwidth, SPOF, Numbers to know, Back-of-envelope estimation).
+- [ ] **Step 3: Write `docs/coach/patterns/core-concepts.md` following the template above, covering the patterns in `staff-engineer-study-guide.md` §3A** (Scalability, CAP/PACELC, Latency vs Throughput vs Bandwidth, SPOF, Numbers to know, Back-of-envelope estimation).
 
 - [ ] **Step 4: Run, verify PASS**
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add docs/coach/patterns/A-core-concepts.md tests/foundation.sh
+git add docs/coach/patterns/core-concepts.md tests/foundation.sh
 git commit -m "Add pattern reference 3A — core concepts"
 ```
 
-### Task 10: `docs/coach/patterns/B-networking-transport.md`
+### Task 10: `docs/coach/patterns/networking-transport.md`
 
 Apply the template from Task 9. Source: `staff-engineer-study-guide.md` §3B. Patterns to cover: DNS, TCP vs UDP vs QUIC, WebSocket vs Long Polling vs SSE, WebRTC, HTTP/1-2-3, gRPC vs REST vs GraphQL, TLS/mTLS, CDN (push vs pull), Reverse proxy / API Gateway.
 
 Steps 1–5 identical to Task 9 with appropriate path and grep checks.
 
-### Task 11: `docs/coach/patterns/C-load-balancing.md`
+### Task 11: `docs/coach/patterns/load-balancing.md`
 
 Source: §3C. Patterns: L4 vs L7, algorithms (round-robin, least-connections, IP-hash, consistent-hash), anycast/GeoDNS, sticky sessions.
 
-### Task 12: `docs/coach/patterns/D-storage-databases.md`
+### Task 12: `docs/coach/patterns/storage-databases.md`
 
 Source: §3D. Patterns: SQL (B-tree engines), NoSQL families (KV, document, wide-column LSM, graph), newer specialized stores (time-series, search, vector, columnar OLAP, geospatial), ACID vs BASE + isolation levels, indexes, sharding, replication, denormalization, materialized views/CQRS, 2PC vs Saga vs outbox.
 
-### Task 13: `docs/coach/patterns/E-caching.md`
+### Task 13: `docs/coach/patterns/caching.md`
 
 Source: §3E. Patterns: where to cache, strategies (cache-aside/write-through/write-behind/refresh-ahead), eviction, stampede protection, hot-key mitigation, consistent hashing.
 
-### Task 14: `docs/coach/patterns/F-async-streaming.md`
+### Task 14: `docs/coach/patterns/async-streaming.md`
 
 Source: §3F. Patterns: message queue vs pub-sub, Kafka (partitions/ISR/log compaction/exactly-once), at-least-once + idempotent, stream processing + windows + watermarks, CDC, backpressure + DLQ, circuit breaker / bulkhead / retry-with-backoff.
 
-### Task 15: `docs/coach/patterns/G-consistency-coordination.md`
+### Task 15: `docs/coach/patterns/consistency-coordination.md`
 
 Source: §3G. Patterns: quorum R+W>N, vector clocks, hinted handoff/read repair/Merkle anti-entropy, consensus (Paxos, Raft, ZAB), leader election + fencing, distributed locking, lease/WAL/segmented log, OT vs CRDT, OCC vs pessimistic.
 
-### Task 16: `docs/coach/patterns/H-data-structures.md`
+### Task 16: `docs/coach/patterns/data-structures.md`
 
 Source: §3H. Patterns: Bloom, count-min/HyperLogLog, skip list, trie/FST, inverted index + BM25, geohash/S2/H3/quadtree/R-tree, LSM vs B-tree, Merkle, consistent hash ring, roaring bitmaps, HNSW/IVF-PQ.
 
-### Task 17: `docs/coach/patterns/I-api-idempotency.md`
+### Task 17: `docs/coach/patterns/api-idempotency.md`
 
 Source: §3I. Patterns: idempotency keys (Stripe pattern), OCC with version/ETag, pagination (offset/cursor/keyset), webhooks vs polling vs SSE vs WebSockets, API versioning.
 
-### Task 18: `docs/coach/patterns/J-architectural.md`
+### Task 18: `docs/coach/patterns/architectural.md`
 
 Source: §3J. Patterns: monolith vs microservices vs modular monolith, peer-to-peer, event-driven + event sourcing, CQRS, Strangler Fig, Lambda vs Kappa, DDD boundaries, sidecar / service mesh.
 
-### Task 19: `docs/coach/patterns/K-reliability-observability.md`
+### Task 19: `docs/coach/patterns/reliability-observability.md`
 
 Source: §3K. Patterns: SLI/SLO/SLA + error budgets, metrics/logging/tracing, heartbeats + gossip (SWIM), service discovery, DR + RTO/RPO, multi-region active-active vs active-passive, canary/blue-green/feature flags, chaos engineering.
 
-### Task 20: `docs/coach/patterns/L-security-privacy.md`
+### Task 20: `docs/coach/patterns/security-privacy.md`
 
 Source: §3L. Patterns: AuthN/AuthZ (OAuth/OIDC/JWT/session cookies), rate limiting + DDoS + WAF, encryption at rest/in transit, envelope encryption with KMS, PII handling + k-anonymity + differential privacy, E2EE (Signal protocol / double-ratchet), audit logging.
 
-### Task 21: `docs/coach/patterns/M-ml-specific.md`
+### Task 21: `docs/coach/patterns/ml-specific.md`
 
 Source: §3M. Patterns: two-tower retrieval, multi-stage funnel (candidate-gen → ranking → re-rank), feature store, model registry + versioning + shadow + canary, offline metrics (AUC/NDCG/Recall@K/MAP) vs online (CTR/watch-time/revenue) + A/B testing, concept/data drift + PSI/KL, online vs batch retraining, cold start, LLM serving (KV cache, spec decoding, RAG, prompt caching).
 
-### Task 22: `docs/coach/patterns/N-papers.md`
+### Task 22: `docs/coach/patterns/papers.md`
 
 Source: §3N. List of papers worth naming: GFS, MapReduce, BigTable, Chubby, Spanner, Dynamo, Kafka, ZooKeeper, Paxos, Raft, LSM-Tree, *Designing Data-Intensive Applications*. Each: 1 sentence on why it's worth knowing + 1 line on when to invoke in an interview.
 
-### Task 23: `docs/coach/patterns/O-tradeoffs.md`
+### Task 23: `docs/coach/patterns/tradeoffs.md`
 
 Source: §3O. List of trade-offs to argue both sides of: SQL vs NoSQL, strong vs eventual consistency, push vs pull fan-out, long polling vs WebSockets vs SSE, stateful vs stateless, batch vs stream, read-through vs write-through, REST vs gRPC vs GraphQL, vertical vs horizontal, monolith vs microservices, build vs buy. Each: 2-sentence summary of when each side wins.
 
@@ -1461,7 +1461,7 @@ You are the AI system-design interview coach. The user has invoked `/study-patte
 
 - **If `$ARGUMENTS` is empty:** Read `state/profile.md` and `state/observed.md`. Recommend 3 next-up pattern subsections **interleaved across archetypes** per the Brunmair & Richter principle in protocols.md. Each recommendation: one-line rationale tied to weak signals (low confidence in `observed.md`, or `focus_areas` from profile). Wait for user to pick.
 - **If `$ARGUMENTS` is a section code (3A through 3O, ai-infra, frontend):** Load `docs/coach/patterns/<code>-*.md`.
-- **If `$ARGUMENTS` is an archetype name** (e.g., `concurrent-resource`): resolve to the most-relevant pattern file (e.g., `concurrent-resource` → `G-consistency-coordination.md`). If ambiguous, ask the user to pick.
+- **If `$ARGUMENTS` is an archetype name** (e.g., `concurrent-resource`): resolve to the most-relevant pattern file (e.g., `concurrent-resource` → `consistency-coordination.md`). If ambiguous, ask the user to pick.
 
 ## Teaching loop
 
@@ -1573,7 +1573,7 @@ Type *"let's pick this up later"* or similar.
 
 - [ ] **Step 2: Verify state captured `progress_index`**
 
-Check `state/sessions/<date>-study-G-consistency-coordination.md` — frontmatter or body should record where the session paused.
+Check `state/sessions/<date>-study-consistency-coordination.md` — frontmatter or body should record where the session paused.
 
 - [ ] **Step 3: Run `/study-patterns 3G` again**
 
