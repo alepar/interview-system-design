@@ -62,7 +62,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Patterns.** See `docs/coach/patterns/data-structures.md`.
 
-**Problems in catalog.** `uber`.
+**Problems in catalog.** `uber` · `lyft-dispatch` · `didi-dispatch` · `doordash-dispatch` · `instacart-batching` · `yelp-search` · `google-places` · `foursquare-checkin` · `find-my-friends` · `snap-map` · `life360` · `google-maps-routing` · `waze-traffic-update` · `last-mile-routing` · `geofence-notifications` · `snap-geofilter-fanout` · `bluetooth-beacon-proximity` · `h3-s2-spatial-index` · `geohash-design`.
 
 ## 7. Search and indexing
 
