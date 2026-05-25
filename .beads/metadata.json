@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "interview_system_design",
+  "project_id": "c553a250-6cea-4aa1-a9a8-d9425f78e254"
+}
