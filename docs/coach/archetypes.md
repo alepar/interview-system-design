@@ -72,7 +72,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Patterns.** See `docs/coach/patterns/data-structures.md`.
 
-**Problems in catalog.** *(none yet)*.
+**Problems in catalog.** `google-search` · `web-crawler` · `elasticsearch` · `twitter-search` · `autocomplete` · `log-search` · `github-code-search` · `image-search` · `enterprise-search` · `hybrid-search` · `incremental-indexing` · `amazon-product-search` · `spell-correction` · `geo-place-search`.
 
 ## 8. Conflict resolution / collaborative systems
 
