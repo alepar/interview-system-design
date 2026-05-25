@@ -82,7 +82,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Patterns.** See `docs/coach/patterns/consistency-coordination.md`.
 
-**Problems in catalog.** *(none yet)*.
+**Problems in catalog.** `crdt-primitive` · `google-docs` · `collaborative-text-editor` · `yjs` · `figma` · `figjam-whiteboard` · `google-sheets` · `notion` · `shopping-cart-crdt` · `version-control-merge` · `local-first-sync` · `calendar-sync` · `multiplayer-game-sync` · `presence-awareness`.
 
 ## 9. ML-in-the-loop serving
 
@@ -124,4 +124,4 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Patterns.** See `docs/coach/patterns/frontend.md`.
 
-**Problems in catalog.** *(none yet)*.
+**Problems in catalog.** `image-carousel` · `autocomplete-typeahead` · `infinite-scroll-feed` · `rich-text-editor` · `news-feed-client` · `pinterest-board-client` · `instagram-stories-client` · `google-docs-client` · `figma-canvas-client` · `slack-web-client` · `stock-trading-dashboard` · `datadog-dashboard` · `video-player` · `spotify-web-player` · `google-maps-client` · `airbnb-search-map` · `chatgpt-claude-chat-ui` · `copilot-inline-completions` · `stripe-checkout-flow`.
