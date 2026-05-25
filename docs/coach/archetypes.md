@@ -52,7 +52,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Patterns.** See `docs/coach/patterns/storage-databases.md`.
 
-**Problems in catalog.** `dropbox`.
+**Problems in catalog.** `dropbox` · `youtube-upload` · `video-transcoding` · `vod-delivery` · `instagram-upload` · `google-photos` · `image-derivatives` · `content-addressed-dedup` · `backup-incremental` · `resumable-upload` · `document-preview` · `audio-transcoding` · `tiktok-upload` · `content-moderation-pipeline`.
 
 ## 6. Geo / proximity systems
 
