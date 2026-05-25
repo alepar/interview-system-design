@@ -92,7 +92,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Patterns.** See `docs/coach/patterns/ml-specific.md`.
 
-**Problems in catalog.** *(none yet)*.
+**Problems in catalog.** `youtube-reco` · `instagram-reels-ranking` · `tiktok-foryou-ranking` · `spotify-discover` · `pinterest-pixie` · `netflix-homepage` · `ctr-prediction` · `ad-auction-rtb` · `web-search-ranking` · `airbnb-search-ranking` · `fb-news-feed` · `linkedin-pymk` · `uber-surge` · `stripe-fraud` · `spam-abuse-ranking` · `feature-store` · `model-rollout-shadow` · `autonomous-driving-inference` · `voice-assistant-routing`.
 
 ## 10. Infrastructure primitives
 
