@@ -12,7 +12,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Patterns.** See `docs/coach/patterns/caching.md` and `networking-transport.md`.
 
-**Problems in catalog.** `tinyurl`.
+**Problems in catalog.** `tinyurl` · `pastebin` · `dns` · `leaderboard` · `view-counter` · `top-k-trending` · `news-homepage` · `wikipedia` · `cdn-edge-cache` · `product-catalog` · `stock-ticker` · `session-store` · `feature-flags` · `distributed-config`.
 
 ## 2. Fan-out / feed systems
 
