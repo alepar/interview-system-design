@@ -22,7 +22,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Patterns.** See `docs/coach/patterns/async-streaming.md`.
 
-**Problems in catalog.** `twitter-timeline`.
+**Problems in catalog.** `twitter-timeline` · `instagram-feed` · `linkedin-feed` · `reddit-feed` · `pinterest-home` · `youtube-subscriptions` · `github-events-feed` · `spotify-friend-activity` · `medium-following-feed` · `notification-aggregation-service` · `email-digest-pipeline` · `breaking-news-fanout` · `inbox-zero` · `mastodon-federated-feed` · `bluesky-atproto-feed` · `sports-scores-fanout` · `stock-alert-fanout` · `geo-weather-alert-fanout` · `discord-server-activity-stream`.
 
 ## 3. Real-time messaging / streaming
 
