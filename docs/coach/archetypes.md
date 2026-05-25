@@ -42,7 +42,7 @@ v1 archetypes (11 and 12) are documented inline below pending guide updates.
 
 **Patterns.** See `docs/coach/patterns/consistency-coordination.md` and `api-idempotency.md`.
 
-**Problems in catalog.** `ticketmaster`.
+**Problems in catalog.** `ticketmaster` · `flash-sale` · `online-auction` · `sneaker-drop` · `airline-seat-booking` · `hotel-booking` · `ecommerce-inventory` · `coupon-redemption` · `appointment-booking` · `parking-garage` · `distributed-lock` · `idempotent-payment` · `wallet-ledger` · `resource-pool`.
 
 ## 5. User-generated content pipelines
 
