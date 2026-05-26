@@ -1,8 +1,6 @@
 # Networking and Transport
 
-Pattern reference for `/study-patterns 3B`. Each entry: definition (1 sentence) + canonical use (1 sentence) + 1–2 named production systems + 1–2 alternatives.
-
-Source: `staff-engineer-study-guide.md` §3B.
+Source: `staff-engineer-study-guide.md`.
 
 ## DNS
 
@@ -34,6 +32,16 @@ Source: `staff-engineer-study-guide.md` §3B.
 
 **Alternatives.** gRPC bidirectional streaming as a WebSocket alternative in internal services; polling for low-frequency updates where simplicity outweighs latency.
 
+## Push Notification Gateways
+
+**Definition.** APNs (iOS) and FCM (Android, Web) are HTTP/2-based mobile push gateways: senders open persistent connections that multiplex many concurrent streams (~1000/connection on APNs), so fan-out workers maintain a connection pool rather than connection-per-request.
+
+**Canonical use.** Use a `collapse-id` (APNs) / `collapse_key` (FCM) so a chat with many unread messages supersedes to one delivery; set `apns-priority=10` for user-visible wakes and `5` for power-considerate silent push; set TTL/`apns-expiration` to drop offline ephemerals (typing) vs store-and-forward user messages (~24h).
+
+**Production systems.** Apple APNs, Firebase Cloud Messaging (FCM), AWS SNS (multiplexes APNs+FCM), OneSignal, Pusher.
+
+**Alternatives.** WebSocket-based direct push when the app can stay foregrounded (no gateway dependency, no per-device cap); SMS as last-resort fallback (carrier delivery semantics, no in-band cancellation); Apple Critical Alerts / Time Sensitive envelopes for bypassing Focus modes. Per-device throttling (~1 push/min sustained at normal priority) forces senders to pre-aggregate or use higher-priority tiers.
+
 ## WebRTC and SFU vs MCU
 
 **Definition.** WebRTC is a browser-native protocol for real-time peer-to-peer audio/video/data; an SFU (Selective Forwarding Unit) routes media streams without transcoding, while an MCU (Multipoint Control Unit) mixes all streams into one composite.
@@ -43,6 +51,36 @@ Source: `staff-engineer-study-guide.md` §3B.
 **Production systems.** Zoom (proprietary SFU), Twilio (SFU-based), Google Meet (SFU).
 
 **Alternatives.** HLS/DASH for non-interactive live video at massive scale; full peer-to-peer mesh (feasible only for ≤4 participants).
+
+## WebRTC: Simulcast vs SVC
+
+**Definition.** For multi-quality video forwarding via an SFU: **Simulcast** sends N independent encodings of the same source (low/mid/high); the SFU picks which layer to forward per subscriber. **SVC (Scalable Video Coding)** sends one encoding with embedded temporal/spatial layers (AV1 SVC is the practical target); the SFU drops upper layers per subscriber inline by peeking at RTP header extensions.
+
+**Canonical use.** Use simulcast when senders have CPU headroom and codec support for SVC is uneven across clients (the common case); use SVC when downlink heterogeneity is large and you can budget the encoder/decoder support (AV1 SVC).
+
+**Production systems.** Zoom (simulcast), Twitch IVS (HEVC simulcast), Google Meet (AV1 SVC), Jitsi SFU.
+
+**Alternatives.** Transcoding at the SFU (CPU-prohibitive at scale — turns the SFU into an MCU); single-layer encode with no adaptation (kills slow receivers).
+
+## WebRTC Congestion Control: TWCC and GCC
+
+**Definition.** **Transport-Wide Congestion Control (TWCC)** is an RTP feedback message: receiver records per-packet arrival times and sends them back (~every 100ms), letting the sender estimate per-packet RTT and loss. **Google Congestion Control (GCC)** is the canonical algorithm that consumes TWCC feedback to drive sender bitrate adaptation: a delay-based estimator (queue buildup ⇒ bandwidth limit) plus a loss-based safety net.
+
+**Canonical use.** Run GCC over TWCC feedback so the sender drops simulcast layers or rate-adapts the encoder before the link saturates; SFUs may forward feedback end-to-end so the sender sees the slowest receiver in the path.
+
+**Production systems.** Chromium / libwebrtc (GCC reference), Zoom (custom GCC-derived variant), Jitsi, LiveKit.
+
+**Alternatives.** SCReAM (RFC 8298, simpler self-clocked control); pure loss-based control (poor under low-loss + high-delay paths like cellular).
+
+## NetEQ Jitter Buffer and Adaptive Playout
+
+**Definition.** Real-time audio playout requires absorbing network jitter without adding too much latency. NetEQ (WebRTC's audio jitter buffer) does adaptive playout: it time-stretches audio when packets arrive late, compresses when they arrive ahead, and synthesizes comfort noise / PLC samples for lost packets.
+
+**Canonical use.** Size the buffer adaptively per receiver — deeper under jitter, shallower under clean links — and let PLC + time-stretching cover small drops without rebuffering; this is also how clock drift between sender and receiver (e.g., 48001 vs 48000 Hz audio clocks) is silently absorbed.
+
+**Production systems.** WebRTC / libwebrtc (NetEQ), Discord, Zoom, Google Meet.
+
+**Alternatives.** Fixed-size jitter buffer (simpler, but worse mouth-to-ear latency under variable conditions); no PLC (audible dropouts on any loss).
 
 ## HTTP/1.1 vs HTTP/2 vs HTTP/3 — REST vs gRPC vs GraphQL
 
@@ -63,6 +101,26 @@ Source: `staff-engineer-study-guide.md` §3B.
 **Production systems.** AWS ALB (TLS termination), Istio/Envoy (mTLS service mesh), Google BeyondCorp.
 
 **Alternatives.** Application-layer auth tokens (JWT, API keys) instead of mTLS for simpler service auth; end-to-end TLS when data sensitivity requires it all the way to the backend.
+
+## Signal Protocol: Double Ratchet + X3DH
+
+**Definition.** End-to-end-encrypted 1:1 messaging. **X3DH** (Extended Triple Diffie-Hellman) is the initial key agreement: the initiator combines its identity + ephemeral keys with the recipient's published identity + signed pre-key + (optional) one-time pre-key, so the recipient can be offline at session start. **Double Ratchet** then advances state per message: a DH ratchet (new ephemeral DH on each round-trip → post-compromise security) combined with a symmetric-key ratchet (KDF chain → per-message keys → forward secrecy).
+
+**Canonical use.** Use Signal Protocol whenever the server must be a public-key directory plus opaque ciphertext relay — never trusted with plaintext — for asynchronous 1:1 messaging with FS + PCS guarantees.
+
+**Production systems.** Signal, WhatsApp, Facebook Messenger (Secret Conversations + default E2E rollout), Google Messages RCS E2E, Skype private conversations.
+
+**Alternatives.** Pure asymmetric encryption (no per-message forward secrecy); MLS (better for large groups; see below); PQXDH (Signal's hybrid Kyber-768 extension for harvest-now-decrypt-later resistance).
+
+## MLS (Messaging Layer Security) Group Key
+
+**Definition.** IETF-standardized E2E group messaging (RFC 9420, July 2023). **TreeKEM** arranges members as leaves of a binary tree of HPKE keypairs; adding, removing, or rotating one member updates only the path from that leaf to the root, so member-change costs O(log N) ciphertexts instead of O(N) (Sender Keys) or O(N²) (pairwise Double Ratchet). Provides Forward Secrecy + Post-Compromise Security at group scale; a Delivery Service total-orders Commits without ever seeing plaintext.
+
+**Canonical use.** Use MLS for groups up to ~50K members where Sender Keys' linear re-keying cost dominates (10K-member group: ~14 ciphertexts vs ~10K for Sender Keys); keep Sender Keys for very small groups where MLS state-machine overhead isn't justified.
+
+**Production systems.** Discord DAVE (voice channels, enforced March 2026), Cisco Webex, RingCentral, AWS Wickr; Meta piloting MLS for large WhatsApp groups.
+
+**Alternatives.** Pairwise Signal Double Ratchet for every pair in a group (O(N²) keys); Sender Keys (O(N) per member-remove); centralized re-keying (loses E2E entirely).
 
 ## CDN — Push vs Pull
 

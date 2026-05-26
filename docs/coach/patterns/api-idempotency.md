@@ -1,8 +1,6 @@
 # API and Idempotency Patterns
 
-Pattern reference for `/study-patterns 3I`. Each entry: definition (1 sentence) + canonical use (1 sentence) + 1–2 named production systems + 1–2 alternatives.
-
-Source: `staff-engineer-study-guide.md` §3I.
+Source: `staff-engineer-study-guide.md`.
 
 ## Idempotency Keys (Stripe Pattern)
 
@@ -53,3 +51,23 @@ Source: `staff-engineer-study-guide.md` §3I.
 **Production systems.** Stripe (header date versioning), AWS APIs (URI versioning for most services), GitHub REST API (URI `/v3/` + custom `X-GitHub-Api-Version` header).
 
 **Alternatives.** Query-parameter versioning (`?version=2`, simple but cache-unfriendly); never-break API evolution with additive-only changes and deprecation policy (avoids versioning complexity for stable APIs).
+
+## Saga / Compensating Transactions
+
+**Definition.** A long-lived multi-step distributed transaction where each forward step has a paired **compensating action** that semantically undoes its effect; on partial failure at step N, the saga rolls back by executing compensations for steps 1..N-1 in reverse order. Each step and its compensation must be idempotent (compensating twice equals compensating once), because retries are inevitable in the failure paths the pattern exists to handle.
+
+**Canonical use.** A ticket-purchase workflow (Ticketmaster: reserve seat → charge card → issue ticket → email confirmation) cannot run as a single ACID transaction because the payment provider, email service, and seat DB don't share a transaction manager; instead each step is paired with a compensation (release seat, refund charge, void ticket, send apology email) and the saga executes compensations in reverse if any step fails.
+
+**Production systems.** Stripe payments (refund as compensation for charge; Garcia-Molina & Salem SIGMOD 1987 referenced in Stripe's design); Ticketmaster reservation+payment+fulfillment; Uber trip booking; airline booking systems (hold seat → charge → ticket).
+
+**Alternatives.** Two-phase commit / 2PC (correct strong consistency, but heavy coordinator-blocking protocol that doesn't survive WAN partitions and isn't supported by external SaaS APIs like Stripe or SendGrid); event sourcing with no compensations (eventual consistency, append-only log of facts, no rollback — works only when partial state is acceptable to downstream consumers).
+
+## Saga Orchestration vs Choreography
+
+**Definition.** **Choreography**: each service listens for events and emits its own next event autonomously — no central coordinator, decoupled, but the workflow is implicit in the event topology and hard to reason about / audit. **Orchestration**: a central coordinator (durable workflow engine) drives an explicit state machine, calls each step, persists progress, and triggers compensations on failure — easier to reason about, monitor, and modify, at the cost of a coordinator dependency.
+
+**Canonical use.** A marketplace payment splitting one charge across N merchants uses **orchestration** (Temporal workflow) so the state of "which merchants are credited so far" is explicit and resumable after coordinator restart; an order-fulfillment pipeline across loosely-coupled microservices (order, inventory, shipping, billing) often uses **choreography** because each service already owns its event stream and no team wants to depend on a central coordinator.
+
+**Production systems.** Temporal (orchestration; production at Uber/Snap/Stripe/Coinbase); AWS Step Functions (managed orchestration state machine); Netflix Conductor (orchestration); Camunda / Zeebe (BPMN orchestration); Uber Cadence (Temporal's predecessor, still in use). Choreography typically rides on Kafka or an event bus without a named engine.
+
+**Alternatives.** Hand-rolled state machine in a relational DB with a cron worker (works for low-complexity sagas, lacks visibility/replay/versioning of a dedicated engine); pure 2PC where all participants are in-house (avoids saga complexity but rules out external SaaS steps). **Failure modes to flag regardless of style**: isolation gap (other transactions can observe intermediate saga state — e.g., a seat shows "held" mid-saga); uncompensatable side-effects (an email already sent, a wire transfer already disbursed, a physical package shipped) that require human workflows or accept-the-loss policy rather than automated rollback; compensation-of-compensation pathology if compensating actions themselves can fail and aren't idempotent.

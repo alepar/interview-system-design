@@ -25,7 +25,7 @@ Per `docs/coach/protocols.md` "Honor attestation":
 ## Topic selection
 
 - **If `$ARGUMENTS` is empty:** Read `state/profile.md` and `state/observed.md`. Recommend 3 next-up pattern subsections **interleaved across archetypes** per the Brunmair & Richter principle in protocols.md. Each recommendation: one-line rationale tied to weak signals (low confidence in `observed.md`, or `focus_areas` from profile). Wait for user to pick.
-- **If `$ARGUMENTS` is a section code (3A through 3O, ai-infra, frontend):** Load `docs/coach/patterns/<code>-*.md`.
+- **If `$ARGUMENTS` is a pattern name** (e.g., `caching`, `frontend`, `consistency-coordination`): match against `docs/coach/patterns/*.md` permissively (case-insensitive substring/prefix). If exactly one file matches, load it. If multiple match, list the matches and ask the user to disambiguate. If none match, list all available patterns and ask the user to pick.
 - **If `$ARGUMENTS` is an archetype name** (e.g., `concurrent-resource`): resolve to the most-relevant pattern file (e.g., `concurrent-resource` → `consistency-coordination.md`). If ambiguous, ask the user to pick.
 
 ## Teaching loop

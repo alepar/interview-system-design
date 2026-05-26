@@ -1,8 +1,6 @@
 # Storage and Databases
 
-Pattern reference for `/study-patterns 3D`. Each entry: definition (1 sentence) + canonical use (1 sentence) + 1–2 named production systems + 1–2 alternatives.
-
-Source: `staff-engineer-study-guide.md` §3D.
+Source: `staff-engineer-study-guide.md`.
 
 ## SQL — B-Tree Storage Engines
 

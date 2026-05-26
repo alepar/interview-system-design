@@ -1,8 +1,6 @@
 # Data Structures Worth Naming
 
-Pattern reference for `/study-patterns 3H`. Each entry: definition (1 sentence) + canonical use (1 sentence) + 1–2 named production systems + 1–2 alternatives.
-
-Source: `staff-engineer-study-guide.md` §3H.
+Source: `staff-engineer-study-guide.md`.
 
 ## Bloom Filter
 

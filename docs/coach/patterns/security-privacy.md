@@ -1,8 +1,6 @@
 # Security and Privacy
 
-Pattern reference for `/study-patterns 3L`. Each entry: definition (1 sentence) + canonical use (1 sentence) + 1–2 named production systems + 1–2 alternatives.
-
-Source: `staff-engineer-study-guide.md` §3L.
+Source: `staff-engineer-study-guide.md`.
 
 ## AuthN / AuthZ: OAuth 2.0, OIDC, JWT, Session Cookies
 
@@ -23,6 +21,26 @@ Source: `staff-engineer-study-guide.md` §3L.
 **Production systems.** AWS WAF + Shield Advanced, Cloudflare (DDoS + WAF + rate limiting as a managed edge service).
 
 **Alternatives.** Nginx/Envoy built-in rate limiting (simpler, no external dependency); iptables / BPF-level packet filtering for volumetric L3/L4 attacks.
+
+## Rate-Limiting Algorithms
+
+**Definition.** Algorithms for enforcing per-client request rate: **token bucket** (refill at rate R, allow burst up to capacity B; simple, allows controlled bursts), **leaky bucket** (queue with constant drain rate; smooths bursts but adds queueing latency), **fixed window** (counter per N-second window; simplest but allows 2× burst at the window boundary), **sliding window log** (timestamp log per client; precise but O(N) memory), **sliding window counter** (weighted blend of two adjacent fixed-window counters; precision-vs-memory compromise), **GCRA** (Generic Cell Rate Algorithm; single-timestamp state, mathematically equivalent to leaky bucket, the algorithm Stripe and Cloudflare use in production).
+
+**Canonical use.** Token bucket or GCRA at the API gateway for per-API-key limits with bursts (Stripe-style); leaky bucket where downstream cannot absorb bursts; sliding-window counter for short windows where fixed-window boundary spikes are a real concern (login endpoints, password reset).
+
+**Production systems.** Stripe (GCRA, single Redis key per limit), Cloudflare (GCRA at the edge, sub-millisecond), Envoy global rate-limit service (token bucket via gRPC service), Redis Cell module (GCRA primitive).
+
+**Alternatives.** Distributed counter with periodic sync (looser limits but lower coordination cost); concurrency limits / semaphores (cap in-flight requests rather than rate; the right tool when downstream has bounded parallelism, not bounded throughput).
+
+## Bot Mitigation and Behavioral Biometrics
+
+**Definition.** Layered defense against automated traffic combining **static signals** (IP/ASN reputation, TLS fingerprinting via JA3/JA4, HTTP header heuristics) with **dynamic signals** (invisible CAPTCHA / Turnstile / hCaptcha, device fingerprinting via Canvas/Audio/WebGL, behavioral biometrics like mouse curves and keystroke dynamics) to produce a risk score; admission is **tiered** — silent challenge for low risk, interactive CAPTCHA at medium risk, hard block at high risk.
+
+**Canonical use.** Place as a checkpoint in front of the origin on hype/contention endpoints (sneaker drops, flash sales, ticket onsales) where bots are the dominant adversary (10–40%+ of traffic, up to 97% on hyped releases) and pure rate limiting cannot distinguish a distributed botnet from real users.
+
+**Production systems.** Cloudflare Bot Management + Turnstile (managed edge, JA4 + ML scoring), hCaptcha (privacy-preserving enterprise CAPTCHA), Arkose Labs (interactive challenges for high-friction tiers), Akamai Bot Manager (CDN-integrated detection).
+
+**Alternatives.** Pure rate limiting (cheap, but weak against rotating-IP residential botnets); proof-of-work CAPTCHAs like mCaptcha or Anubis (no third-party dependency, imposes compute cost on attackers but degrades UX on low-end devices).
 
 ## Encryption at Rest and in Transit; Envelope Encryption with KMS
 

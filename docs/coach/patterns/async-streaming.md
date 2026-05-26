@@ -1,8 +1,6 @@
 # Asynchronous / Streaming
 
-Pattern reference for `/study-patterns 3F`. Each entry: definition (1 sentence) + canonical use (1 sentence) + 1–2 named production systems + 1–2 alternatives.
-
-Source: `staff-engineer-study-guide.md` §3F.
+Source: `staff-engineer-study-guide.md`.
 
 ## Message Queue vs Publish-Subscribe
 

@@ -1,7 +1,5 @@
 # Front-End System Design
 
-Pattern reference for `/study-patterns frontend`. Each entry: definition (1 sentence) + canonical use (1 sentence) + 1–2 named production systems + 1–2 alternatives.
-
 Source: design spec §9 + `staff-engineer-study-guide.md` (Category 12).
 
 ## RADIO framework
@@ -23,6 +21,26 @@ Source: design spec §9 + `staff-engineer-study-guide.md` (Category 12).
 **Production systems.** React Window, React Virtualized (open-source; used in production at scale at Facebook and Twitter feeds).
 
 **Alternatives.** Pagination / infinite scroll with DOM accumulation (simpler; DOM grows unbounded on long sessions); server-side rendering with cursor-based pagination (reduces client DOM; requires page reload or partial hydration).
+
+## Ref-buffer + requestAnimationFrame render decoupling
+
+**Definition.** Incoming updates (SSE tokens, WebSocket ticks, IPC events) are appended to a `useRef`-held buffer rather than calling `setState` directly; a `requestAnimationFrame` loop drains the buffer to React state once per frame (~60Hz), so the network arrival rate is fully decoupled from the render rate.
+
+**Canonical use.** An LLM chat UI receiving 50-100 SSE tokens/sec buffers them in `tokenBufferRef.current` and flushes once per `rAF` tick, turning 100 re-renders/sec into ~60 — preventing input-box jank and dropped frames during streaming.
+
+**Production systems.** ChatGPT / Claude streaming chat UIs, GitHub Copilot inline completions, Bloomberg-style trading dashboards with thousands of ticks/sec.
+
+**Alternatives.** Fixed-interval `setInterval` batching at 30-100ms (simpler; not aligned with the browser's paint cycle, can still drop frames or waste work); direct `setState` per event (works under ~10 events/sec; collapses under streaming load).
+
+## Canvas / WebGL vs DOM renderer choice
+
+**Definition.** Once visible item count exceeds roughly 5-10k DOM nodes, React reconciliation and browser layout become the bottleneck; switching to a Canvas 2D or WebGL/WebGPU renderer treats the viewport as a single `<canvas>` element and paints items imperatively, trading off accessibility and per-element event handlers for raw throughput.
+
+**Canonical use.** A design canvas with 50k shapes or a map with 100k pins renders to WebGL, maintains a parallel ARIA tree for accessibility, and implements hit-testing (quadtree / spatial index) to translate pointer events back to logical items.
+
+**Production systems.** Figma (WebGL renderer driven by WASM-compiled C++), Google Maps (Canvas raster tiles + WebGL vector layer), Airbnb search map (Mapbox GL / WebGL), Bloomberg trading dashboards.
+
+**Alternatives.** List/grid virtualization with `react-window` (keeps DOM + accessibility for free; caps out around 10k items); SVG rendering (declarative; better than DOM for medium scale; still per-node layout cost).
 
 ## Optimistic UI with rollback
 
@@ -54,6 +72,16 @@ Source: design spec §9 + `staff-engineer-study-guide.md` (Category 12).
 
 **Alternatives.** App Cache (deprecated; removed from most browsers); server-side rendering with no client cache (no offline capability; simpler deployment).
 
+## Cross-origin iframe sandbox + postMessage protocol
+
+**Definition.** Sensitive UI (card input, auth widget, captcha) is loaded inside a sandboxed cross-origin iframe served from the vendor's domain; the parent page and child iframe communicate via `window.postMessage` with strict `origin` checks and a versioned message-shape schema, so the parent never reads the sensitive fields directly and stays outside the vendor's compliance scope.
+
+**Canonical use.** Stripe Elements loads the card-number input in a `js.stripe.com` iframe; the merchant page only exchanges tokenized handles via `postMessage`, keeping the merchant out of PCI-DSS SAQ-D scope and reducing them to SAQ-A.
+
+**Production systems.** Stripe Elements (PCI scope reduction), Plaid Link (bank credentials), Auth0 Universal Login (embedded mode), Google reCAPTCHA.
+
+**Alternatives.** Full-page redirect to the vendor's hosted page (eliminates iframe complexity; breaks inline checkout UX and conversion); direct fields on the merchant page (simplest integration; pulls the merchant fully into PCI-DSS SAQ-D scope — operationally expensive).
+
 ## WebSocket connection management
 
 **Definition.** WebSocket connection management encompasses reconnect-with-exponential-backoff, heartbeat ping/pong frames, and sequence-numbered messages to detect and recover from missed events after a dropped connection.
@@ -63,6 +91,26 @@ Source: design spec §9 + `staff-engineer-study-guide.md` (Category 12).
 **Production systems.** Slack (WebSocket multiplexing + sequence numbering for message delivery guarantees), Figma multiplayer (WebSocket with reconnect and full-state resync).
 
 **Alternatives.** Server-Sent Events (SSE) (unidirectional; simpler for read-heavy push; no backpressure from client); long polling (HTTP-native; higher overhead; natural reconnect on each poll).
+
+## SSE / fetch + ReadableStream streaming
+
+**Definition.** For one-way server-to-client streaming where bidirectional WebSocket framing is overkill, the browser exposes Server-Sent Events (`EventSource` over `text/event-stream`) for line-delimited text and `fetch()` + `response.body.getReader()` over a `ReadableStream` for binary or custom-encoded streams — both ride normal HTTP/2, multiplex on a single connection, and auto-reconnect (SSE) or expose a cancellation handle (fetch).
+
+**Canonical use.** An LLM chat backend pushes token deltas as `data: {"delta":"..."}\n\n` SSE frames; the client `EventSource` feeds each delta into the ref-buffer + rAF render loop above, yielding sub-100ms first-token latency without WebSocket session management.
+
+**Production systems.** ChatGPT / Claude streaming responses (SSE), GitHub Copilot completions (SSE), Datadog Live Tail (fetch + ReadableStream for log frames).
+
+**Alternatives.** WebSocket (bidirectional; more session/heartbeat complexity; required only if the client also streams to the server); long polling (HTTP-native; one round-trip per chunk; higher overhead); GraphQL subscriptions (typed schema; rides WebSocket — inherits its complexity).
+
+## Media Source Extensions / Encrypted Media Extensions / adaptive bitrate
+
+**Definition.** Media Source Extensions (MSE) let JavaScript append media segments into a `SourceBuffer` attached to a `<video>` element, making in-browser HLS/DASH players possible; Encrypted Media Extensions (EME) plug a Content Decryption Module (Widevine, FairPlay, PlayReady) into that pipeline for DRM; adaptive bitrate (ABR) is the client-side control loop that measures throughput and buffer level to pick the next segment's bitrate.
+
+**Canonical use.** A web video player fetches a DASH manifest, downloads the next 4-second segment at the bitrate selected by an ABR algorithm (e.g., BOLA or throughput-based), passes the bytes through EME for decryption, and appends to the MSE `SourceBuffer` while monitoring buffer health to upshift or downshift.
+
+**Production systems.** Netflix, YouTube, Twitch (MSE + EME + ABR); Spotify Web Player (HLS audio via MSE); video-player problem reference design.
+
+**Alternatives.** Native `<video src="*.m3u8">` with HLS.js polyfill (covers HLS playback without writing MSE/ABR app code; less control over the buffer / ABR policy); progressive MP4 download (simplest; no bitrate adaptation; no DRM).
 
 ## Code-splitting and lazy loading
 

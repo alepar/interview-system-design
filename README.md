@@ -34,8 +34,8 @@ The coach teaches you a chosen pattern subsection (e.g., consistency / coordinat
 **Invocation:**
 
 - `/study-patterns` — coach reads your profile + observed signals, recommends 3 next-up subsections **interleaved across archetypes** (so you don't drill the same area three sessions in a row). Each recommendation includes a one-line rationale tied to your weak signals.
-- `/study-patterns 3G` — pick a specific subsection by code (3A through 3O, plus `ai-infra` and `frontend`).
-- `/study-patterns concurrent-resource` — pick by archetype name; resolves to the most-relevant subsection.
+- `/study-patterns <name>` — pick a specific pattern by name (e.g., `caching`, `frontend`, `consistency-coordination`). Matching is permissive — substring or prefix is fine; the coach asks you to disambiguate when multiple patterns match.
+- `/study-patterns concurrent-resource` — pick by archetype name; resolves to the most-relevant pattern.
 
 **What happens:** for each pattern in the chosen subsection, the coach gives a 1-paragraph intro (definition + canonical use + a named production system), then poses a check question grounded in the rubric. You answer; the coach grades **yes / partial / no**:
 

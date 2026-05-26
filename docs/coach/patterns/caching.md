@@ -1,8 +1,6 @@
 # Caching
 
-Pattern reference for `/study-patterns 3E`. Each entry: definition (1 sentence) + canonical use (1 sentence) + 1–2 named production systems + 1–2 alternatives.
-
-Source: `staff-engineer-study-guide.md` §3E.
+Source: `staff-engineer-study-guide.md`.
 
 ## Where to Cache
 

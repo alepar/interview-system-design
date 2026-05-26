@@ -1,8 +1,6 @@
 # Load Balancing
 
-Pattern reference for `/study-patterns 3C`. Each entry: definition (1 sentence) + canonical use (1 sentence) + 1–2 named production systems + 1–2 alternatives.
-
-Source: `staff-engineer-study-guide.md` §3C.
+Source: `staff-engineer-study-guide.md`.
 
 ## L4 vs L7 Load Balancers
 

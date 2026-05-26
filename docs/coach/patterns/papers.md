@@ -1,8 +1,6 @@
 # Key Distributed-Systems Papers
 
-Pattern reference for `/study-patterns 3N`. Each entry is a paper (or book). Field mapping: Definition = 1-sentence summary of what it introduced (year + author); Canonical use = when to invoke/cite in an interview; Production systems = systems implementing or descended from the paper's ideas; Alternatives = related papers / competing approaches.
-
-Source: `staff-engineer-study-guide.md` §3N.
+Source: `staff-engineer-study-guide.md`.
 
 ## Google File System (GFS)
 

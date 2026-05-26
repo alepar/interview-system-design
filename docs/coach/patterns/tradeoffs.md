@@ -1,8 +1,6 @@
 # Trade-offs to Argue Both Sides Of
 
-Pattern reference for `/study-patterns 3O`. Each entry is a trade-off pair. Field mapping: Definition = 1-sentence statement of what's being traded against what; Canonical use = 2-sentence summary of when each side wins; Production systems = examples of each side in production; Alternatives = related trade-offs to consider together.
-
-Source: `staff-engineer-study-guide.md` §3O.
+Source: `staff-engineer-study-guide.md`.
 
 ## SQL vs NoSQL
 

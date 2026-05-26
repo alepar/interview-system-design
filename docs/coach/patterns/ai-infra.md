@@ -1,7 +1,5 @@
 # AI Infrastructure
 
-Pattern reference for `/study-patterns ai-infra`. Each entry: definition (1 sentence) + canonical use (1 sentence) + 1–2 named production systems + 1–2 alternatives.
-
 Source: design spec §9 + `staff-engineer-study-guide.md` (Category 11).
 
 ## Continuous batching (vLLM-style)
@@ -103,3 +101,43 @@ Source: design spec §9 + `staff-engineer-study-guide.md` (Category 11).
 **Production systems.** PyTorch FSDP (Meta, open-source), Megatron-LM (NVIDIA, tensor + pipeline parallelism), DeepSpeed (Microsoft, ZeRO optimizer).
 
 **Alternatives.** Pipeline parallelism (partitions layers across devices; lower all-reduce bandwidth; introduces pipeline bubbles); tensor parallelism (shards individual weight matrices; high intra-layer bandwidth requirement); model-parallel inference (serving, not training; different trade-offs).
+
+## Topology-aware GPU placement and training fault tolerance
+
+**Definition.** Topology-aware placement matches a training job's parallelism plan (tensor-parallel groups, pipeline stages, data-parallel replicas) to the physical interconnect hierarchy — NVLink/NVSwitch domains within a node, PCIe locality, and multi-host RDMA fabrics (InfiniBand, RoCE) — so that the highest-bandwidth collectives land on the highest-bandwidth links. Training fault tolerance adds async checkpointing, collective-comm hang detection, and elastic membership so that a multi-week training run survives node failures without full restart.
+
+**Canonical use.** A scheduler placing a 1024-GPU pretraining job pins each 8-way tensor-parallel group inside a single NVLink island, lays pipeline stages across nodes connected by the fattest InfiniBand rails, and reserves hot-spare nodes; async checkpoints write to a parallel filesystem every N minutes while NCCL Flight Recorder traces any all-reduce hang to the offending rank.
+
+**Production systems.** PyTorch TorchElastic and DeepSpeed elastic training, Slurm with topology constraints, AWS HyperPod (auto-resume on hardware fault), TorchSnapshot for async checkpointing, NCCL Flight Recorder, internal schedulers at Anthropic and Meta.
+
+**Alternatives.** Topology-blind bin-packing (simpler; degrades collective bandwidth dramatically); synchronous-only checkpointing (simpler; stalls training during writes and lengthens recovery); restart-from-zero on any fault (acceptable only at small scale).
+
+## Long-context techniques: MLA, Ring Attention, chunked prefill
+
+**Definition.** A family of techniques that extend PagedAttention to make very long contexts and very long prefills tractable: Multi-Head Latent Attention (MLA) compresses the KV cache via a low-rank latent projection; Ring Attention and sequence parallelism distribute attention computation across devices so context length scales with the number of devices; chunked prefill breaks the prefill phase into smaller chunks that interleave with decode steps; prefill/decode disaggregation runs the two phases on different hardware tiers tuned for their distinct compute profiles.
+
+**Canonical use.** A serving system targeting million-token contexts uses MLA to shrink per-token KV footprint, Ring Attention to spread the attention matmul across a tensor-parallel group, and chunked prefill so a 200 K-token user prompt no longer blocks decode for thousands of in-flight requests; decode runs on memory-bandwidth-optimized GPUs while prefill runs on compute-dense ones.
+
+**Production systems.** vLLM (chunked prefill and prefill/decode disaggregation), DeepSeek-V2 and DeepSeek-V3 (MLA), Ring Attention reference implementations (Liu et al. 2023), TensorRT-LLM long-context kernels.
+
+**Alternatives.** Full-context-fits-in-memory (only viable for short contexts); sliding-window attention (cheap; loses long-range dependencies); retrieval augmentation instead of long context (different trade-off; loses in-context reasoning over the full document).
+
+## Durable agent loops, MCP, and sandbox isolation
+
+**Definition.** Long-running LLM-agent workflows need three things general request/response stacks do not: a durable execution substrate so multi-hour or multi-day runs survive node restarts, a standard protocol for exposing tools and resources to the model, and an isolation boundary for executing untrusted model-generated code. Durable execution is provided by workflow engines (Temporal, AWS Step Functions, Inngest) that persist every step. The Model Context Protocol (MCP) is Anthropic's open standard for tool, resource, and prompt exposure with capability negotiation. Sandboxing options trade isolation strength against cold-start latency: Firecracker microVMs (KVM-based, hundreds of ms cold start), gVisor (user-space kernel, lighter but weaker), and bubblewrap or raw Linux namespaces (kernel-shared, lightest, weakest).
+
+**Canonical use.** An agent platform stores each agent run as a Temporal workflow whose steps are tool calls; tools are advertised to the model via MCP; every code-execution tool call lands in a Firecracker microVM with a fresh rootfs, network egress policy, and a wall-clock budget.
+
+**Production systems.** ChatGPT Code Interpreter (gVisor), OpenAI Assistants and Responses API (Firecracker-backed sandboxes), E2B (Firecracker for agent sandboxes), Anthropic Claude with MCP, Temporal and Inngest for durable agent loops.
+
+**Alternatives.** No isolation for tool execution (catastrophic risk for untrusted code); full VM per call (strong isolation; cold-start too slow for interactive agents); in-process exec with seccomp (fast; insufficient for adversarial workloads).
+
+## Multi-tenant LoRA, embedding pools, and realtime multimodal serving
+
+**Definition.** Three serving patterns that share one base infrastructure across many tenants or modalities. Multi-tenant LoRA serving keeps a single base model resident and pages in thousands of small LoRA adapters on demand, batching requests across tenants using Unified Paging (S-LoRA) or Segmented Gather Matrix-Vector multiplication (SGMV). Embedding service scaling combines Matryoshka representation learning — one model whose output dimensions are usable at multiple truncation lengths for different cost/quality tiers — with a tenant-sharded vector index. Realtime multimodal serving pipelines audio, vision, and text through a shared KV cache with WebRTC for low-latency audio I/O and framewise vision encoding overlapped with audio decoding.
+
+**Canonical use.** A platform offering per-customer fine-tuned variants runs one 70 B base model with thousands of LoRA adapters batched via S-LoRA; an embedding endpoint serves the same Matryoshka model at 256, 768, and 1536 dimensions for different tiers; a realtime voice product streams audio in over WebRTC, encodes video frames in parallel, and emits audio out with sub-300 ms turn latency.
+
+**Production systems.** vLLM with S-LoRA, Punica (SGMV kernels), OpenAI gpt-4o-realtime, Google Gemini Live, Cohere Embed (Matryoshka), OpenAI text-embedding-3 (Matryoshka).
+
+**Alternatives.** Separate model deployment per tenant (no cross-tenant batching; cost-prohibitive at fleet scale); single-modality serving stitched together by a client (adds round trips; misses the cross-modal latency floor); fixed-dimension embeddings (forces one cost/quality point).
