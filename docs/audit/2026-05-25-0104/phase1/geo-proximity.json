@@ -1,0 +1,122 @@
+{
+  "archetype": "geo-proximity",
+  "problems_reviewed": [
+    "bluetooth-beacon-proximity",
+    "didi-dispatch",
+    "doordash-dispatch",
+    "find-my-friends",
+    "foursquare-checkin",
+    "geofence-notifications",
+    "geohash-design",
+    "google-maps-routing",
+    "google-places",
+    "h3-s2-spatial-index",
+    "instacart-batching",
+    "last-mile-routing",
+    "life360",
+    "lyft-dispatch",
+    "snap-geofilter-fanout",
+    "snap-map",
+    "uber",
+    "waze-traffic-update",
+    "yelp-search"
+  ],
+  "patterns_reviewed": ["data-structures.md"],
+  "findings": [
+    {
+      "id": "geo-proximity-001",
+      "category": "pattern_gap",
+      "severity": "medium",
+      "confidence": "high",
+      "files": ["docs/coach/patterns/data-structures.md", "docs/coach/problems/last-mile-routing.md", "docs/coach/problems/instacart-batching.md", "docs/coach/problems/doordash-dispatch.md", "docs/coach/problems/lyft-dispatch.md"],
+      "evidence": "data-structures.md geo entry covers only: 'Geohash, S2, H3, Quadtree, R-tree, k-d Tree'. No coverage of CVRPTW / MIP / Hungarian / LP-relaxation / ruin-and-recreate routing metaheuristics used in 5+ archetype problems.",
+      "summary": "Pattern file covers spatial indexes but not the VRP/CVRPTW/bipartite-matching solver patterns that dominate dispatch and routing problems.",
+      "suggested_fix": "Either add a routing/optimization pattern file (or section in algorithms-patterns) covering CVRPTW, Hungarian/LP-relaxation, MIP solvers, ruin-and-recreate/LNS, or reference an existing patterns file from archetypes.md for routing-heavy problems.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "geo-proximity-002",
+      "category": "mis_categorization",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/last-mile-routing.md"],
+      "evidence": "Bar anchors: 'CVRPTW: NP-hard TSP generalization; metaheuristics (LNS = ruin-and-recreate, guided local search, tabu); Google OR-Tools canonical open-source' — design pressure is OR/optimization, not geo indexing.",
+      "summary": "last-mile-routing is primarily a VRP optimization problem; geo indexing barely appears in the bar-anchors.",
+      "suggested_fix": "Either keep with a clearer geo-indexing tie-in, or consider whether a routing/optimization sub-archetype is needed; flag for Phase 2.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "ml-in-loop", "resolved": false}
+    },
+    {
+      "id": "geo-proximity-003",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/instacart-batching.md"],
+      "evidence": "Staff+ anchor leads with 'CVRPTW decomposes into clustering + shopper-assignment' and 'quantile regression q=0.9 predicts upper-bound delivery time' — pressures are batching/optimization + ML quantile, not spatial indexing.",
+      "summary": "instacart-batching design pressure is CVRPTW + ML quantile bounding; spatial index is not first-order.",
+      "suggested_fix": "Consider whether ml-in-loop or a routing sub-archetype is a better fit; if kept, strengthen the geo-indexing thread.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "ml-in-loop", "resolved": false}
+    },
+    {
+      "id": "geo-proximity-004",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/find-my-friends.md"],
+      "evidence": "Staff+ anchor names 'P-224 EC key pair generated on-device; private key + 256-bit seed SK0 NEVER leave devices' and 'Server-side encrypted reports indexed by SHA-256(P-224 public key)' — dominant pressure is privacy-preserving crypto protocol, not spatial query.",
+      "summary": "find-my-friends design pressure is a cryptographic crowdsourced-finder protocol, not spatial indexing; geo is incidental payload.",
+      "suggested_fix": "Phase 2 review: keep in geo-proximity (location-sharing UX) or move to a security/privacy primitive archetype if one exists.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "infra-primitives", "resolved": false}
+    },
+    {
+      "id": "geo-proximity-005",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "low",
+      "files": ["docs/coach/problems/bluetooth-beacon-proximity.md"],
+      "evidence": "Bar anchors center on 'iBeacon advertising packet 30 bytes...', 'Eddystone 4 frame types', 'Eddystone-EID rotates AES-encrypted 8-byte ID' — pressures are BLE protocol + crypto, not spatial indexing.",
+      "summary": "bluetooth-beacon-proximity reads as a BLE-protocol primitive; spatial index appears only via cross-refs.",
+      "suggested_fix": "Phase 2 review: confirm geo-proximity is the right home, or consider infra-primitives.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "infra-primitives", "resolved": false}
+    },
+    {
+      "id": "geo-proximity-006",
+      "category": "duplicate",
+      "severity": "low",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/find-my-friends.md", "docs/coach/problems/bluetooth-beacon-proximity.md"],
+      "evidence": "bluetooth-beacon-proximity Staff+: 'Apple Find My inverse-beacon: lost device advertises rotating P-224 public key; nearby Apple devices sniff + encrypt their location to that key + upload anonymously.' — near-verbatim of find-my-friends.",
+      "summary": "Substantial overlap between bluetooth-beacon-proximity and find-my-friends on the Apple Find My rotating-P-224 protocol; both have it as a top Staff+ anchor.",
+      "suggested_fix": "Trim Find My content from bluetooth-beacon-proximity to a cross-ref; keep BLE/Eddystone/UWB content there. Find My protocol stays in find-my-friends.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "geo-proximity-007",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "low",
+      "files": ["docs/coach/problems/waze-traffic-update.md"],
+      "evidence": "Bar anchors include 'DBSCAN clustering + Bayesian/ML classifiers to deduplicate co-located reports + selfish-routing Price of Anarchy = 4' — pressures are UGC moderation + ML fusion + game-theory externality.",
+      "summary": "waze-traffic-update has strong ugc-pipeline / ml-in-loop overtones (crowdsourced report verification, classifiers) on top of routing.",
+      "suggested_fix": "Phase 2 review: keep but acknowledge multi-archetype overlap; could justify an ml-in-loop or ugc-pipeline cross-ref.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "ugc-pipeline", "resolved": false}
+    },
+    {
+      "id": "geo-proximity-008",
+      "category": "other",
+      "severity": "low",
+      "confidence": "high",
+      "files": ["docs/coach/problems/lyft-dispatch.md"],
+      "evidence": "H1 title is the entire Staff+ anchor: '# Lyft dispatch — Google S2 (not Uber H3) + geohash-level-5 cells (~1 km²) + Redis cluster sharded by S2 cell ID + sorted-sets w/ 30s stale-beacon expiration (15M QPS sustained) + bipartite matching via ILP/LP relaxation + ~30s batched window for Lyft Line + online RL agent considering long-horizon driver-income state + Marketplace Marginal Values (MMV) dual-variable debiasing + Kalman-filter real-time map-matching'.",
+      "summary": "Several problems (lyft-dispatch, didi-dispatch, doordash-dispatch, instacart-batching, snap-map, life360, find-my-friends, google-maps-routing, waze-traffic-update, yelp-search, google-places, foursquare-checkin, snap-geofilter-fanout, geofence-notifications, bluetooth-beacon-proximity, h3-s2-spatial-index, geohash-design) use the H1 heading to enumerate the Staff+ anchor; inconsistent with uber.md which has a clean '# Uber (Ride-Sharing Dispatch)' title.",
+      "suggested_fix": "Cosmetic: decide on H1 convention across archetype (clean title vs. anchor-as-title) and apply consistently.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    }
+  ],
+  "self_report": {
+    "problems_count_in_index": 19,
+    "problems_count_files_found": 19,
+    "files_not_in_index": [],
+    "index_entries_with_no_file": []
+  },
+  "status": "ok"
+}

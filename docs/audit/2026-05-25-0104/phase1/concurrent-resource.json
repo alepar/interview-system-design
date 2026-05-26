@@ -1,0 +1,132 @@
+{
+  "archetype": "concurrent-resource",
+  "problems_reviewed": [
+    "appointment-booking",
+    "ecommerce-inventory",
+    "flash-sale",
+    "idempotent-payment",
+    "online-auction",
+    "resource-pool",
+    "sneaker-drop",
+    "wallet-ledger",
+    "coupon-redemption",
+    "distributed-lock",
+    "hotel-booking",
+    "parking-garage",
+    "ticketmaster",
+    "airline-seat-booking"
+  ],
+  "patterns_reviewed": ["consistency-coordination.md", "api-idempotency.md"],
+  "findings": [
+    {
+      "id": "concurrent-resource-001",
+      "category": "other",
+      "severity": "low",
+      "confidence": "high",
+      "files": ["docs/coach/problems/ticketmaster.md"],
+      "evidence": "ticketmaster.md ends at '## Known failure modes' (line 63) with no '## (Delineation note)' section, unlike all 13 other concurrent-resource files which include one.",
+      "summary": "ticketmaster.md is missing the '## (Delineation note)' section that every other concurrent-resource file uses",
+      "suggested_fix": "Add a '## (Delineation note)' to ticketmaster.md positioning it against flash-sale/sneaker-drop/airline-seat-booking/hotel-booking (already referenced by those files as the canonical seat-hold variant).",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "concurrent-resource-002",
+      "category": "other",
+      "severity": "low",
+      "confidence": "high",
+      "files": ["docs/coach/problems/ticketmaster.md"],
+      "evidence": "ticketmaster.md frontmatter `sources:` contains only one entry (`hello_interview`), whereas every other file in the archetype lists 4-5 sources.",
+      "summary": "ticketmaster.md has a single-source frontmatter while peers list 4-5 sources",
+      "suggested_fix": "Backfill sources in ticketmaster.md (e.g. ByteByteGo / DDIA OCC chapter / Stripe idempotency docs) to match peer-file source density.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "concurrent-resource-003",
+      "category": "duplicate",
+      "severity": "low",
+      "confidence": "medium",
+      "files": [
+        "docs/coach/problems/parking-garage.md",
+        "docs/coach/problems/resource-pool.md"
+      ],
+      "evidence": "parking-garage.md (delineation note): `parking-garage` is the canonical **finite-slot allocation** variant — the physical-skinned sibling of `resource-pool`'; resource-pool.md says `parking-garage` is its physical-skinned instance'.",
+      "summary": "parking-garage and resource-pool are near-duplicates by self-declaration (physical-skinned vs abstract finite-pool allocation) — same canonical pressure, separated only by framing",
+      "suggested_fix": "Keep both but ensure delineation is sharp (resource-pool = abstract semaphore + connection-pool sizing; parking-garage = OOD-flavored multi-gate skinned variant). Consider whether two files earn their keep or one should fold into the other as a 'variant note'.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "concurrent-resource-004",
+      "category": "pattern_gap",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": [
+        "docs/coach/problems/flash-sale.md",
+        "docs/coach/problems/sneaker-drop.md",
+        "docs/coach/problems/ticketmaster.md",
+        "docs/coach/problems/coupon-redemption.md"
+      ],
+      "evidence": "flash-sale.md: 'A **virtual waiting room** admits users at a controlled rate (~100k/s)'; sneaker-drop.md: 'a **virtual waiting room that gates before the site**'; ticketmaster.md: 'a virtual waiting room sits in front of the booking service'.",
+      "summary": "Virtual waiting room / queued admission is a dominant design pressure in 4 problems but is not covered by either referenced pattern (consistency-coordination, api-idempotency)",
+      "suggested_fix": "Either add a waiting-room / admission-control entry to consistency-coordination.md (or load-balancing.md), or reference an additional pattern file (e.g. reliability-observability.md / load-balancing.md) from the archetype's Patterns line.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "concurrent-resource-005",
+      "category": "pattern_gap",
+      "severity": "low",
+      "confidence": "medium",
+      "files": [
+        "docs/coach/problems/sneaker-drop.md",
+        "docs/coach/problems/flash-sale.md"
+      ],
+      "evidence": "sneaker-drop.md: 'bots as the dominant adversary (10–40% of Nike SNKRS submissions; one Supreme drop saw 1.9B purchase attempts, 97% inorganic)' — bot mitigation / behavioral biometrics is a first-class pressure.",
+      "summary": "Bot mitigation / rate-limiting / behavioral biometrics is a first-class pressure in sneaker-drop (and present in flash-sale) but neither referenced pattern file covers it",
+      "suggested_fix": "Add a pointer to security-privacy.md or a dedicated rate-limiting/anti-abuse pattern entry from the archetype's Patterns line; alternatively, accept it as a problem-specific concern.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "concurrent-resource-006",
+      "category": "pattern_gap",
+      "severity": "low",
+      "confidence": "medium",
+      "files": [
+        "docs/coach/problems/ecommerce-inventory.md",
+        "docs/coach/problems/wallet-ledger.md",
+        "docs/coach/problems/idempotent-payment.md"
+      ],
+      "evidence": "ecommerce-inventory.md: 'Payment failure triggers a saga: the order→payment→inventory chain compensates by releasing the reservation'; wallet-ledger.md: 'use a saga: debit A, then credit B, with a compensating credit-back'.",
+      "summary": "Saga / compensating-transaction pattern is a recurring pressure across reservation+payment problems but is not surfaced in the referenced consistency-coordination or api-idempotency pattern files",
+      "suggested_fix": "Add a saga / compensating-transaction entry to consistency-coordination.md (it covers OT/CRDTs, OCC, fencing, leader election — sagas would fit), or reference architectural.md from the archetype.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "concurrent-resource-007",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "low",
+      "files": ["docs/coach/problems/distributed-lock.md"],
+      "evidence": "distributed-lock.md delineation note: '`distributed-lock` is the application-level mutual-exclusion primitive underlying many problems in this archetype'; bar-anchors center on the lock-as-primitive semantics (Redlock, ZK, fencing tokens) rather than on a domain resource.",
+      "summary": "distributed-lock is framed as a primitive (Redlock/ZK/etcd, fencing tokens) and could arguably live under infra-primitives alongside zookeeper/etcd, though the file explicitly positions itself as the application-level lock used by other concurrent-resource problems",
+      "suggested_fix": "Phase 2 should confirm whether 'application-level lock' belongs alongside the consensus engines (infra-primitives) or stays here as the cross-cutting primitive. Current placement is defensible; flag only because the candidate archetype is non-obvious.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "infra-primitives", "resolved": false}
+    },
+    {
+      "id": "concurrent-resource-008",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "low",
+      "files": ["docs/coach/problems/idempotent-payment.md"],
+      "evidence": "idempotent-payment.md delineation note: 'idempotent-payment is the exactly-once-under-retries concurrency primitive underlying bookings, coupons, and orders across this archetype.' Bar-anchors emphasize idempotency keys, Stripe pattern, Orpheus — pattern coverage matches api-idempotency.md squarely.",
+      "summary": "idempotent-payment reads as a cross-cutting primitive (idempotency keys + state machine + recovery) more than a concurrent-resource problem; could be considered an infra-primitives or pattern-anchor file",
+      "suggested_fix": "Phase 2 should decide whether this stays as a concurrent-resource problem or is repositioned as an api-idempotency pattern anchor / infra-primitive. Current placement is reasonable given the concurrency-on-same-key emphasis.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "infra-primitives", "resolved": false}
+    }
+  ],
+  "self_report": {
+    "problems_count_in_index": 14,
+    "problems_count_files_found": 14,
+    "files_not_in_index": [],
+    "index_entries_with_no_file": []
+  },
+  "status": "ok"
+}

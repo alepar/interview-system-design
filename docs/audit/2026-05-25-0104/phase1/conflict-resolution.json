@@ -1,0 +1,120 @@
+{
+  "archetype": "conflict-resolution",
+  "problems_reviewed": [
+    "figma",
+    "collaborative-text-editor",
+    "crdt-primitive",
+    "calendar-sync",
+    "figjam-whiteboard",
+    "google-docs",
+    "google-sheets",
+    "presence-awareness",
+    "multiplayer-game-sync",
+    "shopping-cart-crdt",
+    "local-first-sync",
+    "notion",
+    "version-control-merge",
+    "yjs"
+  ],
+  "patterns_reviewed": ["consistency-coordination.md"],
+  "findings": [
+    {
+      "id": "conflict-resolution-001",
+      "category": "mis_categorization",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/multiplayer-game-sync.md"],
+      "evidence": "`multiplayer-game-sync` is the hard-real-time member of this archetype: lockstep is a degenerate CmRDT (ops = inputs, the deterministic simulation is the \"merge\"); client-prediction + reconciliation is the same rebase pattern as `local-first-sync`.",
+      "summary": "Game netcode framed as CRDT-adjacent but its bar anchors are dominated by tick rate, UDP loss, lag compensation, and authoritative-server prediction — design pressures characteristic of realtime-messaging rather than conflict resolution.",
+      "suggested_fix": "Phase 2: compare against realtime-messaging archetype (sub-second delivery, connection model, server-authoritative tick). If the dominant pressure is connection/transport rather than convergence semantics, relocate; otherwise keep but explicitly justify the CRDT framing in the spine note beyond a single sentence.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "realtime-messaging", "resolved": false}
+    },
+    {
+      "id": "conflict-resolution-002",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "low",
+      "files": ["docs/coach/problems/presence-awareness.md"],
+      "evidence": "**Delineates from `discord-presence`**: that is *connection-scale* online/offline with GenStage fan-out to millions; **this is document-scale** ephemeral editing state, capped at the editor limit (200 Figma / 100 Docs / 50 FigJam).",
+      "summary": "Presence-awareness is a sibling of discord-presence (which lives in realtime-messaging); placing it in conflict-resolution turns on the 'awareness CRDT' framing, but the dominant design pressures are WebSocket fan-out + throttling + ephemeral broadcast.",
+      "suggested_fix": "Phase 2: verify the awareness-CRDT framing is load-bearing enough to anchor this in conflict-resolution. If a candidate could answer this problem competently without ever invoking CRDT machinery, consider relocating to realtime-messaging.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "realtime-messaging", "resolved": false}
+    },
+    {
+      "id": "conflict-resolution-003",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "low",
+      "files": ["docs/coach/problems/calendar-sync.md"],
+      "evidence": "`calendar-sync` is the record-granular, offline-first, after-the-fact member of this archetype (closer to `version-control-merge` than to OT/CRDT). It shares the offline-first sync shape with `local-first-sync` (here over CalDAV/HTTP rather than a bespoke engine).",
+      "summary": "Calendar/contacts sync's design pressures are 412-driven optimistic concurrency + sync-token incremental sync — closer to caching/read-heavy or its own offline-sync sub-archetype than CRDT-style conflict resolution.",
+      "suggested_fix": "Phase 2: confirm placement. The problem's correctness story (If-Match → 412 → human-resolved conflict) is record-level, not field-/op-level convergence. If conflict-resolution is reserved for operation-level merge, calendar-sync may belong elsewhere; if it explicitly admits 'after-the-fact record merge' (as version-control-merge does), keep.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "caching-read-heavy", "resolved": false}
+    },
+    {
+      "id": "conflict-resolution-004",
+      "category": "pattern_gap",
+      "severity": "medium",
+      "confidence": "high",
+      "files": ["docs/coach/patterns/consistency-coordination.md"],
+      "evidence": "**Definition.** Operational Transform (OT) achieves convergence in collaborative editing by transforming concurrent operations against each other through a central server; CRDTs (Conflict-free Replicated Data Types) use mathematically designed state (state-based) or operation (op-based) structures that always merge deterministically without coordination.",
+      "summary": "The single 'OT vs CRDTs' pattern entry covers two paragraphs but the 14 problems lean on specific sub-concepts not represented in the pattern: sequence CRDTs (RGA/Fugue), OR-Set add-wins, fractional indexing, awareness CRDT, movable-tree CRDT, rebase-style sync, sync-token incremental sync.",
+      "suggested_fix": "Expand consistency-coordination.md with at least: (a) sequence-CRDT family + interleaving anomaly, (b) OR-Set add-wins, (c) fractional indexing for ordering, (d) awareness CRDT (LWW-per-client + expiry), (e) rebase-style server-authoritative sync. Each is referenced by 3+ problems and is the load-bearing concept in its problem.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "conflict-resolution-005",
+      "category": "pattern_gap",
+      "severity": "low",
+      "confidence": "high",
+      "files": ["docs/coach/patterns/consistency-coordination.md"],
+      "evidence": "## Optimistic vs Pessimistic Concurrency Control",
+      "summary": "calendar-sync's central correctness story is HTTP conditional PUT / If-Match → 412 (record-level OCC with ETags). The pattern's OCC entry mentions ETags briefly but does not name 412 / RFC 6578 sync-tokens / record-level conflict UI, which is the spine of this problem.",
+      "suggested_fix": "Either add HTTP-native record-level OCC (If-Match → 412, sync-token) to the OCC entry, or accept that calendar-sync sits on an under-represented pattern surface and add a short reference there.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "conflict-resolution-006",
+      "category": "other",
+      "severity": "low",
+      "confidence": "medium",
+      "files": [
+        "docs/coach/problems/google-sheets.md",
+        "docs/coach/problems/notion.md"
+      ],
+      "evidence": "**Flags** that OT-on-grid and the dependency-DAG are inferred from the published Docs OT model, not Google-confirmed for Sheets.",
+      "summary": "google-sheets and notion both explicitly flag that their core conflict-resolution model is inferred / not fully publicly confirmed; this is healthy honesty but worth tracking so coach prompts don't assert these as ground truth.",
+      "suggested_fix": "Phase 2: confirm both problems carry the 'flag this in a mock' caveat into the persona / bar-anchor prompts so the coach can't be cornered into asserting an unconfirmed claim.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "conflict-resolution-007",
+      "category": "other",
+      "severity": "low",
+      "confidence": "high",
+      "files": [
+        "docs/coach/problems/figma.md",
+        "docs/coach/problems/figjam-whiteboard.md",
+        "docs/coach/problems/google-docs.md",
+        "docs/coach/problems/collaborative-text-editor.md",
+        "docs/coach/problems/yjs.md",
+        "docs/coach/problems/presence-awareness.md",
+        "docs/coach/problems/crdt-primitive.md",
+        "docs/coach/problems/shopping-cart-crdt.md",
+        "docs/coach/problems/local-first-sync.md",
+        "docs/coach/problems/notion.md"
+      ],
+      "evidence": "`figma` owns server-authoritative LWW-per-property multiplayer for a structured document. The infinite-canvas/whiteboard variant (versionNonce LWW, P2P) is `figjam-whiteboard`; ephemeral cursors are `presence-awareness`; the OT and CRDT alternatives it rejected are `google-docs` and `collaborative-text-editor`/`crdt-primitive`.",
+      "summary": "Strong, consistent inter-problem 'spine notes' across the archetype delineate ownership crisply. Worth noting as a positive signal — this archetype is internally well-structured and unlikely to have duplicates.",
+      "suggested_fix": "No action required. Use this archetype's spine-note discipline as a template for under-structured archetypes during taxonomy review.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    }
+  ],
+  "self_report": {
+    "problems_count_in_index": 14,
+    "problems_count_files_found": 14,
+    "files_not_in_index": [],
+    "index_entries_with_no_file": []
+  },
+  "status": "ok"
+}

@@ -1,0 +1,1976 @@
+{
+  "run_timestamp": "2026-05-25T01:04:00Z",
+  "cross_cut": {
+    "duplicates_across_archetypes": [
+      {
+        "id": "xc-dup-001",
+        "category": "duplicate",
+        "severity": "low",
+        "confidence": "high",
+        "archetypes_affected": [
+          "search-indexing",
+          "frontend"
+        ],
+        "files": [
+          "docs/coach/problems/autocomplete.md",
+          "docs/coach/problems/autocomplete-typeahead.md"
+        ],
+        "evidence": "autocomplete (search-indexing) \u2014 'Stores top-K completions precomputed per trie node ... Lucene FST suggester ... shards the trie by first 1-2 prefix chars'; autocomplete-typeahead (frontend) \u2014 'AbortController ... debounce vs throttle ... ARIA combobox 1.2 ... aria-activedescendant'.",
+        "summary": "Same domain but materially different prompts: autocomplete is backend FST/trie/sharding; autocomplete-typeahead is client async-hazard + ARIA. Intentional split, not a duplicate.",
+        "suggested_fix": "No action. Confirmed clean cross-archetype split."
+      },
+      {
+        "id": "xc-dup-002",
+        "category": "duplicate",
+        "severity": "low",
+        "confidence": "high",
+        "archetypes_affected": [
+          "conflict-resolution",
+          "frontend"
+        ],
+        "files": [
+          "docs/coach/problems/figma.md",
+          "docs/coach/problems/figma-canvas-client.md"
+        ],
+        "evidence": "figma (conflict-resolution) \u2014 'Map<ObjectID, Map<Property, Value>> ... last-writer-wins per (object, property) ... server defining order ... fractional indexing'; figma-canvas-client (frontend) \u2014 'entire rendering layer canvas/WebGL ... WebAssembly C++ ... R-tree spatial index ... bindings layer'.",
+        "summary": "Intentional backend (server-authoritative LWW design) + frontend (WASM/WebGL client) split. Not a duplicate.",
+        "suggested_fix": "No action."
+      },
+      {
+        "id": "xc-dup-003",
+        "category": "duplicate",
+        "severity": "low",
+        "confidence": "high",
+        "archetypes_affected": [
+          "conflict-resolution",
+          "frontend"
+        ],
+        "files": [
+          "docs/coach/problems/google-docs.md",
+          "docs/coach/problems/google-docs-client.md"
+        ],
+        "evidence": "google-docs (conflict-resolution) \u2014 'Jupiter central-server model ... TP1/TP2 ... transforms each incoming op only against that history'; google-docs-client (frontend) \u2014 'optimistic typing with rollback ... presence cursors as absolutely-positioned div overlays ... IndexedDB TransactionQueue ... DOM is NOT source of truth'.",
+        "summary": "Intentional backend (OT/Jupiter) + frontend (cursor overlay + IME + offline IndexedDB) split.",
+        "suggested_fix": "No action."
+      },
+      {
+        "id": "xc-dup-004",
+        "category": "duplicate",
+        "severity": "low",
+        "confidence": "high",
+        "archetypes_affected": [
+          "geo-proximity",
+          "ml-in-loop"
+        ],
+        "files": [
+          "docs/coach/problems/uber.md",
+          "docs/coach/problems/uber-surge.md"
+        ],
+        "evidence": "uber (geo-proximity) \u2014 'H3 hexagonal grid ... matching algorithm (nearest-K filter then ranking by ETA + acceptance probability) ... driver state machine'; uber-surge (ml-in-loop) \u2014 'demand-forecast GBM ... price-elasticity controller ... active-active multi-region failover ... Michelangelo'.",
+        "summary": "uber is dispatch (geo); uber-surge is ML pricing. Different prompts, explicitly delineated.",
+        "suggested_fix": "No action."
+      },
+      {
+        "id": "xc-dup-005",
+        "category": "duplicate",
+        "severity": "low",
+        "confidence": "high",
+        "archetypes_affected": [
+          "ml-in-loop",
+          "frontend"
+        ],
+        "files": [
+          "docs/coach/problems/airbnb-search-ranking.md",
+          "docs/coach/problems/airbnb-search-map.md"
+        ],
+        "evidence": "airbnb-search-ranking \u2014 'DNN ranker architecture: 195 features ... 1.7B pairs ... listing2vec 32-d skip-gram ... IVF over HNSW'; airbnb-search-map \u2014 'react-window FixedSizeList/Grid ... history.replaceState (not pushState) ... canvas/WebGL marker layer ... debounce viewport-bbox refetch'.",
+        "summary": "Backend ranking (ml-in-loop) vs client map+grid sync (frontend). Different prompts. airbnb-search-map's bar-anchor leakage into backend-ranking territory was flagged separately (frontend-007).",
+        "suggested_fix": "No action; see frontend-007 for related Staff+ bar tightening."
+      },
+      {
+        "id": "xc-dup-006",
+        "category": "duplicate",
+        "severity": "low",
+        "confidence": "high",
+        "archetypes_affected": [
+          "fan-out",
+          "ml-in-loop"
+        ],
+        "files": [
+          "docs/coach/problems/pinterest-home.md",
+          "docs/coach/problems/pinterest-pixie.md"
+        ],
+        "evidence": "pinterest-home \u2014 'SmartFeed Worker multi-source priority queue + dual HBase cluster ... Pixie graph as candidate generator: 60ms p99, 1K QPS/server'; pinterest-pixie \u2014 'PinSage's importance-sampled neighborhoods ... ~100,000 random walks/query on 3B-node / 17B-edge graph ... PinSage hyperparameters: K=2 conv layers ... PinnerSage multi-vector user representations'.",
+        "summary": "pinterest-home is the feed system using Pixie as a candidate source; pinterest-pixie is the graph-reco algorithm (PinSage/PinnerSage) deep dive. fan-out's own envelope (fan-out-007) flagged this for verification \u2014 confirmed distinct.",
+        "suggested_fix": "No action. Distinct prompts intentionally co-referenced."
+      },
+      {
+        "id": "xc-dup-007",
+        "category": "duplicate",
+        "severity": "medium",
+        "confidence": "medium",
+        "archetypes_affected": [
+          "ugc-pipeline",
+          "ai-infrastructure"
+        ],
+        "files": [
+          "docs/coach/problems/content-moderation-pipeline.md",
+          "docs/coach/problems/safety-moderation-pipeline.md"
+        ],
+        "evidence": "ugc-pipeline content-moderation-pipeline self-description: 'pipeline integration of moderation (gate placement, hash/fingerprint matching, confidence routing, human-review queue) \u2014 distinct from AI-infra safety-moderation-pipeline'.",
+        "summary": "Two moderation problems explicitly delineate (UGC-pipeline integration vs AI-infra LLM-output moderation), but the line is thin and both reference classifier cascades + human review queues. Worth a Phase-3 cross-read to confirm the boundary holds in detail.",
+        "suggested_fix": "Phase 3: cross-read both files end-to-end and tighten delineation notes if any Staff+ anchor overlaps. Current state: intentional twin, low duplication risk."
+      }
+    ],
+    "orphan_patterns": [
+      "core-concepts.md",
+      "load-balancing.md",
+      "papers.md",
+      "reliability-observability.md",
+      "security-privacy.md",
+      "tradeoffs.md"
+    ],
+    "archetype_pattern_ref_issues": [],
+    "global_index_issues": [],
+    "taxonomy_findings": [
+      {
+        "id": "taxonomy-001",
+        "category": "archetype_taxonomy",
+        "taxonomy_action": "split",
+        "severity": "medium",
+        "confidence": "high",
+        "impact": "high",
+        "archetypes_affected": [
+          "realtime-messaging"
+        ],
+        "evidence": "Phase-1 realtime-messaging envelope flags 8 of 19 problems (42%) as mis_categorization candidates, splitting into two distinct sub-clusters: (a) primitive-builds {mqtt-broker, webrtc-sfu, signal-protocol, mls-group, twilio, discord-channels-storage} pointing to infra-primitives; (b) live-video CDN broadcast {twitch-streaming, youtube-live, audio-rooms} pointing to ugc-pipeline. The archetype's stated summary is 'sub-second delivery with high concurrency. Design pressure: connection model (WebSocket vs SSE vs long-poll), presence, group fan-out at scale.' \u2014 which neither sub-cluster matches.",
+        "summary": "realtime-messaging contains three distinct design-pressure clusters (interactive messaging/connection-model; messaging primitives; live-media CDN broadcast); 42% of problems sit on the boundary.",
+        "suggested_fix": "Split realtime-messaging into (1) interactive-messaging (whatsapp, messenger-multi-device-sync, telegram[->fan-out?], slack, discord-presence, discord-channels[storage], discord-voice, zoom, push-notification, matrix) and (2) live-media-broadcast (twitch-streaming, twitch-chat, youtube-live, audio-rooms) \u2014 or move (2) into ugc-pipeline as a 'live' sub-section. Move the messaging-protocol primitives (mqtt-broker, webrtc-sfu, signal-protocol, mls-group, twilio) into infra-primitives or a new 'messaging-primitives' grouping."
+      },
+      {
+        "id": "taxonomy-002",
+        "category": "archetype_taxonomy",
+        "taxonomy_action": "redefine",
+        "severity": "medium",
+        "confidence": "high",
+        "impact": "medium",
+        "archetypes_affected": [
+          "ml-in-loop"
+        ],
+        "evidence": "archetypes.md \u00a79 summary: 'Production ML systems. Design pressure: candidate-gen -> ranking -> re-rank funnel; online vs offline features; eval.' But ml-in-loop catalog includes feature-store ('point-in-time-correct joins + offline-online consistency + dual-store + streaming aggregations'), model-rollout-shadow ('shadow -> canary -> A/B + champion-challenger + three drift signals'), autonomous-driving-inference ('safety-critical embedded inference ... ASIL-D fail-operational'), and voice-assistant-routing ('classical voice-assistant stack as cascade of ML models'). Phase-1 ml-in-loop finding #007 explicitly flags this: 'feature-store and model-rollout-shadow are ML-platform infra problems (not product ranking systems)'.",
+        "summary": "ml-in-loop summary is funnel-centric but archetype now includes ML-platform infra (feature-store, rollout-shadow) and embedded inference (autonomous-driving, voice-assistant). At least 4 of 19 problems do not match the summary.",
+        "suggested_fix": "Broaden ml-in-loop summary in archetypes.md to: 'Production ML systems including (a) ranking/funnel serving, (b) ML-platform infra (feature stores, registries, rollout/shadow, drift), and (c) low-latency / embedded inference. Design pressure varies by sub-cluster but always centers on the model lifecycle in production.' Alternative: relocate embedded-inference problems to ai-infrastructure (closer to inference-batching/gpu-cluster-scheduler)."
+      },
+      {
+        "id": "taxonomy-003",
+        "category": "archetype_taxonomy",
+        "taxonomy_action": "boundary",
+        "severity": "medium",
+        "confidence": "high",
+        "impact": "medium",
+        "archetypes_affected": [
+          "ml-in-loop",
+          "ai-infrastructure"
+        ],
+        "evidence": "Bidirectional mis-cat pair (3 findings): ml-in-loop->ai-infrastructure {autonomous-driving-inference, voice-assistant-routing}; ai-infrastructure->ml-in-loop {safety-moderation-pipeline}. archetypes.md lists safety-moderation-pipeline as a top-3 ai-infra prompt; ai-infra Phase-1 finding-001 still flags it as boundary.",
+        "summary": "ml-in-loop and ai-infrastructure share a fuzzy boundary on inference-serving vs ML serving; same problems plausibly fit either.",
+        "suggested_fix": "Add an explicit boundary note in archetypes.md between \u00a79 ml-in-loop and \u00a711 AI-Infrastructure: 'ai-infrastructure is GPU/LLM-serving-stack-centric (inference-batching, KV cache, gang scheduling); ml-in-loop is product-ML-centric (ranking funnels, feature stores, drift). Embedded inference (autonomous driving, voice assistants) and safety moderation cross the line; current placement reflects whether the LLM-serving substrate or the ML-product lifecycle dominates.'"
+      },
+      {
+        "id": "taxonomy-004",
+        "category": "archetype_taxonomy",
+        "taxonomy_action": "boundary",
+        "severity": "medium",
+        "confidence": "high",
+        "impact": "medium",
+        "archetypes_affected": [
+          "infra-primitives",
+          "concurrent-resource"
+        ],
+        "evidence": "Bidirectional mis-cat pair (4 findings): infra-primitives->concurrent-resource {stripe-payments, kubernetes-scheduler}; concurrent-resource->infra-primitives {distributed-lock, idempotent-payment}. concurrent-resource summary: 'N consumers competing for M units of inventory. Design pressure: OCC vs pessimistic lock vs distributed lock; idempotency.' \u2014 exactly the primitives the cross-pointing problems formalize.",
+        "summary": "infra-primitives and concurrent-resource boundary: which is the 'application-using-the-primitive' archetype and which is the 'build-the-primitive' archetype? distributed-lock and idempotent-payment self-describe as primitives but sit in concurrent-resource; stripe-payments and kubernetes-scheduler sit in infra-primitives but are application-level.",
+        "suggested_fix": "Add a rule of thumb in archetypes.md: 'infra-primitives = the engine (Kafka, ZK, etcd, distributed-KV); concurrent-resource = the application of mutual exclusion to user-facing inventory.' Then either: (a) keep distributed-lock + idempotent-payment in concurrent-resource as 'cross-cutting application-level primitives' (current intent) and move kubernetes-scheduler/stripe-payments framing closer to primitive substrate \u2014 or (b) consider a dedicated 'coordination primitives' sub-archetype."
+      },
+      {
+        "id": "taxonomy-005",
+        "category": "archetype_taxonomy",
+        "taxonomy_action": "boundary",
+        "severity": "medium",
+        "confidence": "medium",
+        "impact": "medium",
+        "archetypes_affected": [
+          "ml-in-loop",
+          "geo-proximity"
+        ],
+        "evidence": "Bidirectional mis-cat pair (3 findings): geo-proximity->ml-in-loop {last-mile-routing, instacart-batching}; ml-in-loop->geo-proximity {uber-surge}. Pressures cross-cut: H3 streaming + ML quantile + LTR over geo-filtered candidates appear in problems on both sides.",
+        "summary": "ml-in-loop and geo-proximity share a fuzzy boundary on routing/dispatch/pricing problems with ML components.",
+        "suggested_fix": "Add a boundary note: 'geo-proximity = spatial-index + dispatch matching + routing OR; ml-in-loop = the predictive/ranking layer over geo-filtered candidates.' Keep last-mile-routing and instacart-batching in geo-proximity (OR/optimization dominates); keep uber-surge in ml-in-loop (forecast + elasticity dominate). Consider adding an explicit 'routing/OR' pattern reference (already flagged in geo-proximity-001)."
+      },
+      {
+        "id": "taxonomy-006",
+        "category": "archetype_taxonomy",
+        "taxonomy_action": "boundary",
+        "severity": "low",
+        "confidence": "medium",
+        "impact": "low",
+        "archetypes_affected": [
+          "ml-in-loop",
+          "fan-out"
+        ],
+        "evidence": "Bidirectional mis-cat pair (3 findings): fan-out->ml-in-loop {inbox-zero, notification-aggregation-service}; ml-in-loop->fan-out {fb-news-feed for fan-out deep-dive overlap}.",
+        "summary": "ml-in-loop and fan-out overlap on feed/notification ranking problems where the fan-out substrate is real but ML uplift/ranking dominates the Staff+ bar.",
+        "suggested_fix": "Add boundary note: 'fan-out = producer-to-many-consumer + celebrity problem + write-vs-read fan-out; ml-in-loop = the ranking/uplift model that runs on top.' inbox-zero leans ML (PA-II + 7-layer spam) \u2014 move to ml-in-loop; notification-aggregation-service is borderline (ML uplift + aggregation/dedup) \u2014 defensible either way."
+      },
+      {
+        "id": "taxonomy-007",
+        "category": "archetype_taxonomy",
+        "taxonomy_action": "boundary",
+        "severity": "low",
+        "confidence": "medium",
+        "impact": "low",
+        "archetypes_affected": [
+          "realtime-messaging",
+          "fan-out"
+        ],
+        "evidence": "Bidirectional mis-cat pair (2 findings): realtime-messaging->fan-out {telegram broadcast}; fan-out->realtime-messaging {discord-server-activity-stream}.",
+        "summary": "Boundary between realtime-messaging (connection model + presence + push to many) and fan-out (producer-to-many-consumer feed) is real and bidirectional.",
+        "suggested_fix": "Move telegram (broadcast channels, fan-out-on-read) to fan-out; move discord-server-activity-stream (WebSocket gateway, GenServer-per-guild) to realtime-messaging. Both moves are individually defensible per Phase-1 evidence."
+      }
+    ]
+  },
+  "per_archetype": [
+    {
+      "archetype": "ai-infrastructure",
+      "problems_reviewed": [
+        "agentic-tool-orchestrator",
+        "ai-gateway-token-quota",
+        "billion-doc-rag",
+        "eval-pipeline-at-scale",
+        "inference-batching",
+        "embedding-service-at-scale",
+        "gpu-cluster-scheduler",
+        "long-context-kv-management",
+        "multimodal-realtime-serving",
+        "prompt-cache-infrastructure",
+        "moe-serving",
+        "safety-moderation-pipeline",
+        "prefill-decode-disaggregation",
+        "sandboxed-agent-execution",
+        "multi-tenant-lora-serving",
+        "training-cluster-fault-tolerance",
+        "model-cascade-router"
+      ],
+      "patterns_reviewed": [
+        "ai-infra.md"
+      ],
+      "findings": [
+        {
+          "id": "ai-infrastructure-003",
+          "category": "mis_categorization",
+          "severity": "low",
+          "confidence": "low",
+          "files": [
+            "docs/coach/problems/gpu-cluster-scheduler.md"
+          ],
+          "evidence": "Produces a basic K8s + nvidia-device-plugin design: pods request `nvidia.com/gpu: 1`, default-scheduler bin-packs across nodes, autoscaler adds nodes when pending pods accumulate ... gang scheduling ... topology awareness (NVLink within node, InfiniBand / RoCE across)",
+          "summary": "gpu-cluster-scheduler is a build-the-primitive problem (resource scheduler with gang/topology/preemption); shape mirrors the kubernetes-scheduler entry in infra-primitives. Could plausibly live there.",
+          "suggested_fix": "Phase 2: compare to `kubernetes-scheduler` (already in infra-primitives) and decide whether the GPU-specific framing (heterogeneous fleet, training\u2194inference borrowing) is enough to keep this in ai-infrastructure.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "infra-primitives",
+            "resolved": true
+          },
+          "resolution_note": "[DOWNGRADE] gpu-cluster-scheduler mirrors kubernetes-scheduler (already in infra-primitives) in shape; GPU-specific framing (NVLink/IB topology, training-inference borrowing) is enough to defend ai-infrastructure but boundary is real. Reduced severity."
+        },
+        {
+          "id": "ai-infrastructure-004",
+          "category": "pattern_gap",
+          "severity": "medium",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/gpu-cluster-scheduler.md",
+            "docs/coach/problems/training-cluster-fault-tolerance.md"
+          ],
+          "evidence": "ai-infra.md sections are: Continuous batching, PagedAttention, Prefix caching, Speculative decoding, Model-router gateways, MoE, Semantic caching, Eval pipelines, Parallel Safety Pipelines, Distributed training.",
+          "summary": "Pattern file ai-infra.md has no entry for gang scheduling / topology-aware GPU scheduling or for training-cluster fault tolerance (async checkpointing, NCCL Flight Recorder, SDC defense). The Distributed-training entry mentions FSDP/Megatron but does not cover the scheduler or fault-tolerance design pressures.",
+          "suggested_fix": "Phase 2: either add 'Gang scheduling + topology-aware GPU placement' and 'Async checkpoint + SDC defense' entries to ai-infra.md, or accept the gap and flag these two problems as exploration-stretch with no canonical pattern entry.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "ai-infrastructure-005",
+          "category": "pattern_gap",
+          "severity": "medium",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/long-context-kv-management.md",
+            "docs/coach/problems/prefill-decode-disaggregation.md"
+          ],
+          "evidence": "Names MLA (Multi-head Latent Attention, DeepSeek-V3) as the compression beyond GQA. Names sequence parallelism / Ring Attention for cross-GPU long-context attention. Names HEADINFER ... Names chunked prefill as the answer to long-prefill HOL blocking.",
+          "summary": "ai-infra.md PagedAttention entry covers KV-cache blocks but not the long-context techniques (MLA, Ring Attention/sequence parallelism, HEADINFER, chunked prefill, prefill/decode disaggregation, KV transfer plane) that two problems treat as Staff+ depth.",
+          "suggested_fix": "Phase 2: add pattern entries for 'Chunked prefill + sequence parallelism', 'Prefill/decode disaggregation (DistServe/Splitwise + NIXL/MoonCake KV transport)', and 'MLA / GQA KV-cache compression' so these two problems have canonical pattern references.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "ai-infrastructure-006",
+          "category": "pattern_gap",
+          "severity": "medium",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/agentic-tool-orchestrator.md",
+            "docs/coach/problems/sandboxed-agent-execution.md"
+          ],
+          "evidence": "Names Anthropic's Managed Agents 3-tier architecture (Harness brain / Sandbox hands / Session log) ... MCP as the tool protocol with lazy tool-discovery ... Firecracker microVM for untrusted-code-execution tools (125ms cold start, hardware-virtualized isolation); gVisor or bubblewrap for tools with weaker threat models.",
+          "summary": "ai-infra.md has no pattern entry for durable agent loops, MCP tool protocol, or sandbox isolation primitives (Firecracker / gVisor / bubblewrap). Two agent-related problems lean heavily on this material but it is not codified as a pattern.",
+          "suggested_fix": "Phase 2: add 'Durable agent loop + MCP tool protocol' and 'Sandbox isolation primitives for code-exec agents' to ai-infra.md, OR move these two agent problems to a new agent-platform sub-archetype.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "ai-infrastructure-007",
+          "category": "pattern_gap",
+          "severity": "low",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/multi-tenant-lora-serving.md",
+            "docs/coach/problems/embedding-service-at-scale.md",
+            "docs/coach/problems/multimodal-realtime-serving.md"
+          ],
+          "evidence": "Names S-LoRA Unified Paging (base + adapter weights + KV cache in one memory pool) and Punica SGMV kernel ... Matryoshka truncation ... GPT-4o Realtime specifics: WebSocket persistent session, PCM16/24kHz/mono",
+          "summary": "ai-infra.md does not cover multi-tenant LoRA serving (Unified Paging, SGMV), embedding-service scaling (Matryoshka, online/offline pool split), or realtime multi-modal serving (WebSocket voice, vision-token asymmetry) as distinct patterns.",
+          "suggested_fix": "Phase 2: consider adding 'Multi-tenant LoRA serving (Unified Paging + SGMV)', 'Embedding service (online query vs offline corpus pools)', and 'Realtime multimodal session (WebSocket voice + vision tokens)' pattern entries; or accept that these three problems are exploration-stretch with no canonical pattern reference.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "ai-infrastructure-008",
+          "category": "duplicate",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/moe-serving.md",
+            "docs/coach/problems/model-cascade-router.md"
+          ],
+          "evidence": "model-cascade-router deep-dive 3: 'MoE serving as intra-model routing. DeepSeek-V3: 671B total parameters, 37B activated per token, 58 MoE layers \u00d7 256 routed + 1 shared expert each \u2192 14,848 routed experts ... routing collapse ... DeepSeek's defense: auxiliary-loss-free dynamic bias adjustment ... MoETuner reports 9.3-17.5% speedup'",
+          "summary": "model-cascade-router deep-dive #3 (MoE serving) is essentially a recap of moe-serving's central content (same DeepSeek-V3 numbers, same routing-collapse defense, same MoETuner anchor). Significant content overlap, though framing differs.",
+          "suggested_fix": "Phase 2: tighten model-cascade-router deep-dive #3 to focus on the cascade\u2194MoE-routing analogy (or replace it with a different deep-dive); avoid duplicating moe-serving's primary depth content.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "ai-infrastructure-009",
+          "category": "duplicate",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/inference-batching.md",
+            "docs/coach/problems/prompt-cache-infrastructure.md"
+          ],
+          "evidence": "inference-batching deep-dive 3: 'Prompt cache topology and per-tenant isolation (fleet) ... per-pod prefix tree (RadixAttention, SGLang) ... shared cache cluster ... cache_salt per tenant mixed into the cache key'",
+          "summary": "inference-batching deep-dive #3 covers prompt-cache topology + per-tenant isolation + cross-version invalidation \u2014 substantially the same Staff+ content as prompt-cache-infrastructure's three deep-dives. Two problems should not have overlapping Staff+ commit points.",
+          "suggested_fix": "Phase 2: either trim inference-batching deep-dive #3 to a one-paragraph pointer to prompt-cache-infrastructure, or refactor prompt-cache-infrastructure to focus on the parts not already in inference-batching (e.g., partial-cache-hits, multi-tier eviction).",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "ai-infrastructure-010",
+          "category": "other",
+          "severity": "low",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/inference-batching.md"
+          ],
+          "evidence": "Connection economics is the recurring gap (per `state/observed.md` from the uber session). At 11.4M concurrent connections (ChatGPT scale), per-connection memory in the gateway tier drives pod sizing",
+          "summary": "inference-batching coach-notes reference `state/observed.md` (private state path) \u2014 likely fine internally, but worth confirming the file isn't expected to be public/repo-relative when the catalog ships outside the alexey branch.",
+          "suggested_fix": "Phase 2: verify whether the `state/observed.md` reference belongs in a published problem file or should be reworded to remove the cross-session-state mention.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        }
+      ],
+      "self_report": {
+        "problems_count_in_index": 17,
+        "problems_count_files_found": 17,
+        "files_not_in_index": [],
+        "index_entries_with_no_file": []
+      },
+      "status": "ok"
+    },
+    {
+      "archetype": "caching-read-heavy",
+      "problems_reviewed": [
+        "tinyurl",
+        "pastebin",
+        "dns",
+        "leaderboard",
+        "view-counter",
+        "top-k-trending",
+        "news-homepage",
+        "wikipedia",
+        "cdn-edge-cache",
+        "product-catalog",
+        "stock-ticker",
+        "session-store",
+        "feature-flags",
+        "distributed-config"
+      ],
+      "patterns_reviewed": [
+        "caching.md",
+        "networking-transport.md"
+      ],
+      "findings": [
+        {
+          "id": "caching-read-heavy-001",
+          "category": "mis_categorization",
+          "severity": "medium",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/stock-ticker.md"
+          ],
+          "evidence": "ingest connectors normalize exchange feeds into **Kafka partitioned by symbol** ... and **WebSocket gateways** subscribe and stream to clients (compute lives in aggregators, not gateways)",
+          "summary": "stock-ticker's dominant pressure is push fan-out over WebSocket to many subscribers, not cache topology; reads as realtime-messaging or fan-out.",
+          "suggested_fix": "Phase 2: review whether stock-ticker belongs in realtime-messaging (WebSocket gateway, snapshot+delta with sequence gaps) or fan-out (per-symbol Kafka -> many subscribers), not caching-read-heavy.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "realtime-messaging",
+            "resolved": true
+          },
+          "resolution_note": "[CONFIRM] stock-ticker's substrate is Kafka per-symbol + WebSocket gateways = realtime fan-out, not cache topology. realtime-messaging envelope does not contain it; mis-cat is real."
+        },
+        {
+          "id": "caching-read-heavy-003",
+          "category": "mis_categorization",
+          "severity": "low",
+          "confidence": "low",
+          "files": [
+            "docs/coach/problems/view-counter.md"
+          ],
+          "evidence": "Names the **hot-key problem** ... and the **sharded-counter fix** (split one counter into N sub-counters keyed by bucket; increment a random shard, **sum all N on read**",
+          "summary": "view-counter's dominant pressure is write hot-key sharding + idempotent counting; arguably concurrent-resource or infra-primitives rather than caching-read-heavy.",
+          "suggested_fix": "Phase 2: check whether view-counter belongs in concurrent-resource (hot-key write contention + idempotency) or stays here for the read/display side.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "concurrent-resource",
+            "resolved": true
+          },
+          "resolution_note": "[DOWNGRADE] view-counter has both write-side hot-key sharding (concurrent-resource flavor) and read-side display caching (current archetype). Both placements defensible; severity dropped."
+        },
+        {
+          "id": "caching-read-heavy-004",
+          "category": "pattern_gap",
+          "severity": "low",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/top-k-trending.md",
+            "docs/coach/problems/view-counter.md"
+          ],
+          "evidence": "Solves heavy-hitters with a **Count-Min Sketch + min-heap of size K** ... a 10x4000 CMS approx 160KB vs ~4GB for an exact map  ; Uses **HyperLogLog** for unique-view cardinality (12KB, 0.81% error",
+          "summary": "Archetype references only caching.md + networking-transport.md, but top-k-trending and view-counter lean centrally on Count-Min Sketch and HyperLogLog covered in data-structures.md (not referenced).",
+          "suggested_fix": "Add docs/coach/patterns/data-structures.md to this archetype's Patterns line (it already documents CMS/HLL/skiplist and is used by leaderboard/top-k-trending/view-counter).",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        }
+      ],
+      "self_report": {
+        "problems_count_in_index": 14,
+        "problems_count_files_found": 14,
+        "files_not_in_index": [],
+        "index_entries_with_no_file": []
+      },
+      "status": "ok"
+    },
+    {
+      "archetype": "concurrent-resource",
+      "problems_reviewed": [
+        "appointment-booking",
+        "ecommerce-inventory",
+        "flash-sale",
+        "idempotent-payment",
+        "online-auction",
+        "resource-pool",
+        "sneaker-drop",
+        "wallet-ledger",
+        "coupon-redemption",
+        "distributed-lock",
+        "hotel-booking",
+        "parking-garage",
+        "ticketmaster",
+        "airline-seat-booking"
+      ],
+      "patterns_reviewed": [
+        "consistency-coordination.md",
+        "api-idempotency.md"
+      ],
+      "findings": [
+        {
+          "id": "concurrent-resource-001",
+          "category": "other",
+          "severity": "low",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/ticketmaster.md"
+          ],
+          "evidence": "ticketmaster.md ends at '## Known failure modes' (line 63) with no '## (Delineation note)' section, unlike all 13 other concurrent-resource files which include one.",
+          "summary": "ticketmaster.md is missing the '## (Delineation note)' section that every other concurrent-resource file uses",
+          "suggested_fix": "Add a '## (Delineation note)' to ticketmaster.md positioning it against flash-sale/sneaker-drop/airline-seat-booking/hotel-booking (already referenced by those files as the canonical seat-hold variant).",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "concurrent-resource-002",
+          "category": "other",
+          "severity": "low",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/ticketmaster.md"
+          ],
+          "evidence": "ticketmaster.md frontmatter `sources:` contains only one entry (`hello_interview`), whereas every other file in the archetype lists 4-5 sources.",
+          "summary": "ticketmaster.md has a single-source frontmatter while peers list 4-5 sources",
+          "suggested_fix": "Backfill sources in ticketmaster.md (e.g. ByteByteGo / DDIA OCC chapter / Stripe idempotency docs) to match peer-file source density.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "concurrent-resource-003",
+          "category": "duplicate",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/parking-garage.md",
+            "docs/coach/problems/resource-pool.md"
+          ],
+          "evidence": "parking-garage.md (delineation note): `parking-garage` is the canonical **finite-slot allocation** variant \u2014 the physical-skinned sibling of `resource-pool`'; resource-pool.md says `parking-garage` is its physical-skinned instance'.",
+          "summary": "parking-garage and resource-pool are near-duplicates by self-declaration (physical-skinned vs abstract finite-pool allocation) \u2014 same canonical pressure, separated only by framing",
+          "suggested_fix": "Keep both but ensure delineation is sharp (resource-pool = abstract semaphore + connection-pool sizing; parking-garage = OOD-flavored multi-gate skinned variant). Consider whether two files earn their keep or one should fold into the other as a 'variant note'.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "concurrent-resource-004",
+          "category": "pattern_gap",
+          "severity": "medium",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/flash-sale.md",
+            "docs/coach/problems/sneaker-drop.md",
+            "docs/coach/problems/ticketmaster.md",
+            "docs/coach/problems/coupon-redemption.md"
+          ],
+          "evidence": "flash-sale.md: 'A **virtual waiting room** admits users at a controlled rate (~100k/s)'; sneaker-drop.md: 'a **virtual waiting room that gates before the site**'; ticketmaster.md: 'a virtual waiting room sits in front of the booking service'.",
+          "summary": "Virtual waiting room / queued admission is a dominant design pressure in 4 problems but is not covered by either referenced pattern (consistency-coordination, api-idempotency)",
+          "suggested_fix": "Either add a waiting-room / admission-control entry to consistency-coordination.md (or load-balancing.md), or reference an additional pattern file (e.g. reliability-observability.md / load-balancing.md) from the archetype's Patterns line.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "concurrent-resource-005",
+          "category": "pattern_gap",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/sneaker-drop.md",
+            "docs/coach/problems/flash-sale.md"
+          ],
+          "evidence": "sneaker-drop.md: 'bots as the dominant adversary (10\u201340% of Nike SNKRS submissions; one Supreme drop saw 1.9B purchase attempts, 97% inorganic)' \u2014 bot mitigation / behavioral biometrics is a first-class pressure.",
+          "summary": "Bot mitigation / rate-limiting / behavioral biometrics is a first-class pressure in sneaker-drop (and present in flash-sale) but neither referenced pattern file covers it",
+          "suggested_fix": "Add a pointer to security-privacy.md or a dedicated rate-limiting/anti-abuse pattern entry from the archetype's Patterns line; alternatively, accept it as a problem-specific concern.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "concurrent-resource-006",
+          "category": "pattern_gap",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/ecommerce-inventory.md",
+            "docs/coach/problems/wallet-ledger.md",
+            "docs/coach/problems/idempotent-payment.md"
+          ],
+          "evidence": "ecommerce-inventory.md: 'Payment failure triggers a saga: the order\u2192payment\u2192inventory chain compensates by releasing the reservation'; wallet-ledger.md: 'use a saga: debit A, then credit B, with a compensating credit-back'.",
+          "summary": "Saga / compensating-transaction pattern is a recurring pressure across reservation+payment problems but is not surfaced in the referenced consistency-coordination or api-idempotency pattern files",
+          "suggested_fix": "Add a saga / compensating-transaction entry to consistency-coordination.md (it covers OT/CRDTs, OCC, fencing, leader election \u2014 sagas would fit), or reference architectural.md from the archetype.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "concurrent-resource-008",
+          "category": "mis_categorization",
+          "severity": "low",
+          "confidence": "low",
+          "files": [
+            "docs/coach/problems/idempotent-payment.md"
+          ],
+          "evidence": "idempotent-payment.md delineation note: 'idempotent-payment is the exactly-once-under-retries concurrency primitive underlying bookings, coupons, and orders across this archetype.' Bar-anchors emphasize idempotency keys, Stripe pattern, Orpheus \u2014 pattern coverage matches api-idempotency.md squarely.",
+          "summary": "idempotent-payment reads as a cross-cutting primitive (idempotency keys + state machine + recovery) more than a concurrent-resource problem; could be considered an infra-primitives or pattern-anchor file",
+          "suggested_fix": "Phase 2 should decide whether this stays as a concurrent-resource problem or is repositioned as an api-idempotency pattern anchor / infra-primitive. Current placement is reasonable given the concurrency-on-same-key emphasis.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "infra-primitives",
+            "resolved": true
+          },
+          "resolution_note": "[DOWNGRADE] idempotent-payment is cross-cutting (could be api-idempotency anchor or infra-primitive) but emphasizes concurrency-on-same-key; reasonable in concurrent-resource."
+        }
+      ],
+      "self_report": {
+        "problems_count_in_index": 14,
+        "problems_count_files_found": 14,
+        "files_not_in_index": [],
+        "index_entries_with_no_file": []
+      },
+      "status": "ok"
+    },
+    {
+      "archetype": "conflict-resolution",
+      "problems_reviewed": [
+        "figma",
+        "collaborative-text-editor",
+        "crdt-primitive",
+        "calendar-sync",
+        "figjam-whiteboard",
+        "google-docs",
+        "google-sheets",
+        "presence-awareness",
+        "multiplayer-game-sync",
+        "shopping-cart-crdt",
+        "local-first-sync",
+        "notion",
+        "version-control-merge",
+        "yjs"
+      ],
+      "patterns_reviewed": [
+        "consistency-coordination.md"
+      ],
+      "findings": [
+        {
+          "id": "conflict-resolution-001",
+          "category": "mis_categorization",
+          "severity": "medium",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/multiplayer-game-sync.md"
+          ],
+          "evidence": "`multiplayer-game-sync` is the hard-real-time member of this archetype: lockstep is a degenerate CmRDT (ops = inputs, the deterministic simulation is the \"merge\"); client-prediction + reconciliation is the same rebase pattern as `local-first-sync`.",
+          "summary": "Game netcode framed as CRDT-adjacent but its bar anchors are dominated by tick rate, UDP loss, lag compensation, and authoritative-server prediction \u2014 design pressures characteristic of realtime-messaging rather than conflict resolution.",
+          "suggested_fix": "Phase 2: compare against realtime-messaging archetype (sub-second delivery, connection model, server-authoritative tick). If the dominant pressure is connection/transport rather than convergence semantics, relocate; otherwise keep but explicitly justify the CRDT framing in the spine note beyond a single sentence.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "realtime-messaging",
+            "resolved": true
+          },
+          "resolution_note": "[CONFIRM] multiplayer-game-sync's bar anchors are dominated by UDP loss, tick rate, lag compensation, authoritative-server prediction \u2014 these are realtime-messaging design pressures. CRDT framing is thin."
+        },
+        {
+          "id": "conflict-resolution-002",
+          "category": "mis_categorization",
+          "severity": "low",
+          "confidence": "low",
+          "files": [
+            "docs/coach/problems/presence-awareness.md"
+          ],
+          "evidence": "**Delineates from `discord-presence`**: that is *connection-scale* online/offline with GenStage fan-out to millions; **this is document-scale** ephemeral editing state, capped at the editor limit (200 Figma / 100 Docs / 50 FigJam).",
+          "summary": "Presence-awareness is a sibling of discord-presence (which lives in realtime-messaging); placing it in conflict-resolution turns on the 'awareness CRDT' framing, but the dominant design pressures are WebSocket fan-out + throttling + ephemeral broadcast.",
+          "suggested_fix": "Phase 2: verify the awareness-CRDT framing is load-bearing enough to anchor this in conflict-resolution. If a candidate could answer this problem competently without ever invoking CRDT machinery, consider relocating to realtime-messaging.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "realtime-messaging",
+            "resolved": true
+          },
+          "resolution_note": "[DOWNGRADE] presence-awareness explicitly delineates from discord-presence as 'document-scale ephemeral editing state'; awareness-CRDT framing is load-bearing per the file. Keep here but acknowledge realtime-messaging is plausible."
+        },
+        {
+          "id": "conflict-resolution-004",
+          "category": "pattern_gap",
+          "severity": "medium",
+          "confidence": "high",
+          "files": [
+            "docs/coach/patterns/consistency-coordination.md"
+          ],
+          "evidence": "**Definition.** Operational Transform (OT) achieves convergence in collaborative editing by transforming concurrent operations against each other through a central server; CRDTs (Conflict-free Replicated Data Types) use mathematically designed state (state-based) or operation (op-based) structures that always merge deterministically without coordination.",
+          "summary": "The single 'OT vs CRDTs' pattern entry covers two paragraphs but the 14 problems lean on specific sub-concepts not represented in the pattern: sequence CRDTs (RGA/Fugue), OR-Set add-wins, fractional indexing, awareness CRDT, movable-tree CRDT, rebase-style sync, sync-token incremental sync.",
+          "suggested_fix": "Expand consistency-coordination.md with at least: (a) sequence-CRDT family + interleaving anomaly, (b) OR-Set add-wins, (c) fractional indexing for ordering, (d) awareness CRDT (LWW-per-client + expiry), (e) rebase-style server-authoritative sync. Each is referenced by 3+ problems and is the load-bearing concept in its problem.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "conflict-resolution-005",
+          "category": "pattern_gap",
+          "severity": "low",
+          "confidence": "high",
+          "files": [
+            "docs/coach/patterns/consistency-coordination.md"
+          ],
+          "evidence": "## Optimistic vs Pessimistic Concurrency Control",
+          "summary": "calendar-sync's central correctness story is HTTP conditional PUT / If-Match \u2192 412 (record-level OCC with ETags). The pattern's OCC entry mentions ETags briefly but does not name 412 / RFC 6578 sync-tokens / record-level conflict UI, which is the spine of this problem.",
+          "suggested_fix": "Either add HTTP-native record-level OCC (If-Match \u2192 412, sync-token) to the OCC entry, or accept that calendar-sync sits on an under-represented pattern surface and add a short reference there.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "conflict-resolution-006",
+          "category": "other",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/google-sheets.md",
+            "docs/coach/problems/notion.md"
+          ],
+          "evidence": "**Flags** that OT-on-grid and the dependency-DAG are inferred from the published Docs OT model, not Google-confirmed for Sheets.",
+          "summary": "google-sheets and notion both explicitly flag that their core conflict-resolution model is inferred / not fully publicly confirmed; this is healthy honesty but worth tracking so coach prompts don't assert these as ground truth.",
+          "suggested_fix": "Phase 2: confirm both problems carry the 'flag this in a mock' caveat into the persona / bar-anchor prompts so the coach can't be cornered into asserting an unconfirmed claim.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "conflict-resolution-007",
+          "category": "other",
+          "severity": "low",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/figma.md",
+            "docs/coach/problems/figjam-whiteboard.md",
+            "docs/coach/problems/google-docs.md",
+            "docs/coach/problems/collaborative-text-editor.md",
+            "docs/coach/problems/yjs.md",
+            "docs/coach/problems/presence-awareness.md",
+            "docs/coach/problems/crdt-primitive.md",
+            "docs/coach/problems/shopping-cart-crdt.md",
+            "docs/coach/problems/local-first-sync.md",
+            "docs/coach/problems/notion.md"
+          ],
+          "evidence": "`figma` owns server-authoritative LWW-per-property multiplayer for a structured document. The infinite-canvas/whiteboard variant (versionNonce LWW, P2P) is `figjam-whiteboard`; ephemeral cursors are `presence-awareness`; the OT and CRDT alternatives it rejected are `google-docs` and `collaborative-text-editor`/`crdt-primitive`.",
+          "summary": "Strong, consistent inter-problem 'spine notes' across the archetype delineate ownership crisply. Worth noting as a positive signal \u2014 this archetype is internally well-structured and unlikely to have duplicates.",
+          "suggested_fix": "No action required. Use this archetype's spine-note discipline as a template for under-structured archetypes during taxonomy review.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        }
+      ],
+      "self_report": {
+        "problems_count_in_index": 14,
+        "problems_count_files_found": 14,
+        "files_not_in_index": [],
+        "index_entries_with_no_file": []
+      },
+      "status": "ok"
+    },
+    {
+      "archetype": "fan-out",
+      "problems_reviewed": [
+        "twitter-timeline",
+        "instagram-feed",
+        "linkedin-feed",
+        "reddit-feed",
+        "pinterest-home",
+        "youtube-subscriptions",
+        "github-events-feed",
+        "spotify-friend-activity",
+        "medium-following-feed",
+        "notification-aggregation-service",
+        "email-digest-pipeline",
+        "breaking-news-fanout",
+        "inbox-zero",
+        "mastodon-federated-feed",
+        "bluesky-atproto-feed",
+        "sports-scores-fanout",
+        "stock-alert-fanout",
+        "geo-weather-alert-fanout",
+        "discord-server-activity-stream"
+      ],
+      "patterns_reviewed": [
+        "async-streaming.md"
+      ],
+      "findings": [
+        {
+          "id": "fan-out-001",
+          "category": "mis_categorization",
+          "severity": "medium",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/inbox-zero.md"
+          ],
+          "evidence": "Gmail Priority Inbox per-user logistic regression with online passive-aggressive PA-II + non-stationary noisy implicit labels + per-user higher regularization than global + cross-DC scoring",
+          "summary": "inbox-zero dominant design pressure is per-user ML ranking (Priority Inbox PA-II) + threading + 7-layer spam stack, not producer-to-many-consumer fan-out.",
+          "suggested_fix": "Consider re-filing under ml-in-loop (Priority Inbox ranking) or keeping if 'unified inbox sync' is judged a fan-in/fan-out variant.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "ml-in-loop",
+            "resolved": true
+          },
+          "resolution_note": "[CONFIRM] Per-user PA-II online ranking + 7-layer spam stack is canonical ml-in-loop; fan-out aspect is secondary."
+        },
+        {
+          "id": "fan-out-002",
+          "category": "mis_categorization",
+          "severity": "medium",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/discord-server-activity-stream.md"
+          ],
+          "evidence": "single Elixir GenServer per guild fans out every event to per-user session processes ... WebSocket gateway per session ... 2.6M concurrent voice users across 850+ servers",
+          "summary": "Discord server activity stream is dominated by real-time messaging concerns (WebSocket gateway, presence, GenServer-per-guild) \u2014 overlaps strongly with archetype 3 realtime-messaging which already contains discord-presence/channels/voice.",
+          "suggested_fix": "Verify whether mega-guild fan-out belongs here vs. realtime-messaging; the file itself notes 'Cross-coverage with messaging discord-presence ... same Manifold + GenStage primitives.'",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "realtime-messaging",
+            "resolved": true
+          },
+          "resolution_note": "[CONFIRM] File self-references 'Cross-coverage with messaging discord-presence ... same Manifold + GenStage primitives.' realtime-messaging already has 3 Discord problems; this is the 4th."
+        },
+        {
+          "id": "fan-out-003",
+          "category": "mis_categorization",
+          "severity": "medium",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/geo-weather-alert-fanout.md"
+          ],
+          "evidence": "CAP v1.2 OASIS XML envelope ... WEA cellular cell-broadcast ... enhanced 100% inside polygon / 0% >528ft outside via WEA 3.0 handset GPS filtering",
+          "summary": "geo-weather-alert-fanout's dominant pressure is geo-targeted broadcast (polygons, FIPS codes, handset GPS filtering, cell-broadcast substrate) which fits the geo-proximity archetype more directly than producer-to-many feed fan-out.",
+          "suggested_fix": "Check whether the geo-polygon and handset-side spatial-filter elements outweigh the fan-out framing; possibly belongs under geo-proximity.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "geo-proximity",
+            "resolved": true
+          },
+          "resolution_note": "[CONFIRM] CAP polygons + WEA handset GPS filtering + cell-broadcast = geo-proximity pressures; geo-proximity envelope has geofence-notifications as the canonical 'geofenced broadcast' file."
+        },
+        {
+          "id": "fan-out-004",
+          "category": "mis_categorization",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/notification-aggregation-service.md"
+          ],
+          "evidence": "Pinterest NEP multi-head GBDT (push-open / email-click / unsub); Policy sends if utility > segment threshold; PID controller auto-tunes per-segment thresholds ... Instagram causal-inference uplift ui = Pr(active|do(send)) \u2212 Pr(active|do(drop))",
+          "summary": "notification-aggregation-service is dominated by ML uplift modelling, multi-head ranking, and diversity demotion \u2014 bar-anchors read as ml-in-loop, with fan-out (aggregation) as a secondary concern.",
+          "suggested_fix": "Phase 2 should decide whether this is fan-out (aggregation/dedup) or ml-in-loop (uplift+budget+diversity); arguments for either; keep here only if the aggregation framing is judged primary.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "ml-in-loop",
+            "resolved": true
+          },
+          "resolution_note": "[DOWNGRADE] Heavy ML uplift modelling argues for ml-in-loop, but aggregation/dedup framing is also load-bearing. Boundary case; keep with reduced severity."
+        },
+        {
+          "id": "fan-out-005",
+          "category": "pattern_gap",
+          "severity": "medium",
+          "confidence": "high",
+          "files": [
+            "docs/coach/patterns/async-streaming.md"
+          ],
+          "evidence": "Patterns. See docs/coach/patterns/async-streaming.md.",
+          "summary": "Archetype references only async-streaming.md, but 9+ problems (twitter-timeline, instagram-feed, pinterest-home, reddit-feed, sports-scores-fanout) lean heavily on caching topology (Redis sorted sets, hot-celebrity key replication, listing cache, dual HBase cluster) which is owned by caching.md, not async-streaming.md.",
+          "suggested_fix": "Add docs/coach/patterns/caching.md to the archetype's 'Patterns' line (and consider data-structures.md for sorted-set / heap-merge content).",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "fan-out-006",
+          "category": "pattern_gap",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/patterns/async-streaming.md"
+          ],
+          "evidence": "breaking-news-fanout, stock-alert-fanout, sports-scores-fanout all rely on APNs/FCM gateway limits (1K concurrent fanouts/project, ~2K req/sec/HTTP2-connection, apns-collapse-id) \u2014 neither async-streaming.md nor any other referenced pattern covers push-gateway semantics.",
+          "summary": "Push-notification gateway limits (APNs/FCM concurrent caps, collapse-id, HTTP/2 connection sizing) are recurring pressures across breaking-news / stock-alert / sports-scores / youtube-subscriptions but no pattern file is referenced for them.",
+          "suggested_fix": "Either add networking-transport.md to the archetype reference set, or note that push-gateway specifics live in the realtime-messaging push-notification problem.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "fan-out-007",
+          "category": "other",
+          "severity": "low",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/pinterest-home.md",
+            "docs/coach/problems/instagram-feed.md"
+          ],
+          "evidence": "pinterest-home: 'Cross-coverage with ML-in-loop pinterest-pixie (Pixie graph is in both archetypes \u2014 fan-out source vs ML candidate generator).'",
+          "summary": "Pinterest's Pixie appears in both pinterest-home (fan-out source) and pinterest-pixie (ml-in-loop). Not a duplicate \u2014 explicitly cross-coverage \u2014 but worth Phase-2 verification that the two files do not collide on canonical prompts.",
+          "suggested_fix": "Phase 2 cross-archetype duplicate check should confirm pinterest-home and ml-in-loop pinterest-pixie cover distinct prompts.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        }
+      ],
+      "self_report": {
+        "problems_count_in_index": 19,
+        "problems_count_files_found": 19,
+        "files_not_in_index": [],
+        "index_entries_with_no_file": []
+      },
+      "status": "ok"
+    },
+    {
+      "archetype": "frontend",
+      "problems_reviewed": [
+        "airbnb-search-map",
+        "autocomplete-typeahead",
+        "chatgpt-claude-chat-ui",
+        "copilot-inline-completions",
+        "datadog-dashboard",
+        "figma-canvas-client",
+        "google-docs-client",
+        "google-maps-client",
+        "image-carousel",
+        "infinite-scroll-feed",
+        "instagram-stories-client",
+        "news-feed-client",
+        "pinterest-board-client",
+        "rich-text-editor",
+        "slack-web-client",
+        "spotify-web-player",
+        "stock-trading-dashboard",
+        "stripe-checkout-flow",
+        "video-player"
+      ],
+      "patterns_reviewed": [
+        "frontend.md"
+      ],
+      "findings": [
+        {
+          "id": "frontend-001",
+          "category": "duplicate",
+          "severity": "medium",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/news-feed-client.md",
+            "docs/coach/problems/infinite-scroll-feed.md"
+          ],
+          "evidence": "news-feed-client: 'Cursor-paginated infinite feed with virtualization ... WebSocket-pushed live updates'; infinite-scroll-feed: 'Infinite scroll fetching next page near bottom ... Variable-height items'. Both cite greatfrontend_news_feed.",
+          "summary": "news-feed-client and infinite-scroll-feed substantially overlap on cursor pagination + virtualization + IntersectionObserver + scroll restoration; same primary source.",
+          "suggested_fix": "Either merge infinite-scroll-feed into news-feed-client as a sub-section, or sharpen scopes: infinite-scroll-feed = pure pagination/render mechanics primer; news-feed-client = end-to-end product (composer, optimistic create, ads, WS).",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "frontend-002",
+          "category": "pattern_gap",
+          "severity": "medium",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/chatgpt-claude-chat-ui.md",
+            "docs/coach/problems/stock-trading-dashboard.md",
+            "docs/coach/problems/copilot-inline-completions.md"
+          ],
+          "evidence": "chatgpt-claude-chat-ui: 'ref-buffer + rAF flush architectural principle (verbatim): \"your network layer should never directly drive React renders.\"' \u2014 pattern is the canonical Staff+ unlock across three problems but absent from frontend.md.",
+          "summary": "frontend.md has no entry for the ref-buffer + requestAnimationFrame flush / render-decoupling pattern despite being the canonical Staff+ unlock in 3 catalog problems.",
+          "suggested_fix": "Add a 'Ref-buffer + rAF render decoupling' (or 'High-frequency UI batching') section to docs/coach/patterns/frontend.md citing chatgpt-claude-chat-ui and stock-trading-dashboard as canonical uses.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "frontend-003",
+          "category": "pattern_gap",
+          "severity": "medium",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/figma-canvas-client.md",
+            "docs/coach/problems/google-maps-client.md",
+            "docs/coach/problems/stock-trading-dashboard.md",
+            "docs/coach/problems/airbnb-search-map.md"
+          ],
+          "evidence": "figma-canvas-client: 'entire rendering layer canvas/WebGL (NOT DOM)'; stock-trading-dashboard: 'DOM/SVG <1k elements; Canvas 2D for depth-of-book; WebGL via GPU sustains 60fps on 500K candlesticks'.",
+          "summary": "frontend.md has no entry on Canvas/WebGL vs DOM renderer choice despite 4 catalog problems treating it as the Staff+ depth probe.",
+          "suggested_fix": "Add a 'Canvas / WebGL rendering tier' section to docs/coach/patterns/frontend.md covering renderer-by-scale (DOM <1k / Canvas / WebGL >10k) with figma + maps + stock-dashboard as references.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "frontend-004",
+          "category": "pattern_gap",
+          "severity": "medium",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/video-player.md",
+            "docs/coach/problems/spotify-web-player.md"
+          ],
+          "evidence": "video-player: 'HLS via hls.js cross-browser (Chrome/Firefox lack native HLS); DASH via dash.js; both use MSE to push segments into SourceBuffer' \u2014 MSE/EME/ABR is the entire Staff+ bar yet not in frontend.md.",
+          "summary": "frontend.md has no entry for MSE / EME / adaptive-bitrate streaming despite being core to two catalog problems (video-player, spotify-web-player).",
+          "suggested_fix": "Add a 'Media streaming: MSE + EME + adaptive bitrate' section to docs/coach/patterns/frontend.md.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "frontend-005",
+          "category": "pattern_gap",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/stripe-checkout-flow.md"
+          ],
+          "evidence": "stripe-checkout-flow: 'iframe-based card collection \u2014 form contains iframe owned by Stripe; merchant receives only token (PaymentMethod ID); PCI-DSS scope reduces from SAQ D-Merchant ... to SAQ A'.",
+          "summary": "frontend.md has no entry for cross-origin iframe sandbox + postMessage protocol (Stripe Elements pattern), the canonical Staff+ unlock for stripe-checkout-flow.",
+          "suggested_fix": "Add an 'iframe sandbox + postMessage protocol' section to docs/coach/patterns/frontend.md, or accept the gap if checkout is the only problem needing it.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "frontend-006",
+          "category": "pattern_gap",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/chatgpt-claude-chat-ui.md",
+            "docs/coach/problems/copilot-inline-completions.md",
+            "docs/coach/problems/datadog-dashboard.md"
+          ],
+          "evidence": "chatgpt-claude-chat-ui: 'Browser EventSource insufficient: GET-only + no custom Authorization headers. Production uses fetch() + ReadableStream + manual SSE framing parser'; datadog-dashboard: 'Live-tail logs via SSE'.",
+          "summary": "frontend.md covers WebSocket connection management but has no SSE / fetch+ReadableStream streaming pattern entry despite 3 problems naming it as the Staff+ unlock.",
+          "suggested_fix": "Either extend the existing 'WebSocket connection management' entry in docs/coach/patterns/frontend.md to cover SSE and fetch+ReadableStream, or add a dedicated 'SSE streaming + AbortController' entry.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "frontend-007",
+          "category": "other",
+          "severity": "low",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/airbnb-search-map.md"
+          ],
+          "evidence": "Bar anchors mention 'two-view ranking', 'neural location retrieval' \u2014 '2-layer NN outputs 4 floats defining lat/lng offsets'. These are server-side ranker/retrieval insights, not client architecture.",
+          "summary": "airbnb-search-map's Staff+ bar leans heavily on backend ranking insights (neural location retrieval, two-view ranking) rather than client-side architecture; bar-anchors blur with ml-in-loop archetype.",
+          "suggested_fix": "Either tighten the Staff+ bar to client concerns (virtualization, viewport debounce, history.replaceState, marker clustering) and demote ranking notes to context, or accept the cross-cut framing explicitly.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "ml-in-loop",
+            "resolved": true
+          },
+          "resolution_note": "[DOWNGRADE] airbnb-search-map's bar mentions backend ranking insights, but the dominant client-side content (virtualization, history.replaceState, marker clustering) is genuinely frontend. Recommend tightening Staff+ bar, not relocating."
+        }
+      ],
+      "self_report": {
+        "problems_count_in_index": 19,
+        "problems_count_files_found": 19,
+        "files_not_in_index": [],
+        "index_entries_with_no_file": []
+      },
+      "status": "ok"
+    },
+    {
+      "archetype": "geo-proximity",
+      "problems_reviewed": [
+        "bluetooth-beacon-proximity",
+        "didi-dispatch",
+        "doordash-dispatch",
+        "find-my-friends",
+        "foursquare-checkin",
+        "geofence-notifications",
+        "geohash-design",
+        "google-maps-routing",
+        "google-places",
+        "h3-s2-spatial-index",
+        "instacart-batching",
+        "last-mile-routing",
+        "life360",
+        "lyft-dispatch",
+        "snap-geofilter-fanout",
+        "snap-map",
+        "uber",
+        "waze-traffic-update",
+        "yelp-search"
+      ],
+      "patterns_reviewed": [
+        "data-structures.md"
+      ],
+      "findings": [
+        {
+          "id": "geo-proximity-001",
+          "category": "pattern_gap",
+          "severity": "medium",
+          "confidence": "high",
+          "files": [
+            "docs/coach/patterns/data-structures.md",
+            "docs/coach/problems/last-mile-routing.md",
+            "docs/coach/problems/instacart-batching.md",
+            "docs/coach/problems/doordash-dispatch.md",
+            "docs/coach/problems/lyft-dispatch.md"
+          ],
+          "evidence": "data-structures.md geo entry covers only: 'Geohash, S2, H3, Quadtree, R-tree, k-d Tree'. No coverage of CVRPTW / MIP / Hungarian / LP-relaxation / ruin-and-recreate routing metaheuristics used in 5+ archetype problems.",
+          "summary": "Pattern file covers spatial indexes but not the VRP/CVRPTW/bipartite-matching solver patterns that dominate dispatch and routing problems.",
+          "suggested_fix": "Either add a routing/optimization pattern file (or section in algorithms-patterns) covering CVRPTW, Hungarian/LP-relaxation, MIP solvers, ruin-and-recreate/LNS, or reference an existing patterns file from archetypes.md for routing-heavy problems.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "geo-proximity-003",
+          "category": "mis_categorization",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/instacart-batching.md"
+          ],
+          "evidence": "Staff+ anchor leads with 'CVRPTW decomposes into clustering + shopper-assignment' and 'quantile regression q=0.9 predicts upper-bound delivery time' \u2014 pressures are batching/optimization + ML quantile, not spatial indexing.",
+          "summary": "instacart-batching design pressure is CVRPTW + ML quantile bounding; spatial index is not first-order.",
+          "suggested_fix": "Consider whether ml-in-loop or a routing sub-archetype is a better fit; if kept, strengthen the geo-indexing thread.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "ml-in-loop",
+            "resolved": true
+          },
+          "resolution_note": "[DOWNGRADE] instacart-batching has CVRPTW + ML quantile bounding; ml-in-loop is partial fit. Defensible in geo-proximity given dispatch context."
+        },
+        {
+          "id": "geo-proximity-004",
+          "category": "mis_categorization",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/find-my-friends.md"
+          ],
+          "evidence": "Staff+ anchor names 'P-224 EC key pair generated on-device; private key + 256-bit seed SK0 NEVER leave devices' and 'Server-side encrypted reports indexed by SHA-256(P-224 public key)' \u2014 dominant pressure is privacy-preserving crypto protocol, not spatial query.",
+          "summary": "find-my-friends design pressure is a cryptographic crowdsourced-finder protocol, not spatial indexing; geo is incidental payload.",
+          "suggested_fix": "Phase 2 review: keep in geo-proximity (location-sharing UX) or move to a security/privacy primitive archetype if one exists.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "infra-primitives",
+            "resolved": true
+          },
+          "resolution_note": "[DOWNGRADE] find-my-friends has crypto-protocol substrate (Apple Find My P-224); infra-primitives is plausible but the user-facing problem framing is geo. Keep with reduced severity."
+        },
+        {
+          "id": "geo-proximity-005",
+          "category": "mis_categorization",
+          "severity": "low",
+          "confidence": "low",
+          "files": [
+            "docs/coach/problems/bluetooth-beacon-proximity.md"
+          ],
+          "evidence": "Bar anchors center on 'iBeacon advertising packet 30 bytes...', 'Eddystone 4 frame types', 'Eddystone-EID rotates AES-encrypted 8-byte ID' \u2014 pressures are BLE protocol + crypto, not spatial indexing.",
+          "summary": "bluetooth-beacon-proximity reads as a BLE-protocol primitive; spatial index appears only via cross-refs.",
+          "suggested_fix": "Phase 2 review: confirm geo-proximity is the right home, or consider infra-primitives.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "infra-primitives",
+            "resolved": true
+          },
+          "resolution_note": "[DOWNGRADE] bluetooth-beacon-proximity is largely BLE protocol primitive (iBeacon/Eddystone/UWB); infra-primitives plausible. Reduced severity."
+        },
+        {
+          "id": "geo-proximity-006",
+          "category": "duplicate",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/find-my-friends.md",
+            "docs/coach/problems/bluetooth-beacon-proximity.md"
+          ],
+          "evidence": "bluetooth-beacon-proximity Staff+: 'Apple Find My inverse-beacon: lost device advertises rotating P-224 public key; nearby Apple devices sniff + encrypt their location to that key + upload anonymously.' \u2014 near-verbatim of find-my-friends.",
+          "summary": "Substantial overlap between bluetooth-beacon-proximity and find-my-friends on the Apple Find My rotating-P-224 protocol; both have it as a top Staff+ anchor.",
+          "suggested_fix": "Trim Find My content from bluetooth-beacon-proximity to a cross-ref; keep BLE/Eddystone/UWB content there. Find My protocol stays in find-my-friends.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "geo-proximity-007",
+          "category": "mis_categorization",
+          "severity": "low",
+          "confidence": "low",
+          "files": [
+            "docs/coach/problems/waze-traffic-update.md"
+          ],
+          "evidence": "Bar anchors include 'DBSCAN clustering + Bayesian/ML classifiers to deduplicate co-located reports + selfish-routing Price of Anarchy = 4' \u2014 pressures are UGC moderation + ML fusion + game-theory externality.",
+          "summary": "waze-traffic-update has strong ugc-pipeline / ml-in-loop overtones (crowdsourced report verification, classifiers) on top of routing.",
+          "suggested_fix": "Phase 2 review: keep but acknowledge multi-archetype overlap; could justify an ml-in-loop or ugc-pipeline cross-ref.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "ugc-pipeline",
+            "resolved": true
+          },
+          "resolution_note": "[DOWNGRADE] waze-traffic-update has UGC dedup + ML fusion + game-theory; ugc-pipeline candidate is plausible but routing/maps framing dominates. Boundary case."
+        },
+        {
+          "id": "geo-proximity-008",
+          "category": "other",
+          "severity": "low",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/lyft-dispatch.md"
+          ],
+          "evidence": "H1 title is the entire Staff+ anchor: '# Lyft dispatch \u2014 Google S2 (not Uber H3) + geohash-level-5 cells (~1 km\u00b2) + Redis cluster sharded by S2 cell ID + sorted-sets w/ 30s stale-beacon expiration (15M QPS sustained) + bipartite matching via ILP/LP relaxation + ~30s batched window for Lyft Line + online RL agent considering long-horizon driver-income state + Marketplace Marginal Values (MMV) dual-variable debiasing + Kalman-filter real-time map-matching'.",
+          "summary": "Several problems (lyft-dispatch, didi-dispatch, doordash-dispatch, instacart-batching, snap-map, life360, find-my-friends, google-maps-routing, waze-traffic-update, yelp-search, google-places, foursquare-checkin, snap-geofilter-fanout, geofence-notifications, bluetooth-beacon-proximity, h3-s2-spatial-index, geohash-design) use the H1 heading to enumerate the Staff+ anchor; inconsistent with uber.md which has a clean '# Uber (Ride-Sharing Dispatch)' title.",
+          "suggested_fix": "Cosmetic: decide on H1 convention across archetype (clean title vs. anchor-as-title) and apply consistently.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        }
+      ],
+      "self_report": {
+        "problems_count_in_index": 19,
+        "problems_count_files_found": 19,
+        "files_not_in_index": [],
+        "index_entries_with_no_file": []
+      },
+      "status": "ok"
+    },
+    {
+      "archetype": "infra-primitives",
+      "problems_reviewed": [
+        "etcd",
+        "aurora",
+        "ad-click-aggregator",
+        "dynamodb",
+        "prometheus",
+        "pulsar",
+        "kafka",
+        "spanner",
+        "memcached",
+        "colossus",
+        "stripe-payments",
+        "google-pubsub",
+        "kubernetes-scheduler",
+        "zookeeper",
+        "s3",
+        "stripe-rate-limiter",
+        "snowflake-id"
+      ],
+      "patterns_reviewed": [
+        "storage-databases.md",
+        "architectural.md"
+      ],
+      "findings": [
+        {
+          "id": "infra-primitives-001",
+          "category": "mis_categorization",
+          "severity": "high",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/ad-click-aggregator.md"
+          ],
+          "evidence": "Top-3 prompts. Design a YouTube recommendation engine \u00b7 Design CTR prediction \u00b7 Design Ad Click Aggregator. (from archetypes.md \u00a79 ML-in-the-loop serving)",
+          "summary": "ad-click-aggregator is explicitly named as a top-3 prompt of archetype 9 (ML-in-the-loop) but filed in archetype 10 (infra-primitives); content is an application-level streaming-batch reconciliation pipeline, not a primitive build",
+          "suggested_fix": "Move file to ml-in-loop archetype OR re-frame archetype 9's top-3 prompts to remove this. The file's own bar-anchors describe lambda-vs-kappa for ad billing (application-level), not a primitive build like 'design Kafka' or 'design Redis'.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "ml-in-loop",
+            "resolved": true
+          },
+          "resolution_note": "[CONFIRM] archetypes.md \u00a79 explicitly lists 'Design Ad Click Aggregator' as a top-3 ml-in-loop prompt \u2014 yet the file is in archetype 10. This is a hard contradiction in the index itself. STRONG mis-cat."
+        },
+        {
+          "id": "infra-primitives-002",
+          "category": "mis_categorization",
+          "severity": "medium",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/stripe-payments.md"
+          ],
+          "evidence": "Process a payment: charge user's payment method, credit merchant's balance, record the transaction ... Exactly-once execution despite network retries, client crashes, server crashes",
+          "summary": "stripe-payments is an application-level exactly-once payment workflow (idempotency-key + double-entry ledger + webhooks + Saga), not a primitive build like Kafka/Redis/DynamoDB",
+          "suggested_fix": "Consider concurrent-resource archetype (file uses idempotency keys + ledger writes, archetype 4's design pressure is exactly OCC/lock/idempotency for limited-resource contention) OR keep here but explicitly document the boundary that 'application-grade exactly-once systems' belong in infra-primitives.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "concurrent-resource",
+            "resolved": true
+          },
+          "resolution_note": "[CONFIRM] stripe-payments is application-level exactly-once workflow with idempotency-key + double-entry ledger + saga; concurrent-resource has idempotent-payment as canonical 'exactly-once primitive', stripe-payments is a thicker variant."
+        },
+        {
+          "id": "infra-primitives-004",
+          "category": "pattern_gap",
+          "severity": "medium",
+          "confidence": "high",
+          "files": [
+            "docs/coach/patterns/storage-databases.md",
+            "docs/coach/patterns/architectural.md"
+          ],
+          "evidence": "Names ZooKeeper's Zab protocol (or Raft for etcd) for consensus ... articulates Multi-Paxos vs Raft vs Zab trade-offs (from zookeeper.md bar-anchors)",
+          "summary": "Neither referenced pattern file covers consensus protocols (Raft/Paxos/Zab/Multi-Paxos) explicitly, yet etcd/zookeeper/spanner/kafka(KRaft)/aurora all depend on consensus as their substrate at Staff+ bar",
+          "suggested_fix": "Add a consensus section to architectural.md or storage-databases.md (Replication has one paragraph but doesn't cover Raft/Paxos/Zab as a substrate), or reference an additional pattern file. Several Staff+ bar-anchors in this archetype hinge on naming the consensus protocol.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "infra-primitives-005",
+          "category": "pattern_gap",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/snowflake-id.md",
+            "docs/coach/problems/spanner.md",
+            "docs/coach/patterns/storage-databases.md",
+            "docs/coach/patterns/architectural.md"
+          ],
+          "evidence": "TrueTime + commit-wait gives strict serializability at ~4ms commit-wait cost ... HLC structure: 48-bit physical timestamp + 16-bit logical counter (from snowflake-id.md)",
+          "summary": "Time/clock primitives (TrueTime, HLC, NTP-skew handling) are critical for spanner.md and snowflake-id.md Staff+ bar-anchors but not covered by either referenced pattern file",
+          "suggested_fix": "Either add a clocks/time section to storage-databases.md (since it sits alongside isolation levels) or accept that these are problem-local depth probes that don't need a pattern home.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "infra-primitives-006",
+          "category": "pattern_gap",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/stripe-rate-limiter.md",
+            "docs/coach/patterns/storage-databases.md",
+            "docs/coach/patterns/architectural.md"
+          ],
+          "evidence": "Names GCRA (Generic Cell Rate Algorithm) as Stripe's specific token-bucket variant ... single Theoretical Arrival Time (TAT) field per key (from stripe-rate-limiter.md)",
+          "summary": "Rate-limiting algorithms (token-bucket, GCRA, sliding-window, leaky-bucket) are the central pressure of stripe-rate-limiter.md but absent from both referenced pattern files",
+          "suggested_fix": "Consider referencing reliability-observability.md or load-balancing.md from this archetype's Patterns line (the rate-limiter problem fits more naturally with those pattern subjects).",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "infra-primitives-007",
+          "category": "other",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/s3.md",
+            "docs/coach/problems/colossus.md"
+          ],
+          "evidence": "No `colossus` overlap concern at L6+: the Colossus filesystem problem (file-system semantics: open/append/close + L4 SSD cache + 1MB chunks) is genuinely distinct from the S3 object-store problem (from s3.md coach notes)",
+          "summary": "s3.md and colossus.md cover storage substrates that are close in shape; both files explicitly call out the boundary, so they are distinct, but worth verifying coach notes consistency",
+          "suggested_fix": "Not a real duplicate; both files explicitly distinguish object-store vs filesystem semantics. Phase 2 can confirm both are kept.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "infra-primitives-008",
+          "category": "other",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/zookeeper.md",
+            "docs/coach/problems/etcd.md"
+          ],
+          "evidence": "Distinct from `zookeeper` problem by workload framing. `zookeeper` is the coordination service (locks, leader election, fencing tokens with 93% KeepAlive workload); `etcd` is the configuration store (from etcd.md coach notes)",
+          "summary": "zookeeper.md and etcd.md cover overlapping consensus-KV substrate; both files explicitly call out the workload-framing distinction, but a reader could conflate them",
+          "suggested_fix": "Both files include redirect language for the coach; verify the distinction is sharp enough in Phase 2. Low priority \u2014 likely fine as-is.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        }
+      ],
+      "self_report": {
+        "problems_count_in_index": 17,
+        "problems_count_files_found": 17,
+        "files_not_in_index": [],
+        "index_entries_with_no_file": []
+      },
+      "status": "ok"
+    },
+    {
+      "archetype": "ml-in-loop",
+      "problems_reviewed": [
+        "ad-auction-rtb",
+        "autonomous-driving-inference",
+        "ctr-prediction",
+        "fb-news-feed",
+        "linkedin-pymk",
+        "pinterest-pixie",
+        "spotify-discover",
+        "stripe-fraud",
+        "feature-store",
+        "instagram-reels-ranking",
+        "model-rollout-shadow",
+        "netflix-homepage",
+        "spam-abuse-ranking",
+        "tiktok-foryou-ranking",
+        "uber-surge",
+        "voice-assistant-routing",
+        "web-search-ranking",
+        "airbnb-search-ranking",
+        "youtube-reco"
+      ],
+      "patterns_reviewed": [
+        "ml-specific.md"
+      ],
+      "findings": [
+        {
+          "id": "ml-in-loop-001",
+          "category": "mis_categorization",
+          "severity": "medium",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/autonomous-driving-inference.md"
+          ],
+          "evidence": "Articulates **safety-critical embedded inference** \u2014 architecturally distinct from cloud-served ranking. Cites **<100ms end-to-end** perception \u2192 planning \u2192 control",
+          "summary": "Autonomous driving inference is embedded safety-critical inference infra, not a ranking funnel; design pressure (ASIL-D fail-operational, sensor fusion, on-vehicle dual-SoC) maps more naturally to ai-infrastructure than to the ml-in-loop candidate-gen \u2192 rank \u2192 re-rank archetype summary.",
+          "suggested_fix": "Consider re-filing under ai-infrastructure (inference-serving infra) or splitting ml-in-loop into a 'serving funnels' vs 'embedded/realtime inference' sub-grouping. At minimum, acknowledge it as boundary case in archetypes.md.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "ai-infrastructure",
+            "resolved": true
+          },
+          "resolution_note": "[CONFIRM] autonomous-driving-inference is embedded safety-critical inference (ASIL-D, fail-operational, dual-SoC), not ranking funnel. ai-infrastructure already houses inference-serving infra (inference-batching, gpu-cluster-scheduler)."
+        },
+        {
+          "id": "ml-in-loop-002",
+          "category": "mis_categorization",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/voice-assistant-routing.md"
+          ],
+          "evidence": "Articulates **classical voice-assistant stack as cascade of ML models** in tight latency budgets, each with separate eval harnesses \u2014 NOT one ML model. Names **5-stage pipeline**: wake-word detection (on-device, sub-200ms, <100KB) \u2192 streaming ASR",
+          "summary": "Voice-assistant routing is a cascade-of-ML-models (ASR/NLU/skill routing) with heavy on-device + low-power inference concerns; only partially overlaps with ml-in-loop's stated 'candidate-gen \u2192 ranking \u2192 re-rank funnel' pressure. Skill routing (Shortlister + HypRank) is the most ml-in-loop-shaped piece; the wake-word/ASR portions are embedded inference.",
+          "suggested_fix": "Either narrow the problem to the skill-routing slice (drop ASR/wake-word details) or treat as a cross-archetype boundary case with ai-infrastructure.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "ai-infrastructure",
+            "resolved": true
+          },
+          "resolution_note": "[DOWNGRADE] voice-assistant-routing has skill-routing (canonical ml-in-loop) + wake-word/ASR (embedded inference). Mixed; keep but acknowledge boundary."
+        },
+        {
+          "id": "ml-in-loop-003",
+          "category": "pattern_gap",
+          "severity": "medium",
+          "confidence": "high",
+          "files": [
+            "docs/coach/patterns/ml-specific.md",
+            "docs/coach/problems/autonomous-driving-inference.md",
+            "docs/coach/problems/voice-assistant-routing.md"
+          ],
+          "evidence": "ml-specific.md sections: Two-Tower, Multi-Stage Funnel, Feature Store, Model Registry/Shadow/Canary, Offline-vs-Online Metrics, Drift, Online Learning, Cold Start, LLM Serving. No section on embedded/realtime/safety-critical inference (ASIL-D, fail-operational, dual-SoC, sensor fusion, on-AOP low-power detectors).",
+          "summary": "Pattern file ml-specific.md does not cover safety-critical / embedded / low-power inference concerns invoked by autonomous-driving-inference and voice-assistant-routing (wake-word AOP, ASIL-D decomposition, fail-operational).",
+          "suggested_fix": "Add a 'Safety-critical / embedded inference' pattern section to ml-specific.md (or to ai-infra.md if those two problems migrate). Cover ASIL-D decomposition, dual-SoC cross-check, fail-operational redundancy, low-power 2-stage AOP detectors.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "ml-in-loop-007",
+          "category": "other",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/feature-store.md",
+            "docs/coach/problems/model-rollout-shadow.md"
+          ],
+          "evidence": "Real-time feature store \u2014 point-in-time-correct joins + offline-online consistency + dual-store + streaming aggregations. ML model rollout \u2014 shadow \u2192 canary \u2192 A/B + champion-challenger + three drift signals + auto-rollback + Thompson-sampling bandits.",
+          "summary": "feature-store and model-rollout-shadow are ML-platform infra problems (not product ranking systems); the ml-in-loop archetype summary in archetypes.md emphasizes 'candidate-gen \u2192 ranking \u2192 re-rank funnel' which doesn't naturally describe them. They are still close enough that ml-in-loop is the best fit, but the archetype summary could be widened.",
+          "suggested_fix": "Consider broadening the ml-in-loop summary in archetypes.md to explicitly include ML-platform infra (feature stores, rollout, drift, registries) so these problems aren't conceptual outliers within the archetype.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        }
+      ],
+      "self_report": {
+        "problems_count_in_index": 19,
+        "problems_count_files_found": 19,
+        "files_not_in_index": [],
+        "index_entries_with_no_file": []
+      },
+      "status": "ok"
+    },
+    {
+      "archetype": "realtime-messaging",
+      "problems_reviewed": [
+        "audio-rooms",
+        "discord-channels",
+        "discord-presence",
+        "discord-voice",
+        "matrix",
+        "messenger-multi-device-sync",
+        "mls-group",
+        "mqtt-broker",
+        "push-notification",
+        "signal-protocol",
+        "slack",
+        "telegram",
+        "twilio",
+        "twitch-chat",
+        "twitch-streaming",
+        "webrtc-sfu",
+        "whatsapp",
+        "youtube-live",
+        "zoom"
+      ],
+      "patterns_reviewed": [
+        "networking-transport.md"
+      ],
+      "findings": [
+        {
+          "id": "realtime-messaging-001",
+          "category": "mis_categorization",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/discord-channels.md"
+          ],
+          "evidence": "# Discord channels - message storage at trillion-message scale (Cassandra->ScyllaDB) ... 'Store trillions of messages partitioned by channel ... 177 Cassandra nodes -> 72 ScyllaDB nodes (53% disk reduction)'",
+          "summary": "discord-channels is primarily a storage/DB-migration problem (Cassandra->ScyllaDB, partitioning, hot-partition coalescing) rather than real-time delivery",
+          "suggested_fix": "Consider whether this problem fits better under infra-primitives (DB design / shard-per-core engine) or caching-read-heavy (request coalescing, hot-partition mitigation)",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "infra-primitives",
+            "resolved": true
+          },
+          "resolution_note": "[DOWNGRADE] discord-channels' Cassandra->ScyllaDB storage primitive content is real, but the file is co-located with the messaging spine and infra-primitives Phase-1 does not include it. Both placements defensible; keep with severity dropped."
+        },
+        {
+          "id": "realtime-messaging-002",
+          "category": "mis_categorization",
+          "severity": "medium",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/telegram.md"
+          ],
+          "evidence": "'Recognizes this as fan-out-on-read, not fan-out-on-write -- you do not write 200M inboxes' ... 'Differentiates from `twitter-timeline` by adding edit/delete semantics'",
+          "summary": "telegram is a broadcast channel / fan-out problem framed against twitter-timeline; dominant pressure is fan-out strategy + push-notification fan-out, not connection model",
+          "suggested_fix": "Consider whether telegram fits better under fan-out (producer-to-many-consumer broadcast with celebrity-channel pressure)",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "fan-out",
+            "resolved": true
+          },
+          "resolution_note": "[CONFIRM] Evidence quote 'fan-out-on-read, not fan-out-on-write' + 'Differentiates from twitter-timeline' is canonical fan-out framing; fan-out envelope is the better home."
+        },
+        {
+          "id": "realtime-messaging-003",
+          "category": "mis_categorization",
+          "severity": "medium",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/twitch-streaming.md"
+          ],
+          "evidence": "'Treats live video as RTMP in, HLS out via CDN' ... 'Twitch's in-house hardware transcoders ... 10x capacity at 2x cost' ... 'bitrate ladder (source / 1080p60 / 720p60 ...)'",
+          "summary": "twitch-streaming's dominant design pressure is video transcoding ladder + CDN fan-out (ugc-pipeline archetype summary: 'chunking, dedup, transcoding ladders, CDN')",
+          "suggested_fix": "Consider whether live-streaming fits ugc-pipeline (transcoding ladder + CDN delivery) versus realtime-messaging (connection model + presence)",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "ugc-pipeline",
+            "resolved": true
+          },
+          "resolution_note": "[CONFIRM] Transcoding ladder + CDN delivery is the ugc-pipeline summary verbatim ('chunking, dedup, transcoding ladders, CDN'); ugc-pipeline already has video-transcoding/vod-delivery."
+        },
+        {
+          "id": "realtime-messaging-004",
+          "category": "mis_categorization",
+          "severity": "medium",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/youtube-live.md"
+          ],
+          "evidence": "'DASH+QUIC delivery for low-latency tier; HLS for compatibility ... transcoding ladder ... Multi-language audio tracks ... CDN distribution: PoPs cache CMAF chunks'",
+          "summary": "youtube-live is dominated by transcoding-ladder + multi-CDN aggregation + CDN delivery (ugc-pipeline pressures), not connection-model / presence pressures",
+          "suggested_fix": "Consider whether live-streaming with chunked-CMAF + transcoding belongs under ugc-pipeline rather than realtime-messaging",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "ugc-pipeline",
+            "resolved": true
+          },
+          "resolution_note": "[CONFIRM] DASH+QUIC + CMAF + transcoding ladder match ugc-pipeline pressures; chat is the only realtime-messaging slice."
+        },
+        {
+          "id": "realtime-messaging-005",
+          "category": "mis_categorization",
+          "severity": "medium",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/mqtt-broker.md"
+          ],
+          "evidence": "'MQTT broker - IoT messaging at 1M+ devices with QoS 0/1/2 + persistent sessions' ... 'QoS levels - 0 (at-most-once...), 1 (at-least-once...), 2 (exactly-once via 4-step ... handshake)'",
+          "summary": "mqtt-broker is a 'design the messaging-broker primitive' problem (QoS semantics, persistent sessions, multi-tenant isolation) closer in spirit to infra-primitives (kafka/pulsar)",
+          "suggested_fix": "Consider whether designing-the-broker-primitive belongs with kafka/pulsar under infra-primitives rather than realtime-messaging delivery problems",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "infra-primitives",
+            "resolved": true
+          },
+          "resolution_note": "[CONFIRM] mqtt-broker is broker-primitive design with QoS/persistent sessions; sits naturally with kafka/pulsar/google-pubsub in infra-primitives."
+        },
+        {
+          "id": "realtime-messaging-006",
+          "category": "mis_categorization",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/problems/twilio.md"
+          ],
+          "evidence": "'Twilio - programmable messaging gateway + SIP voice termination' ... 'SMPP gateway architecture ... A2P 10DLC throughput tiers ... per-carrier shaping queues; trust-score gating'",
+          "summary": "twilio's dominant pressure is carrier-routing + per-carrier throughput shaping + compliance, more akin to a messaging-gateway primitive than a real-time delivery system",
+          "suggested_fix": "Consider whether twilio fits infra-primitives (gateway/primitive design with rate-limit/routing) better than realtime-messaging",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "infra-primitives",
+            "resolved": true
+          },
+          "resolution_note": "[DOWNGRADE] Twilio has gateway-primitive flavor (SMPP/SIP routing, per-carrier shaping) but the live messaging substrate is defensible; low-confidence flag, dropped one severity level."
+        },
+        {
+          "id": "realtime-messaging-007",
+          "category": "mis_categorization",
+          "severity": "low",
+          "confidence": "low",
+          "files": [
+            "docs/coach/problems/webrtc-sfu.md"
+          ],
+          "evidence": "'# WebRTC SFU - primitive: ICE/STUN/TURN, DTLS-SRTP, simulcast, TWCC, jitter buffer'",
+          "summary": "webrtc-sfu is explicitly framed as a primitive ('primitive: ICE/STUN/TURN ...') in the title; may fit infra-primitives, though it underpins many realtime-messaging problems",
+          "suggested_fix": "Phase 2 should consider whether 'primitive' problems (webrtc-sfu, mls-group, signal-protocol) belong under infra-primitives or remain co-located with the systems that use them",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "infra-primitives",
+            "resolved": true
+          },
+          "resolution_note": "[DOWNGRADE] webrtc-sfu's title literally says 'primitive', but it underpins discord-voice/zoom and is the canonical reference within the archetype; reasonable to keep but flag as primitive-co-located."
+        },
+        {
+          "id": "realtime-messaging-008",
+          "category": "mis_categorization",
+          "severity": "low",
+          "confidence": "low",
+          "files": [
+            "docs/coach/problems/signal-protocol.md",
+            "docs/coach/problems/mls-group.md"
+          ],
+          "evidence": "signal-protocol: 'Signal Protocol - X3DH + Double Ratchet + Sender Keys for E2E messaging'; mls-group: 'MLS group - RFC 9420 group E2E with TreeKEM at O(log N) update cost'",
+          "summary": "Both signal-protocol and mls-group are cryptographic-protocol designs (FS/PCS, TreeKEM, X3DH); dominant pressure is protocol mechanics, not delivery / connection-model / presence",
+          "suggested_fix": "Phase 2 should evaluate whether crypto-protocol-design problems form their own sub-cluster or are correctly co-located here as substrate",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "infra-primitives",
+            "resolved": true
+          },
+          "resolution_note": "[DOWNGRADE] signal-protocol + mls-group are crypto-protocol primitives but provide the substrate for whatsapp/messenger/audio-rooms in this archetype; primitive framing is plausible but co-location is defensible."
+        },
+        {
+          "id": "realtime-messaging-009",
+          "category": "pattern_gap",
+          "severity": "medium",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/patterns/networking-transport.md"
+          ],
+          "evidence": "networking-transport.md covers DNS, TCP/UDP/QUIC, WebSocket/SSE/LongPoll, WebRTC SFU/MCU, HTTP versions, TLS, CDN, reverse-proxy/API-gateway",
+          "summary": "Pattern does not cover MLS / Signal Protocol (E2E group key crypto), nor presence-fan-out economics (Manifold-style batched send), nor SFU layer-drop with encrypted payloads -- all dominant Staff+ topics in this archetype's problems",
+          "suggested_fix": "Either add a 'secure-messaging-crypto' pattern (covering X3DH / Double Ratchet / MLS) or accept that signal-protocol/mls-group/audio-rooms invoke pressures outside the linked pattern",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "realtime-messaging-010",
+          "category": "pattern_gap",
+          "severity": "medium",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/patterns/networking-transport.md"
+          ],
+          "evidence": "Pattern's WebRTC entry: 'Use an SFU for group video calls to avoid NxM peer connections ... Production systems. Zoom (proprietary SFU), Twilio (SFU-based), Google Meet (SFU)'",
+          "summary": "Pattern's WebRTC subsection does not cover simulcast-vs-SVC, TWCC/GCC congestion control, NetEQ jitter buffer, DAVE/MLS E2E, or per-SFU capacity models -- all explicit Staff+ unlocks in discord-voice/zoom/webrtc-sfu",
+          "suggested_fix": "Deepen the WebRTC subsection of networking-transport.md or add a companion pattern covering SFU operational concerns",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "realtime-messaging-011",
+          "category": "pattern_gap",
+          "severity": "low",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/patterns/networking-transport.md"
+          ],
+          "evidence": "Pattern lacks any entry for push-notification gateway (APNs / FCM), persistent-connection memory economics (Erlang BEAM 1-2M/box), or IoT messaging semantics (MQTT QoS)",
+          "summary": "Three large sub-clusters of this archetype (push gateway, persistent-connection economics, IoT broker) have no pattern coverage at all",
+          "suggested_fix": "Phase 2 should consider whether networking-transport.md needs expansion or whether these clusters warrant their own pattern files",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "realtime-messaging-012",
+          "category": "other",
+          "severity": "low",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/audio-rooms.md",
+            "docs/coach/problems/twitch-streaming.md",
+            "docs/coach/problems/youtube-live.md"
+          ],
+          "evidence": "audio-rooms uses HLS for listener fan-out ('listeners receive an HLS/LL-HLS mux'); twitch-streaming and youtube-live are live-video CDN fan-out via HLS/DASH",
+          "summary": "Three problems (audio-rooms, twitch-streaming, youtube-live) share dominant pressure of HLS/CMAF + CDN fan-out for one-to-many broadcast -- possible internal sub-cluster worth noting for taxonomy",
+          "suggested_fix": "Flag to Phase 2: cluster of CDN-broadcast-of-live-media problems may be evidence for a split or for moving them collectively",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        }
+      ],
+      "self_report": {
+        "problems_count_in_index": 19,
+        "problems_count_files_found": 19,
+        "files_not_in_index": [],
+        "index_entries_with_no_file": []
+      },
+      "status": "ok"
+    },
+    {
+      "archetype": "search-indexing",
+      "problems_reviewed": [
+        "amazon-product-search",
+        "autocomplete",
+        "elasticsearch",
+        "enterprise-search",
+        "google-search",
+        "geo-place-search",
+        "log-search",
+        "image-search",
+        "incremental-indexing",
+        "web-crawler",
+        "github-code-search",
+        "twitter-search",
+        "spell-correction",
+        "hybrid-search"
+      ],
+      "patterns_reviewed": [
+        "data-structures.md"
+      ],
+      "findings": [
+        {
+          "id": "search-indexing-002",
+          "category": "pattern_gap",
+          "severity": "medium",
+          "confidence": "medium",
+          "files": [
+            "docs/coach/patterns/data-structures.md",
+            "docs/coach/archetypes.md"
+          ],
+          "evidence": "## 7. Search and indexing\n...\n**Patterns.** See `docs/coach/patterns/data-structures.md`.",
+          "summary": "Archetype references only data-structures.md, but the problems' core design pressures (LTR reranking, CDC->Kafka NRT update pipelines, doc-vs-term partitioning, two-phase retrieve-then-rerank, lock-free concurrent indexing) extend well beyond inverted-index/FST/HNSW data structures.",
+          "suggested_fix": "Add references to additional pattern files (e.g. async-streaming.md for CDC/Kafka ingest paths in amazon-product-search/twitter-search/github-code-search; ml-specific.md for LTR rerank in geo-place-search/google-search; consistency-coordination.md for incremental-indexing's Percolator transactions) OR create a dedicated search/ranking pattern file.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "search-indexing-003",
+          "category": "other",
+          "severity": "low",
+          "confidence": "high",
+          "files": [
+            "docs/coach/problems/incremental-indexing.md",
+            "docs/coach/problems/spell-correction.md"
+          ],
+          "evidence": "*(Note: this is a 25-min follow-up problem, not a full solo slot \u2014 typically paired with `google-search` or `elasticsearch`.)*",
+          "summary": "Two problems are self-declared as ~25-min deep-dive/follow-up problems rather than full 50-min solo slots. The archetype index does not mark this scope distinction, so a user picking from the catalog cannot tell which problems are full-slot vs paired follow-ups.",
+          "suggested_fix": "Surface the 'follow-up / deep-dive only' scope in `archetypes.md` next to those slugs (e.g. annotate `incremental-indexing\u2020`, `spell-correction\u2020`) so callers of the catalog don't pick a follow-up as a standalone mock.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        }
+      ],
+      "self_report": {
+        "problems_count_in_index": 14,
+        "problems_count_files_found": 14,
+        "files_not_in_index": [],
+        "index_entries_with_no_file": []
+      },
+      "status": "ok"
+    },
+    {
+      "archetype": "ugc-pipeline",
+      "problems_reviewed": [
+        "dropbox",
+        "google-photos",
+        "instagram-upload",
+        "vod-delivery",
+        "youtube-upload",
+        "backup-incremental",
+        "audio-transcoding",
+        "tiktok-upload",
+        "content-addressed-dedup",
+        "content-moderation-pipeline",
+        "document-preview",
+        "image-derivatives",
+        "resumable-upload",
+        "video-transcoding"
+      ],
+      "patterns_reviewed": [
+        "storage-databases.md"
+      ],
+      "findings": [
+        {
+          "id": "ugc-pipeline-001",
+          "category": "pattern_gap",
+          "severity": "medium",
+          "confidence": "high",
+          "files": [
+            "docs/coach/archetypes.md",
+            "docs/coach/patterns/storage-databases.md"
+          ],
+          "evidence": "**Patterns.** See `docs/coach/patterns/storage-databases.md`.",
+          "summary": "Archetype 5 only references storage-databases.md, but UGC pipelines hinge on async/event-driven processing (Kafka, SQS, S3 events, Temporal, DLQ) not covered there; async-streaming.md is the obvious missing reference.",
+          "suggested_fix": "Add `docs/coach/patterns/async-streaming.md` to the archetype's Patterns line (and consider `architectural.md` for the DAG/orchestrator framing); keep storage-databases.md for the object-store vs metadata-DB split.",
+          "cross_archetype_check": {
+            "needed": false,
+            "candidate_archetype": null,
+            "resolved": false
+          }
+        },
+        {
+          "id": "ugc-pipeline-002",
+          "category": "mis_categorization",
+          "severity": "low",
+          "confidence": "low",
+          "files": [
+            "docs/coach/problems/content-addressed-dedup.md"
+          ],
+          "evidence": "`content-addressed-dedup` is the **dedup primitive** underlying `dropbox`, `google-photos`, and `backup-incremental`.",
+          "summary": "content-addressed-dedup self-describes as a 'primitive' shared by other ugc-pipeline problems; it reads more like an infra-primitives entry (CDC + fingerprint index + Merkle) than an upload\u2192process\u2192store\u2192serve pipeline.",
+          "suggested_fix": "Phase 2 should compare against infra-primitives archetype framing; if it stays here, tighten the delineation note to claim it as a UGC-pipeline building block.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "infra-primitives",
+            "resolved": true
+          },
+          "resolution_note": "[DOWNGRADE] content-addressed-dedup is primitive-flavored but self-describes as 'the dedup primitive underlying dropbox/google-photos/backup-incremental' \u2014 intentionally co-located with its consumers. Reduced severity."
+        },
+        {
+          "id": "ugc-pipeline-003",
+          "category": "mis_categorization",
+          "severity": "low",
+          "confidence": "low",
+          "files": [
+            "docs/coach/problems/resumable-upload.md"
+          ],
+          "evidence": "`resumable-upload` is the **upload protocol** stage shared by `youtube-upload`, `instagram-upload`, `google-photos`, and `dropbox`.",
+          "summary": "resumable-upload reads as a protocol/primitive (S3 multipart + tus mechanics, presigned URLs, integrity) shared across the other ugc problems rather than a full UGC pipeline; could fit infra-primitives.",
+          "suggested_fix": "Phase 2 should weigh whether the catalog wants 'shared upload-protocol primitive' in ugc-pipeline or in infra-primitives; either is defensible.",
+          "cross_archetype_check": {
+            "needed": true,
+            "candidate_archetype": "infra-primitives",
+            "resolved": true
+          },
+          "resolution_note": "[DOWNGRADE] Same pattern as content-addressed-dedup: 'upload protocol' shared by youtube-upload/instagram-upload/google-photos/dropbox. Co-location with consumers is defensible."
+        }
+      ],
+      "self_report": {
+        "problems_count_in_index": 14,
+        "problems_count_files_found": 14,
+        "files_not_in_index": [],
+        "index_entries_with_no_file": []
+      },
+      "status": "ok"
+    }
+  ]
+}

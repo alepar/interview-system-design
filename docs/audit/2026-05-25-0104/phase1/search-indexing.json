@@ -1,0 +1,73 @@
+{
+  "archetype": "search-indexing",
+  "problems_reviewed": [
+    "amazon-product-search",
+    "autocomplete",
+    "elasticsearch",
+    "enterprise-search",
+    "google-search",
+    "geo-place-search",
+    "log-search",
+    "image-search",
+    "incremental-indexing",
+    "web-crawler",
+    "github-code-search",
+    "twitter-search",
+    "spell-correction",
+    "hybrid-search"
+  ],
+  "patterns_reviewed": ["data-structures.md"],
+  "findings": [
+    {
+      "id": "search-indexing-001",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "low",
+      "files": ["docs/coach/problems/geo-place-search.md"],
+      "evidence": "This is the **IR angle on geo** — text-relevance ranked search over mostly-static places, with the geo index as a filter and distance as a ranking signal.",
+      "summary": "geo-place-search could plausibly belong to geo-proximity; author intentionally places it here because design pressure is IR (text relevance + LTR + geo-as-filter), not dispatch/moving entities. File contains explicit delineation note vs `uber`.",
+      "suggested_fix": "Keep in search-indexing. File already includes a delineation note distinguishing it from `uber`/dispatch. Phase 2 should confirm the explicit boundary holds and that geo-proximity does not also list this problem.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "geo-proximity", "resolved": false}
+    },
+    {
+      "id": "search-indexing-002",
+      "category": "pattern_gap",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": ["docs/coach/patterns/data-structures.md", "docs/coach/archetypes.md"],
+      "evidence": "## 7. Search and indexing\n...\n**Patterns.** See `docs/coach/patterns/data-structures.md`.",
+      "summary": "Archetype references only data-structures.md, but the problems' core design pressures (LTR reranking, CDC->Kafka NRT update pipelines, doc-vs-term partitioning, two-phase retrieve-then-rerank, lock-free concurrent indexing) extend well beyond inverted-index/FST/HNSW data structures.",
+      "suggested_fix": "Add references to additional pattern files (e.g. async-streaming.md for CDC/Kafka ingest paths in amazon-product-search/twitter-search/github-code-search; ml-specific.md for LTR rerank in geo-place-search/google-search; consistency-coordination.md for incremental-indexing's Percolator transactions) OR create a dedicated search/ranking pattern file.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "search-indexing-003",
+      "category": "other",
+      "severity": "low",
+      "confidence": "high",
+      "files": ["docs/coach/problems/incremental-indexing.md", "docs/coach/problems/spell-correction.md"],
+      "evidence": "*(Note: this is a 25-min follow-up problem, not a full solo slot — typically paired with `google-search` or `elasticsearch`.)*",
+      "summary": "Two problems are self-declared as ~25-min deep-dive/follow-up problems rather than full 50-min solo slots. The archetype index does not mark this scope distinction, so a user picking from the catalog cannot tell which problems are full-slot vs paired follow-ups.",
+      "suggested_fix": "Surface the 'follow-up / deep-dive only' scope in `archetypes.md` next to those slugs (e.g. annotate `incremental-indexing†`, `spell-correction†`) so callers of the catalog don't pick a follow-up as a standalone mock.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "search-indexing-004",
+      "category": "other",
+      "severity": "low",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/image-search.md", "docs/coach/problems/hybrid-search.md"],
+      "evidence": "This problem deliberately stops where AI-infra begins. The **hash-recall stage and two-stage orchestration** are the search content here; the pure-vector serving internals ... belong to `embedding-service-at-scale`/`billion-doc-rag`",
+      "summary": "Both image-search and hybrid-search are explicit cross-archetype 'bridge' problems that defer significant scope to AI-infra problems. This is intentional and well-documented, but the archetype index does not flag the cross-archetype dependency so a planner cannot see that running these problems benefits from prior coverage of `billion-doc-rag`/`embedding-service-at-scale`.",
+      "suggested_fix": "In `archetypes.md` archetype-7 line (or in a per-problem metadata field), mark bridge problems with their target archetype, e.g. `image-search (bridges → ai-infrastructure)`, `hybrid-search (bridges → ai-infrastructure)`. Phase 2 may want a global 'bridge problems' index.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "ai-infrastructure", "resolved": false}
+    }
+  ],
+  "self_report": {
+    "problems_count_in_index": 14,
+    "problems_count_files_found": 14,
+    "files_not_in_index": [],
+    "index_entries_with_no_file": []
+  },
+  "status": "ok"
+}

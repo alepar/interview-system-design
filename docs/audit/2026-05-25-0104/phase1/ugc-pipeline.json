@@ -1,0 +1,73 @@
+{
+  "archetype": "ugc-pipeline",
+  "problems_reviewed": [
+    "dropbox",
+    "google-photos",
+    "instagram-upload",
+    "vod-delivery",
+    "youtube-upload",
+    "backup-incremental",
+    "audio-transcoding",
+    "tiktok-upload",
+    "content-addressed-dedup",
+    "content-moderation-pipeline",
+    "document-preview",
+    "image-derivatives",
+    "resumable-upload",
+    "video-transcoding"
+  ],
+  "patterns_reviewed": ["storage-databases.md"],
+  "findings": [
+    {
+      "id": "ugc-pipeline-001",
+      "category": "pattern_gap",
+      "severity": "medium",
+      "confidence": "high",
+      "files": ["docs/coach/archetypes.md", "docs/coach/patterns/storage-databases.md"],
+      "evidence": "**Patterns.** See `docs/coach/patterns/storage-databases.md`.",
+      "summary": "Archetype 5 only references storage-databases.md, but UGC pipelines hinge on async/event-driven processing (Kafka, SQS, S3 events, Temporal, DLQ) not covered there; async-streaming.md is the obvious missing reference.",
+      "suggested_fix": "Add `docs/coach/patterns/async-streaming.md` to the archetype's Patterns line (and consider `architectural.md` for the DAG/orchestrator framing); keep storage-databases.md for the object-store vs metadata-DB split.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "ugc-pipeline-002",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "low",
+      "files": ["docs/coach/problems/content-addressed-dedup.md"],
+      "evidence": "`content-addressed-dedup` is the **dedup primitive** underlying `dropbox`, `google-photos`, and `backup-incremental`.",
+      "summary": "content-addressed-dedup self-describes as a 'primitive' shared by other ugc-pipeline problems; it reads more like an infra-primitives entry (CDC + fingerprint index + Merkle) than an upload→process→store→serve pipeline.",
+      "suggested_fix": "Phase 2 should compare against infra-primitives archetype framing; if it stays here, tighten the delineation note to claim it as a UGC-pipeline building block.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "infra-primitives", "resolved": false}
+    },
+    {
+      "id": "ugc-pipeline-003",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "low",
+      "files": ["docs/coach/problems/resumable-upload.md"],
+      "evidence": "`resumable-upload` is the **upload protocol** stage shared by `youtube-upload`, `instagram-upload`, `google-photos`, and `dropbox`.",
+      "summary": "resumable-upload reads as a protocol/primitive (S3 multipart + tus mechanics, presigned URLs, integrity) shared across the other ugc problems rather than a full UGC pipeline; could fit infra-primitives.",
+      "suggested_fix": "Phase 2 should weigh whether the catalog wants 'shared upload-protocol primitive' in ugc-pipeline or in infra-primitives; either is defensible.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "infra-primitives", "resolved": false}
+    },
+    {
+      "id": "ugc-pipeline-004",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "low",
+      "files": ["docs/coach/problems/content-moderation-pipeline.md"],
+      "evidence": "`content-moderation-pipeline` is the **pipeline integration** of moderation (gate placement, hash/fingerprint matching, confidence routing, human-review queue) — distinct from AI-infra `safety-moderation-pipeline`",
+      "summary": "content-moderation-pipeline overlaps heavily with AI-infra safety-moderation-pipeline; the delineation note draws a thin line (pipeline integration vs model serving) — confirm the split holds.",
+      "suggested_fix": "Phase 2: read the ai-infrastructure twin (safety-moderation-pipeline) and verify the two stay non-duplicative; if they collapse, move or merge.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "ai-infrastructure", "resolved": false}
+    }
+  ],
+  "self_report": {
+    "problems_count_in_index": 14,
+    "problems_count_files_found": 14,
+    "files_not_in_index": [],
+    "index_entries_with_no_file": []
+  },
+  "status": "ok"
+}

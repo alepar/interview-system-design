@@ -1,0 +1,111 @@
+{
+  "archetype": "ml-in-loop",
+  "problems_reviewed": [
+    "ad-auction-rtb",
+    "autonomous-driving-inference",
+    "ctr-prediction",
+    "fb-news-feed",
+    "linkedin-pymk",
+    "pinterest-pixie",
+    "spotify-discover",
+    "stripe-fraud",
+    "feature-store",
+    "instagram-reels-ranking",
+    "model-rollout-shadow",
+    "netflix-homepage",
+    "spam-abuse-ranking",
+    "tiktok-foryou-ranking",
+    "uber-surge",
+    "voice-assistant-routing",
+    "web-search-ranking",
+    "airbnb-search-ranking",
+    "youtube-reco"
+  ],
+  "patterns_reviewed": ["ml-specific.md"],
+  "findings": [
+    {
+      "id": "ml-in-loop-001",
+      "category": "mis_categorization",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/autonomous-driving-inference.md"],
+      "evidence": "Articulates **safety-critical embedded inference** — architecturally distinct from cloud-served ranking. Cites **<100ms end-to-end** perception → planning → control",
+      "summary": "Autonomous driving inference is embedded safety-critical inference infra, not a ranking funnel; design pressure (ASIL-D fail-operational, sensor fusion, on-vehicle dual-SoC) maps more naturally to ai-infrastructure than to the ml-in-loop candidate-gen → rank → re-rank archetype summary.",
+      "suggested_fix": "Consider re-filing under ai-infrastructure (inference-serving infra) or splitting ml-in-loop into a 'serving funnels' vs 'embedded/realtime inference' sub-grouping. At minimum, acknowledge it as boundary case in archetypes.md.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "ai-infrastructure", "resolved": false}
+    },
+    {
+      "id": "ml-in-loop-002",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/voice-assistant-routing.md"],
+      "evidence": "Articulates **classical voice-assistant stack as cascade of ML models** in tight latency budgets, each with separate eval harnesses — NOT one ML model. Names **5-stage pipeline**: wake-word detection (on-device, sub-200ms, <100KB) → streaming ASR",
+      "summary": "Voice-assistant routing is a cascade-of-ML-models (ASR/NLU/skill routing) with heavy on-device + low-power inference concerns; only partially overlaps with ml-in-loop's stated 'candidate-gen → ranking → re-rank funnel' pressure. Skill routing (Shortlister + HypRank) is the most ml-in-loop-shaped piece; the wake-word/ASR portions are embedded inference.",
+      "suggested_fix": "Either narrow the problem to the skill-routing slice (drop ASR/wake-word details) or treat as a cross-archetype boundary case with ai-infrastructure.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "ai-infrastructure", "resolved": false}
+    },
+    {
+      "id": "ml-in-loop-003",
+      "category": "pattern_gap",
+      "severity": "medium",
+      "confidence": "high",
+      "files": ["docs/coach/patterns/ml-specific.md", "docs/coach/problems/autonomous-driving-inference.md", "docs/coach/problems/voice-assistant-routing.md"],
+      "evidence": "ml-specific.md sections: Two-Tower, Multi-Stage Funnel, Feature Store, Model Registry/Shadow/Canary, Offline-vs-Online Metrics, Drift, Online Learning, Cold Start, LLM Serving. No section on embedded/realtime/safety-critical inference (ASIL-D, fail-operational, dual-SoC, sensor fusion, on-AOP low-power detectors).",
+      "summary": "Pattern file ml-specific.md does not cover safety-critical / embedded / low-power inference concerns invoked by autonomous-driving-inference and voice-assistant-routing (wake-word AOP, ASIL-D decomposition, fail-operational).",
+      "suggested_fix": "Add a 'Safety-critical / embedded inference' pattern section to ml-specific.md (or to ai-infra.md if those two problems migrate). Cover ASIL-D decomposition, dual-SoC cross-check, fail-operational redundancy, low-power 2-stage AOP detectors.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "ml-in-loop-004",
+      "category": "other",
+      "severity": "low",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/fb-news-feed.md"],
+      "evidence": "Names **hybrid fan-out**: write-time for most users (cheap reads); read-time for celebrities (avoid 100M write amplification).",
+      "summary": "fb-news-feed is correctly in ml-in-loop (the design pressure is multi-objective value-model ranking + 3-pass funnel) but its 'hybrid fan-out' deep dive heavily overlaps with the fan-out archetype's canonical pattern. Potential redundancy with content in fan-out archetype problems (e.g., instagram-feed, twitter-timeline).",
+      "suggested_fix": "Audit fb-news-feed's fan-out deep-dive vs the fan-out archetype's coverage; ideally fb-news-feed references fan-out problems for fan-out details and focuses its own depth on ranking pressures.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "fan-out", "resolved": false}
+    },
+    {
+      "id": "ml-in-loop-005",
+      "category": "other",
+      "severity": "low",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/uber-surge.md"],
+      "evidence": "Names **H3 hex grid as geospatial primitive** (resolution 8 ≈ 0.74 km², ~460m edge; 16 resolutions; hexes for uniform 6-equidistant-neighbor aggregation without anisotropic bias). Names **streaming feature pipeline** (Kafka → Flink/Samza → per-cell aggregations...)",
+      "summary": "uber-surge sits at the geo-proximity / ml-in-loop boundary: ML design pressure (forecast + elasticity controller) justifies ml-in-loop, but the H3 + per-cell streaming substrate is canonical geo-proximity. Worth confirming the boundary placement is intentional (the broader 'uber' dispatch problem is filed under geo-proximity).",
+      "suggested_fix": "Add an explicit boundary note to archetypes.md or to the problem itself clarifying that uber-surge is the ML-pricing variant while uber/lyft-dispatch are the geo-proximity variants.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "geo-proximity", "resolved": false}
+    },
+    {
+      "id": "ml-in-loop-006",
+      "category": "other",
+      "severity": "low",
+      "confidence": "high",
+      "files": ["docs/coach/problems/web-search-ranking.md"],
+      "evidence": "Articulates **RANKING, not retrieval** (retrieval substrate in archetype #7 search-indexing).",
+      "summary": "web-search-ranking explicitly disambiguates itself from the search-indexing archetype by scope. This is a clean intentional boundary, not a mis-cat — noting it so Phase 2 doesn't flag.",
+      "suggested_fix": "No fix; record as resolved boundary case so cross-archetype duplicate detection doesn't double-count with google-search / elasticsearch.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "search-indexing", "resolved": false}
+    },
+    {
+      "id": "ml-in-loop-007",
+      "category": "other",
+      "severity": "low",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/feature-store.md", "docs/coach/problems/model-rollout-shadow.md"],
+      "evidence": "Real-time feature store — point-in-time-correct joins + offline-online consistency + dual-store + streaming aggregations. ML model rollout — shadow → canary → A/B + champion-challenger + three drift signals + auto-rollback + Thompson-sampling bandits.",
+      "summary": "feature-store and model-rollout-shadow are ML-platform infra problems (not product ranking systems); the ml-in-loop archetype summary in archetypes.md emphasizes 'candidate-gen → ranking → re-rank funnel' which doesn't naturally describe them. They are still close enough that ml-in-loop is the best fit, but the archetype summary could be widened.",
+      "suggested_fix": "Consider broadening the ml-in-loop summary in archetypes.md to explicitly include ML-platform infra (feature stores, rollout, drift, registries) so these problems aren't conceptual outliers within the archetype.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    }
+  ],
+  "self_report": {
+    "problems_count_in_index": 19,
+    "problems_count_files_found": 19,
+    "files_not_in_index": [],
+    "index_entries_with_no_file": []
+  },
+  "status": "ok"
+}

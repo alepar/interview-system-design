@@ -1,0 +1,111 @@
+{
+  "archetype": "fan-out",
+  "problems_reviewed": [
+    "twitter-timeline",
+    "instagram-feed",
+    "linkedin-feed",
+    "reddit-feed",
+    "pinterest-home",
+    "youtube-subscriptions",
+    "github-events-feed",
+    "spotify-friend-activity",
+    "medium-following-feed",
+    "notification-aggregation-service",
+    "email-digest-pipeline",
+    "breaking-news-fanout",
+    "inbox-zero",
+    "mastodon-federated-feed",
+    "bluesky-atproto-feed",
+    "sports-scores-fanout",
+    "stock-alert-fanout",
+    "geo-weather-alert-fanout",
+    "discord-server-activity-stream"
+  ],
+  "patterns_reviewed": ["async-streaming.md"],
+  "findings": [
+    {
+      "id": "fan-out-001",
+      "category": "mis_categorization",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/inbox-zero.md"],
+      "evidence": "Gmail Priority Inbox per-user logistic regression with online passive-aggressive PA-II + non-stationary noisy implicit labels + per-user higher regularization than global + cross-DC scoring",
+      "summary": "inbox-zero dominant design pressure is per-user ML ranking (Priority Inbox PA-II) + threading + 7-layer spam stack, not producer-to-many-consumer fan-out.",
+      "suggested_fix": "Consider re-filing under ml-in-loop (Priority Inbox ranking) or keeping if 'unified inbox sync' is judged a fan-in/fan-out variant.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "ml-in-loop", "resolved": false}
+    },
+    {
+      "id": "fan-out-002",
+      "category": "mis_categorization",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/discord-server-activity-stream.md"],
+      "evidence": "single Elixir GenServer per guild fans out every event to per-user session processes ... WebSocket gateway per session ... 2.6M concurrent voice users across 850+ servers",
+      "summary": "Discord server activity stream is dominated by real-time messaging concerns (WebSocket gateway, presence, GenServer-per-guild) — overlaps strongly with archetype 3 realtime-messaging which already contains discord-presence/channels/voice.",
+      "suggested_fix": "Verify whether mega-guild fan-out belongs here vs. realtime-messaging; the file itself notes 'Cross-coverage with messaging discord-presence ... same Manifold + GenStage primitives.'",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "realtime-messaging", "resolved": false}
+    },
+    {
+      "id": "fan-out-003",
+      "category": "mis_categorization",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/geo-weather-alert-fanout.md"],
+      "evidence": "CAP v1.2 OASIS XML envelope ... WEA cellular cell-broadcast ... enhanced 100% inside polygon / 0% >528ft outside via WEA 3.0 handset GPS filtering",
+      "summary": "geo-weather-alert-fanout's dominant pressure is geo-targeted broadcast (polygons, FIPS codes, handset GPS filtering, cell-broadcast substrate) which fits the geo-proximity archetype more directly than producer-to-many feed fan-out.",
+      "suggested_fix": "Check whether the geo-polygon and handset-side spatial-filter elements outweigh the fan-out framing; possibly belongs under geo-proximity.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "geo-proximity", "resolved": false}
+    },
+    {
+      "id": "fan-out-004",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/notification-aggregation-service.md"],
+      "evidence": "Pinterest NEP multi-head GBDT (push-open / email-click / unsub); Policy sends if utility > segment threshold; PID controller auto-tunes per-segment thresholds ... Instagram causal-inference uplift ui = Pr(active|do(send)) − Pr(active|do(drop))",
+      "summary": "notification-aggregation-service is dominated by ML uplift modelling, multi-head ranking, and diversity demotion — bar-anchors read as ml-in-loop, with fan-out (aggregation) as a secondary concern.",
+      "suggested_fix": "Phase 2 should decide whether this is fan-out (aggregation/dedup) or ml-in-loop (uplift+budget+diversity); arguments for either; keep here only if the aggregation framing is judged primary.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "ml-in-loop", "resolved": false}
+    },
+    {
+      "id": "fan-out-005",
+      "category": "pattern_gap",
+      "severity": "medium",
+      "confidence": "high",
+      "files": ["docs/coach/patterns/async-streaming.md"],
+      "evidence": "Patterns. See docs/coach/patterns/async-streaming.md.",
+      "summary": "Archetype references only async-streaming.md, but 9+ problems (twitter-timeline, instagram-feed, pinterest-home, reddit-feed, sports-scores-fanout) lean heavily on caching topology (Redis sorted sets, hot-celebrity key replication, listing cache, dual HBase cluster) which is owned by caching.md, not async-streaming.md.",
+      "suggested_fix": "Add docs/coach/patterns/caching.md to the archetype's 'Patterns' line (and consider data-structures.md for sorted-set / heap-merge content).",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "fan-out-006",
+      "category": "pattern_gap",
+      "severity": "low",
+      "confidence": "medium",
+      "files": ["docs/coach/patterns/async-streaming.md"],
+      "evidence": "breaking-news-fanout, stock-alert-fanout, sports-scores-fanout all rely on APNs/FCM gateway limits (1K concurrent fanouts/project, ~2K req/sec/HTTP2-connection, apns-collapse-id) — neither async-streaming.md nor any other referenced pattern covers push-gateway semantics.",
+      "summary": "Push-notification gateway limits (APNs/FCM concurrent caps, collapse-id, HTTP/2 connection sizing) are recurring pressures across breaking-news / stock-alert / sports-scores / youtube-subscriptions but no pattern file is referenced for them.",
+      "suggested_fix": "Either add networking-transport.md to the archetype reference set, or note that push-gateway specifics live in the realtime-messaging push-notification problem.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "fan-out-007",
+      "category": "other",
+      "severity": "low",
+      "confidence": "high",
+      "files": ["docs/coach/problems/pinterest-home.md", "docs/coach/problems/instagram-feed.md"],
+      "evidence": "pinterest-home: 'Cross-coverage with ML-in-loop pinterest-pixie (Pixie graph is in both archetypes — fan-out source vs ML candidate generator).'",
+      "summary": "Pinterest's Pixie appears in both pinterest-home (fan-out source) and pinterest-pixie (ml-in-loop). Not a duplicate — explicitly cross-coverage — but worth Phase-2 verification that the two files do not collide on canonical prompts.",
+      "suggested_fix": "Phase 2 cross-archetype duplicate check should confirm pinterest-home and ml-in-loop pinterest-pixie cover distinct prompts.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    }
+  ],
+  "self_report": {
+    "problems_count_in_index": 19,
+    "problems_count_files_found": 19,
+    "files_not_in_index": [],
+    "index_entries_with_no_file": []
+  },
+  "status": "ok"
+}

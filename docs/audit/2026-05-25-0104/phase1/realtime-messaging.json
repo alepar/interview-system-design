@@ -1,0 +1,166 @@
+{
+  "archetype": "realtime-messaging",
+  "problems_reviewed": [
+    "audio-rooms",
+    "discord-channels",
+    "discord-presence",
+    "discord-voice",
+    "matrix",
+    "messenger-multi-device-sync",
+    "mls-group",
+    "mqtt-broker",
+    "push-notification",
+    "signal-protocol",
+    "slack",
+    "telegram",
+    "twilio",
+    "twitch-chat",
+    "twitch-streaming",
+    "webrtc-sfu",
+    "whatsapp",
+    "youtube-live",
+    "zoom"
+  ],
+  "patterns_reviewed": ["networking-transport.md"],
+  "findings": [
+    {
+      "id": "realtime-messaging-001",
+      "category": "mis_categorization",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/discord-channels.md"],
+      "evidence": "# Discord channels - message storage at trillion-message scale (Cassandra->ScyllaDB) ... 'Store trillions of messages partitioned by channel ... 177 Cassandra nodes -> 72 ScyllaDB nodes (53% disk reduction)'",
+      "summary": "discord-channels is primarily a storage/DB-migration problem (Cassandra->ScyllaDB, partitioning, hot-partition coalescing) rather than real-time delivery",
+      "suggested_fix": "Consider whether this problem fits better under infra-primitives (DB design / shard-per-core engine) or caching-read-heavy (request coalescing, hot-partition mitigation)",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "infra-primitives", "resolved": false}
+    },
+    {
+      "id": "realtime-messaging-002",
+      "category": "mis_categorization",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/telegram.md"],
+      "evidence": "'Recognizes this as fan-out-on-read, not fan-out-on-write -- you do not write 200M inboxes' ... 'Differentiates from `twitter-timeline` by adding edit/delete semantics'",
+      "summary": "telegram is a broadcast channel / fan-out problem framed against twitter-timeline; dominant pressure is fan-out strategy + push-notification fan-out, not connection model",
+      "suggested_fix": "Consider whether telegram fits better under fan-out (producer-to-many-consumer broadcast with celebrity-channel pressure)",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "fan-out", "resolved": false}
+    },
+    {
+      "id": "realtime-messaging-003",
+      "category": "mis_categorization",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/twitch-streaming.md"],
+      "evidence": "'Treats live video as RTMP in, HLS out via CDN' ... 'Twitch's in-house hardware transcoders ... 10x capacity at 2x cost' ... 'bitrate ladder (source / 1080p60 / 720p60 ...)'",
+      "summary": "twitch-streaming's dominant design pressure is video transcoding ladder + CDN fan-out (ugc-pipeline archetype summary: 'chunking, dedup, transcoding ladders, CDN')",
+      "suggested_fix": "Consider whether live-streaming fits ugc-pipeline (transcoding ladder + CDN delivery) versus realtime-messaging (connection model + presence)",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "ugc-pipeline", "resolved": false}
+    },
+    {
+      "id": "realtime-messaging-004",
+      "category": "mis_categorization",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/youtube-live.md"],
+      "evidence": "'DASH+QUIC delivery for low-latency tier; HLS for compatibility ... transcoding ladder ... Multi-language audio tracks ... CDN distribution: PoPs cache CMAF chunks'",
+      "summary": "youtube-live is dominated by transcoding-ladder + multi-CDN aggregation + CDN delivery (ugc-pipeline pressures), not connection-model / presence pressures",
+      "suggested_fix": "Consider whether live-streaming with chunked-CMAF + transcoding belongs under ugc-pipeline rather than realtime-messaging",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "ugc-pipeline", "resolved": false}
+    },
+    {
+      "id": "realtime-messaging-005",
+      "category": "mis_categorization",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/mqtt-broker.md"],
+      "evidence": "'MQTT broker - IoT messaging at 1M+ devices with QoS 0/1/2 + persistent sessions' ... 'QoS levels - 0 (at-most-once...), 1 (at-least-once...), 2 (exactly-once via 4-step ... handshake)'",
+      "summary": "mqtt-broker is a 'design the messaging-broker primitive' problem (QoS semantics, persistent sessions, multi-tenant isolation) closer in spirit to infra-primitives (kafka/pulsar)",
+      "suggested_fix": "Consider whether designing-the-broker-primitive belongs with kafka/pulsar under infra-primitives rather than realtime-messaging delivery problems",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "infra-primitives", "resolved": false}
+    },
+    {
+      "id": "realtime-messaging-006",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/twilio.md"],
+      "evidence": "'Twilio - programmable messaging gateway + SIP voice termination' ... 'SMPP gateway architecture ... A2P 10DLC throughput tiers ... per-carrier shaping queues; trust-score gating'",
+      "summary": "twilio's dominant pressure is carrier-routing + per-carrier throughput shaping + compliance, more akin to a messaging-gateway primitive than a real-time delivery system",
+      "suggested_fix": "Consider whether twilio fits infra-primitives (gateway/primitive design with rate-limit/routing) better than realtime-messaging",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "infra-primitives", "resolved": false}
+    },
+    {
+      "id": "realtime-messaging-007",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "low",
+      "files": ["docs/coach/problems/webrtc-sfu.md"],
+      "evidence": "'# WebRTC SFU - primitive: ICE/STUN/TURN, DTLS-SRTP, simulcast, TWCC, jitter buffer'",
+      "summary": "webrtc-sfu is explicitly framed as a primitive ('primitive: ICE/STUN/TURN ...') in the title; may fit infra-primitives, though it underpins many realtime-messaging problems",
+      "suggested_fix": "Phase 2 should consider whether 'primitive' problems (webrtc-sfu, mls-group, signal-protocol) belong under infra-primitives or remain co-located with the systems that use them",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "infra-primitives", "resolved": false}
+    },
+    {
+      "id": "realtime-messaging-008",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "low",
+      "files": ["docs/coach/problems/signal-protocol.md", "docs/coach/problems/mls-group.md"],
+      "evidence": "signal-protocol: 'Signal Protocol - X3DH + Double Ratchet + Sender Keys for E2E messaging'; mls-group: 'MLS group - RFC 9420 group E2E with TreeKEM at O(log N) update cost'",
+      "summary": "Both signal-protocol and mls-group are cryptographic-protocol designs (FS/PCS, TreeKEM, X3DH); dominant pressure is protocol mechanics, not delivery / connection-model / presence",
+      "suggested_fix": "Phase 2 should evaluate whether crypto-protocol-design problems form their own sub-cluster or are correctly co-located here as substrate",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "infra-primitives", "resolved": false}
+    },
+    {
+      "id": "realtime-messaging-009",
+      "category": "pattern_gap",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": ["docs/coach/patterns/networking-transport.md"],
+      "evidence": "networking-transport.md covers DNS, TCP/UDP/QUIC, WebSocket/SSE/LongPoll, WebRTC SFU/MCU, HTTP versions, TLS, CDN, reverse-proxy/API-gateway",
+      "summary": "Pattern does not cover MLS / Signal Protocol (E2E group key crypto), nor presence-fan-out economics (Manifold-style batched send), nor SFU layer-drop with encrypted payloads -- all dominant Staff+ topics in this archetype's problems",
+      "suggested_fix": "Either add a 'secure-messaging-crypto' pattern (covering X3DH / Double Ratchet / MLS) or accept that signal-protocol/mls-group/audio-rooms invoke pressures outside the linked pattern",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "realtime-messaging-010",
+      "category": "pattern_gap",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": ["docs/coach/patterns/networking-transport.md"],
+      "evidence": "Pattern's WebRTC entry: 'Use an SFU for group video calls to avoid NxM peer connections ... Production systems. Zoom (proprietary SFU), Twilio (SFU-based), Google Meet (SFU)'",
+      "summary": "Pattern's WebRTC subsection does not cover simulcast-vs-SVC, TWCC/GCC congestion control, NetEQ jitter buffer, DAVE/MLS E2E, or per-SFU capacity models -- all explicit Staff+ unlocks in discord-voice/zoom/webrtc-sfu",
+      "suggested_fix": "Deepen the WebRTC subsection of networking-transport.md or add a companion pattern covering SFU operational concerns",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "realtime-messaging-011",
+      "category": "pattern_gap",
+      "severity": "low",
+      "confidence": "medium",
+      "files": ["docs/coach/patterns/networking-transport.md"],
+      "evidence": "Pattern lacks any entry for push-notification gateway (APNs / FCM), persistent-connection memory economics (Erlang BEAM 1-2M/box), or IoT messaging semantics (MQTT QoS)",
+      "summary": "Three large sub-clusters of this archetype (push gateway, persistent-connection economics, IoT broker) have no pattern coverage at all",
+      "suggested_fix": "Phase 2 should consider whether networking-transport.md needs expansion or whether these clusters warrant their own pattern files",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "realtime-messaging-012",
+      "category": "other",
+      "severity": "low",
+      "confidence": "high",
+      "files": ["docs/coach/problems/audio-rooms.md", "docs/coach/problems/twitch-streaming.md", "docs/coach/problems/youtube-live.md"],
+      "evidence": "audio-rooms uses HLS for listener fan-out ('listeners receive an HLS/LL-HLS mux'); twitch-streaming and youtube-live are live-video CDN fan-out via HLS/DASH",
+      "summary": "Three problems (audio-rooms, twitch-streaming, youtube-live) share dominant pressure of HLS/CMAF + CDN fan-out for one-to-many broadcast -- possible internal sub-cluster worth noting for taxonomy",
+      "suggested_fix": "Flag to Phase 2: cluster of CDN-broadcast-of-live-media problems may be evidence for a split or for moving them collectively",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    }
+  ],
+  "self_report": {
+    "problems_count_in_index": 19,
+    "problems_count_files_found": 19,
+    "files_not_in_index": [],
+    "index_entries_with_no_file": []
+  },
+  "status": "ok"
+}

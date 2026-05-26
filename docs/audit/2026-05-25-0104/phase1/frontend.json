@@ -1,0 +1,134 @@
+{
+  "archetype": "frontend",
+  "problems_reviewed": [
+    "airbnb-search-map",
+    "autocomplete-typeahead",
+    "chatgpt-claude-chat-ui",
+    "copilot-inline-completions",
+    "datadog-dashboard",
+    "figma-canvas-client",
+    "google-docs-client",
+    "google-maps-client",
+    "image-carousel",
+    "infinite-scroll-feed",
+    "instagram-stories-client",
+    "news-feed-client",
+    "pinterest-board-client",
+    "rich-text-editor",
+    "slack-web-client",
+    "spotify-web-player",
+    "stock-trading-dashboard",
+    "stripe-checkout-flow",
+    "video-player"
+  ],
+  "patterns_reviewed": ["frontend.md"],
+  "findings": [
+    {
+      "id": "frontend-001",
+      "category": "duplicate",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": [
+        "docs/coach/problems/news-feed-client.md",
+        "docs/coach/problems/infinite-scroll-feed.md"
+      ],
+      "evidence": "news-feed-client: 'Cursor-paginated infinite feed with virtualization ... WebSocket-pushed live updates'; infinite-scroll-feed: 'Infinite scroll fetching next page near bottom ... Variable-height items'. Both cite greatfrontend_news_feed.",
+      "summary": "news-feed-client and infinite-scroll-feed substantially overlap on cursor pagination + virtualization + IntersectionObserver + scroll restoration; same primary source.",
+      "suggested_fix": "Either merge infinite-scroll-feed into news-feed-client as a sub-section, or sharpen scopes: infinite-scroll-feed = pure pagination/render mechanics primer; news-feed-client = end-to-end product (composer, optimistic create, ads, WS).",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "frontend-002",
+      "category": "pattern_gap",
+      "severity": "medium",
+      "confidence": "high",
+      "files": [
+        "docs/coach/problems/chatgpt-claude-chat-ui.md",
+        "docs/coach/problems/stock-trading-dashboard.md",
+        "docs/coach/problems/copilot-inline-completions.md"
+      ],
+      "evidence": "chatgpt-claude-chat-ui: 'ref-buffer + rAF flush architectural principle (verbatim): \"your network layer should never directly drive React renders.\"' — pattern is the canonical Staff+ unlock across three problems but absent from frontend.md.",
+      "summary": "frontend.md has no entry for the ref-buffer + requestAnimationFrame flush / render-decoupling pattern despite being the canonical Staff+ unlock in 3 catalog problems.",
+      "suggested_fix": "Add a 'Ref-buffer + rAF render decoupling' (or 'High-frequency UI batching') section to docs/coach/patterns/frontend.md citing chatgpt-claude-chat-ui and stock-trading-dashboard as canonical uses.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "frontend-003",
+      "category": "pattern_gap",
+      "severity": "medium",
+      "confidence": "high",
+      "files": [
+        "docs/coach/problems/figma-canvas-client.md",
+        "docs/coach/problems/google-maps-client.md",
+        "docs/coach/problems/stock-trading-dashboard.md",
+        "docs/coach/problems/airbnb-search-map.md"
+      ],
+      "evidence": "figma-canvas-client: 'entire rendering layer canvas/WebGL (NOT DOM)'; stock-trading-dashboard: 'DOM/SVG <1k elements; Canvas 2D for depth-of-book; WebGL via GPU sustains 60fps on 500K candlesticks'.",
+      "summary": "frontend.md has no entry on Canvas/WebGL vs DOM renderer choice despite 4 catalog problems treating it as the Staff+ depth probe.",
+      "suggested_fix": "Add a 'Canvas / WebGL rendering tier' section to docs/coach/patterns/frontend.md covering renderer-by-scale (DOM <1k / Canvas / WebGL >10k) with figma + maps + stock-dashboard as references.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "frontend-004",
+      "category": "pattern_gap",
+      "severity": "medium",
+      "confidence": "high",
+      "files": [
+        "docs/coach/problems/video-player.md",
+        "docs/coach/problems/spotify-web-player.md"
+      ],
+      "evidence": "video-player: 'HLS via hls.js cross-browser (Chrome/Firefox lack native HLS); DASH via dash.js; both use MSE to push segments into SourceBuffer' — MSE/EME/ABR is the entire Staff+ bar yet not in frontend.md.",
+      "summary": "frontend.md has no entry for MSE / EME / adaptive-bitrate streaming despite being core to two catalog problems (video-player, spotify-web-player).",
+      "suggested_fix": "Add a 'Media streaming: MSE + EME + adaptive bitrate' section to docs/coach/patterns/frontend.md.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "frontend-005",
+      "category": "pattern_gap",
+      "severity": "low",
+      "confidence": "medium",
+      "files": [
+        "docs/coach/problems/stripe-checkout-flow.md"
+      ],
+      "evidence": "stripe-checkout-flow: 'iframe-based card collection — form contains iframe owned by Stripe; merchant receives only token (PaymentMethod ID); PCI-DSS scope reduces from SAQ D-Merchant ... to SAQ A'.",
+      "summary": "frontend.md has no entry for cross-origin iframe sandbox + postMessage protocol (Stripe Elements pattern), the canonical Staff+ unlock for stripe-checkout-flow.",
+      "suggested_fix": "Add an 'iframe sandbox + postMessage protocol' section to docs/coach/patterns/frontend.md, or accept the gap if checkout is the only problem needing it.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "frontend-006",
+      "category": "pattern_gap",
+      "severity": "low",
+      "confidence": "medium",
+      "files": [
+        "docs/coach/problems/chatgpt-claude-chat-ui.md",
+        "docs/coach/problems/copilot-inline-completions.md",
+        "docs/coach/problems/datadog-dashboard.md"
+      ],
+      "evidence": "chatgpt-claude-chat-ui: 'Browser EventSource insufficient: GET-only + no custom Authorization headers. Production uses fetch() + ReadableStream + manual SSE framing parser'; datadog-dashboard: 'Live-tail logs via SSE'.",
+      "summary": "frontend.md covers WebSocket connection management but has no SSE / fetch+ReadableStream streaming pattern entry despite 3 problems naming it as the Staff+ unlock.",
+      "suggested_fix": "Either extend the existing 'WebSocket connection management' entry in docs/coach/patterns/frontend.md to cover SSE and fetch+ReadableStream, or add a dedicated 'SSE streaming + AbortController' entry.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "frontend-007",
+      "category": "other",
+      "severity": "low",
+      "confidence": "high",
+      "files": [
+        "docs/coach/problems/airbnb-search-map.md"
+      ],
+      "evidence": "Bar anchors mention 'two-view ranking', 'neural location retrieval' — '2-layer NN outputs 4 floats defining lat/lng offsets'. These are server-side ranker/retrieval insights, not client architecture.",
+      "summary": "airbnb-search-map's Staff+ bar leans heavily on backend ranking insights (neural location retrieval, two-view ranking) rather than client-side architecture; bar-anchors blur with ml-in-loop archetype.",
+      "suggested_fix": "Either tighten the Staff+ bar to client concerns (virtualization, viewport debounce, history.replaceState, marker clustering) and demote ranking notes to context, or accept the cross-cut framing explicitly.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "ml-in-loop", "resolved": false}
+    }
+  ],
+  "self_report": {
+    "problems_count_in_index": 19,
+    "problems_count_files_found": 19,
+    "files_not_in_index": [],
+    "index_entries_with_no_file": []
+  },
+  "status": "ok"
+}

@@ -1,0 +1,76 @@
+{
+  "archetype": "caching-read-heavy",
+  "problems_reviewed": [
+    "tinyurl",
+    "pastebin",
+    "dns",
+    "leaderboard",
+    "view-counter",
+    "top-k-trending",
+    "news-homepage",
+    "wikipedia",
+    "cdn-edge-cache",
+    "product-catalog",
+    "stock-ticker",
+    "session-store",
+    "feature-flags",
+    "distributed-config"
+  ],
+  "patterns_reviewed": ["caching.md", "networking-transport.md"],
+  "findings": [
+    {
+      "id": "caching-read-heavy-001",
+      "category": "mis_categorization",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/stock-ticker.md"],
+      "evidence": "ingest connectors normalize exchange feeds into **Kafka partitioned by symbol** ... and **WebSocket gateways** subscribe and stream to clients (compute lives in aggregators, not gateways)",
+      "summary": "stock-ticker's dominant pressure is push fan-out over WebSocket to many subscribers, not cache topology; reads as realtime-messaging or fan-out.",
+      "suggested_fix": "Phase 2: review whether stock-ticker belongs in realtime-messaging (WebSocket gateway, snapshot+delta with sequence gaps) or fan-out (per-symbol Kafka -> many subscribers), not caching-read-heavy.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "realtime-messaging", "resolved": false}
+    },
+    {
+      "id": "caching-read-heavy-002",
+      "category": "mis_categorization",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/top-k-trending.md"],
+      "evidence": "Why the read side is a caching problem. Unlike most write-heavy stream problems, the *read* here is everyone asking for the same tiny list ... This is why the problem belongs in read-heavy/caching despite the heavy write-side machinery.",
+      "summary": "top-k-trending's dominant design pressure is streaming heavy-hitters (CMS, lambda fast/slow); the file itself flags the categorization is borderline.",
+      "suggested_fix": "Phase 2: consider whether top-k-trending fits search-indexing (streaming aggregation) better; the file explicitly defends inclusion here, so review with that in mind.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "search-indexing", "resolved": false}
+    },
+    {
+      "id": "caching-read-heavy-003",
+      "category": "mis_categorization",
+      "severity": "medium",
+      "confidence": "low",
+      "files": ["docs/coach/problems/view-counter.md"],
+      "evidence": "Names the **hot-key problem** ... and the **sharded-counter fix** (split one counter into N sub-counters keyed by bucket; increment a random shard, **sum all N on read**",
+      "summary": "view-counter's dominant pressure is write hot-key sharding + idempotent counting; arguably concurrent-resource or infra-primitives rather than caching-read-heavy.",
+      "suggested_fix": "Phase 2: check whether view-counter belongs in concurrent-resource (hot-key write contention + idempotency) or stays here for the read/display side.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "concurrent-resource", "resolved": false}
+    },
+    {
+      "id": "caching-read-heavy-004",
+      "category": "pattern_gap",
+      "severity": "low",
+      "confidence": "high",
+      "files": [
+        "docs/coach/problems/top-k-trending.md",
+        "docs/coach/problems/view-counter.md"
+      ],
+      "evidence": "Solves heavy-hitters with a **Count-Min Sketch + min-heap of size K** ... a 10x4000 CMS approx 160KB vs ~4GB for an exact map  ; Uses **HyperLogLog** for unique-view cardinality (12KB, 0.81% error",
+      "summary": "Archetype references only caching.md + networking-transport.md, but top-k-trending and view-counter lean centrally on Count-Min Sketch and HyperLogLog covered in data-structures.md (not referenced).",
+      "suggested_fix": "Add docs/coach/patterns/data-structures.md to this archetype's Patterns line (it already documents CMS/HLL/skiplist and is used by leaderboard/top-k-trending/view-counter).",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    }
+  ],
+  "self_report": {
+    "problems_count_in_index": 14,
+    "problems_count_files_found": 14,
+    "files_not_in_index": [],
+    "index_entries_with_no_file": []
+  },
+  "status": "ok"
+}

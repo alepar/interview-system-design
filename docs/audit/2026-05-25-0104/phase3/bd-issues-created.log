@@ -1,0 +1,112 @@
+# Phase 3 emit log — run 2026-05-25-0104
+# EPIC_A (catalog-cross) = interview-system-design-ng1
+# EPIC_B (taxonomy) = interview-system-design-48c
+
+## Per-archetype findings
+CREATED: interview-system-design-ng1.1 - [audit] ai-infrastructure: gpu-cluster-scheduler is a build-the-primitive proble
+CREATED: interview-system-design-ng1.2 - [audit] ai-infrastructure: Pattern file ai-infra.md has no entry for gang schedu
+CREATED: interview-system-design-ng1.3 - [audit] ai-infrastructure: ai-infra.md PagedAttention entry covers KV-cache bloc
+CREATED: interview-system-design-ng1.4 - [audit] ai-infrastructure: ai-infra.md has no pattern entry for durable agent lo
+CREATED: interview-system-design-ng1.5 - [audit] ai-infrastructure: ai-infra.md does not cover multi-tenant LoRA serving 
+CREATED: interview-system-design-ng1.6 - [audit] ai-infrastructure: model-cascade-router deep-dive #3 (MoE serving) is es
+CREATED: interview-system-design-ng1.7 - [audit] ai-infrastructure: inference-batching deep-dive #3 covers prompt-cache t
+CREATED: interview-system-design-ng1.8 - [audit] ai-infrastructure: inference-batching coach-notes reference `state/obser
+CREATED: interview-system-design-ng1.9 - [audit] caching-read-heavy: stock-ticker's dominant pressure is push fan-out ove
+CREATED: interview-system-design-ng1.10 - [audit] caching-read-heavy: view-counter's dominant pressure is write hot-key sh
+CREATED: interview-system-design-ng1.11 - [audit] caching-read-heavy: Archetype references only caching.md + networking-tr
+CREATED: interview-system-design-ng1.12 - [audit] concurrent-resource: ticketmaster.md is missing the '## (Delineation not
+CREATED: interview-system-design-ng1.13 - [audit] concurrent-resource: ticketmaster.md has a single-source frontmatter whi
+CREATED: interview-system-design-ng1.14 - [audit] concurrent-resource: parking-garage and resource-pool are near-duplicate
+CREATED: interview-system-design-ng1.15 - [audit] concurrent-resource: Virtual waiting room / queued admission is a domina
+CREATED: interview-system-design-ng1.16 - [audit] concurrent-resource: Bot mitigation / rate-limiting / behavioral biometr
+CREATED: interview-system-design-ng1.17 - [audit] concurrent-resource: Saga / compensating-transaction pattern is a recurr
+CREATED: interview-system-design-ng1.18 - [audit] concurrent-resource: idempotent-payment reads as a cross-cutting primiti
+CREATED: interview-system-design-ng1.19 - [audit] conflict-resolution: Game netcode framed as CRDT-adjacent but its bar an
+CREATED: interview-system-design-ng1.20 - [audit] conflict-resolution: Presence-awareness is a sibling of discord-presence
+CREATED: interview-system-design-ng1.21 - [audit] conflict-resolution: The single 'OT vs CRDTs' pattern entry covers two p
+CREATED: interview-system-design-ng1.22 - [audit] conflict-resolution: calendar-sync's central correctness story is HTTP c
+CREATED: interview-system-design-ng1.23 - [audit] conflict-resolution: google-sheets and notion both explicitly flag that 
+SKIPPED (no-action): conflict-resolution-007 - Strong, consistent inter-problem 'spine notes' across the archetype delineate ow
+CREATED: interview-system-design-ng1.24 - [audit] fan-out: inbox-zero dominant design pressure is per-user ML ranking (Pri
+CREATED: interview-system-design-ng1.25 - [audit] fan-out: Discord server activity stream is dominated by real-time messag
+CREATED: interview-system-design-ng1.26 - [audit] fan-out: geo-weather-alert-fanout's dominant pressure is geo-targeted br
+CREATED: interview-system-design-ng1.27 - [audit] fan-out: notification-aggregation-service is dominated by ML uplift mode
+CREATED: interview-system-design-ng1.28 - [audit] fan-out: Archetype references only async-streaming.md, but 9+ problems (
+CREATED: interview-system-design-ng1.29 - [audit] fan-out: Push-notification gateway limits (APNs/FCM concurrent caps, col
+CREATED: interview-system-design-ng1.30 - [audit] fan-out: Pinterest's Pixie appears in both pinterest-home (fan-out sourc
+CREATED: interview-system-design-ng1.31 - [audit] frontend: news-feed-client and infinite-scroll-feed substantially overla
+CREATED: interview-system-design-ng1.32 - [audit] frontend: frontend.md has no entry for the ref-buffer + requestAnimation
+CREATED: interview-system-design-ng1.33 - [audit] frontend: frontend.md has no entry on Canvas/WebGL vs DOM renderer choic
+CREATED: interview-system-design-ng1.34 - [audit] frontend: frontend.md has no entry for MSE / EME / adaptive-bitrate stre
+CREATED: interview-system-design-ng1.35 - [audit] frontend: frontend.md has no entry for cross-origin iframe sandbox + pos
+CREATED: interview-system-design-ng1.36 - [audit] frontend: frontend.md covers WebSocket connection management but has no 
+CREATED: interview-system-design-ng1.37 - [audit] frontend: airbnb-search-map's Staff+ bar leans heavily on backend rankin
+CREATED: interview-system-design-ng1.38 - [audit] geo-proximity: Pattern file covers spatial indexes but not the VRP/CVRPT
+CREATED: interview-system-design-ng1.39 - [audit] geo-proximity: instacart-batching design pressure is CVRPTW + ML quantil
+CREATED: interview-system-design-ng1.40 - [audit] geo-proximity: find-my-friends design pressure is a cryptographic crowds
+CREATED: interview-system-design-ng1.41 - [audit] geo-proximity: bluetooth-beacon-proximity reads as a BLE-protocol primit
+CREATED: interview-system-design-ng1.42 - [audit] geo-proximity: Substantial overlap between bluetooth-beacon-proximity an
+CREATED: interview-system-design-ng1.43 - [audit] geo-proximity: waze-traffic-update has strong ugc-pipeline / ml-in-loop 
+CREATED: interview-system-design-ng1.44 - [audit] geo-proximity: Several problems (lyft-dispatch, didi-dispatch, doordash-
+CREATED: interview-system-design-ng1.45 - [audit] infra-primitives: ad-click-aggregator is explicitly named as a top-3 pro
+CREATED: interview-system-design-ng1.46 - [audit] infra-primitives: stripe-payments is an application-level exactly-once p
+CREATED: interview-system-design-ng1.47 - [audit] infra-primitives: Neither referenced pattern file covers consensus proto
+CREATED: interview-system-design-ng1.48 - [audit] infra-primitives: Time/clock primitives (TrueTime, HLC, NTP-skew handlin
+CREATED: interview-system-design-ng1.49 - [audit] infra-primitives: Rate-limiting algorithms (token-bucket, GCRA, sliding-
+CREATED: interview-system-design-ng1.50 - [audit] infra-primitives: s3.md and colossus.md cover storage substrates that ar
+CREATED: interview-system-design-ng1.51 - [audit] infra-primitives: zookeeper.md and etcd.md cover overlapping consensus-K
+CREATED: interview-system-design-ng1.52 - [audit] ml-in-loop: Autonomous driving inference is embedded safety-critical inf
+CREATED: interview-system-design-ng1.53 - [audit] ml-in-loop: Voice-assistant routing is a cascade-of-ML-models (ASR/NLU/s
+CREATED: interview-system-design-ng1.54 - [audit] ml-in-loop: Pattern file ml-specific.md does not cover safety-critical /
+CREATED: interview-system-design-ng1.55 - [audit] ml-in-loop: feature-store and model-rollout-shadow are ML-platform infra
+CREATED: interview-system-design-ng1.56 - [audit] realtime-messaging: discord-channels is primarily a storage/DB-migration
+CREATED: interview-system-design-ng1.57 - [audit] realtime-messaging: telegram is a broadcast channel / fan-out problem fr
+CREATED: interview-system-design-ng1.58 - [audit] realtime-messaging: twitch-streaming's dominant design pressure is video
+CREATED: interview-system-design-ng1.59 - [audit] realtime-messaging: youtube-live is dominated by transcoding-ladder + mu
+CREATED: interview-system-design-ng1.60 - [audit] realtime-messaging: mqtt-broker is a 'design the messaging-broker primit
+CREATED: interview-system-design-ng1.61 - [audit] realtime-messaging: twilio's dominant pressure is carrier-routing + per-
+CREATED: interview-system-design-ng1.62 - [audit] realtime-messaging: webrtc-sfu is explicitly framed as a primitive ('pri
+CREATED: interview-system-design-ng1.63 - [audit] realtime-messaging: Both signal-protocol and mls-group are cryptographic
+CREATED: interview-system-design-ng1.64 - [audit] realtime-messaging: Pattern does not cover MLS / Signal Protocol (E2E gr
+CREATED: interview-system-design-ng1.65 - [audit] realtime-messaging: Pattern's WebRTC subsection does not cover simulcast
+CREATED: interview-system-design-ng1.66 - [audit] realtime-messaging: Three large sub-clusters of this archetype (push gat
+CREATED: interview-system-design-ng1.67 - [audit] realtime-messaging: Three problems (audio-rooms, twitch-streaming, youtu
+CREATED: interview-system-design-ng1.68 - [audit] search-indexing: Archetype references only data-structures.md, but the p
+CREATED: interview-system-design-ng1.69 - [audit] search-indexing: Two problems are self-declared as ~25-min deep-dive/fol
+CREATED: interview-system-design-ng1.70 - [audit] ugc-pipeline: Archetype 5 only references storage-databases.md, but UGC 
+CREATED: interview-system-design-ng1.71 - [audit] ugc-pipeline: content-addressed-dedup self-describes as a 'primitive' sh
+CREATED: interview-system-design-ng1.72 - [audit] ugc-pipeline: resumable-upload reads as a protocol/primitive (S3 multipa
+
+## Cross-archetype duplicates
+SKIPPED (no-action): xc-dup-001 - Same domain but materially different prompts: autocomplete is backend FST/trie/s
+SKIPPED (no-action): xc-dup-002 - Intentional backend (server-authoritative LWW design) + frontend (WASM/WebGL cli
+SKIPPED (no-action): xc-dup-003 - Intentional backend (OT/Jupiter) + frontend (cursor overlay + IME + offline Inde
+SKIPPED (no-action): xc-dup-004 - uber is dispatch (geo); uber-surge is ML pricing. Different prompts, explicitly 
+SKIPPED (no-action): xc-dup-005 - Backend ranking (ml-in-loop) vs client map+grid sync (frontend). Different promp
+SKIPPED (no-action): xc-dup-006 - pinterest-home is the feed system using Pixie as a candidate source; pinterest-p
+CREATED: interview-system-design-ng1.73 - [audit] Two moderation problems explicitly delineate (UGC-pipeline integration v
+
+## Archetype pattern-ref issues
+
+## Global index issues
+
+## Orphan patterns (synthesized)
+CREATED: interview-system-design-ng1.74 - [audit] Orphan pattern: core-concepts.md not referenced by any archetype
+CREATED: interview-system-design-ng1.75 - [audit] Orphan pattern: load-balancing.md not referenced by any archetype
+CREATED: interview-system-design-ng1.76 - [audit] Orphan pattern: papers.md not referenced by any archetype
+CREATED: interview-system-design-ng1.77 - [audit] Orphan pattern: reliability-observability.md not referenced by any arche
+CREATED: interview-system-design-ng1.78 - [audit] Orphan pattern: security-privacy.md not referenced by any archetype
+CREATED: interview-system-design-ng1.79 - [audit] Orphan pattern: tradeoffs.md not referenced by any archetype
+
+## Taxonomy findings
+CREATED: interview-system-design-48c.1 - [audit] taxonomy: realtime-messaging contains three distinct design-pressure clu
+CREATED: interview-system-design-48c.2 - [audit] taxonomy: ml-in-loop summary is funnel-centric but archetype now include
+CREATED: interview-system-design-48c.3 - [audit] taxonomy: ml-in-loop and ai-infrastructure share a fuzzy boundary on inf
+CREATED: interview-system-design-48c.4 - [audit] taxonomy: infra-primitives and concurrent-resource boundary: which is th
+CREATED: interview-system-design-48c.5 - [audit] taxonomy: ml-in-loop and geo-proximity share a fuzzy boundary on routing
+CREATED: interview-system-design-48c.6 - [audit] taxonomy: ml-in-loop and fan-out overlap on feed/notification ranking pr
+CREATED: interview-system-design-48c.7 - [audit] taxonomy: Boundary between realtime-messaging (connection model + presen
+
+## Summary
+Created: 86
+Skipped (no-action): 7

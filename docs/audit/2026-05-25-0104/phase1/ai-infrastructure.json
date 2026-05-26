@@ -1,0 +1,161 @@
+{
+  "archetype": "ai-infrastructure",
+  "problems_reviewed": [
+    "agentic-tool-orchestrator",
+    "ai-gateway-token-quota",
+    "billion-doc-rag",
+    "eval-pipeline-at-scale",
+    "inference-batching",
+    "embedding-service-at-scale",
+    "gpu-cluster-scheduler",
+    "long-context-kv-management",
+    "multimodal-realtime-serving",
+    "prompt-cache-infrastructure",
+    "moe-serving",
+    "safety-moderation-pipeline",
+    "prefill-decode-disaggregation",
+    "sandboxed-agent-execution",
+    "multi-tenant-lora-serving",
+    "training-cluster-fault-tolerance",
+    "model-cascade-router"
+  ],
+  "patterns_reviewed": ["ai-infra.md"],
+  "findings": [
+    {
+      "id": "ai-infrastructure-001",
+      "category": "mis_categorization",
+      "severity": "medium",
+      "confidence": "low",
+      "files": ["docs/coach/problems/safety-moderation-pipeline.md"],
+      "evidence": "input classifier (Llama Prompt Guard ~50ms ...) ... heavier input classifier (Llama Guard 3 ~200ms - full taxonomy classification) ... Feedback loop routes false-positives to a human review queue → labeled data → periodic classifier retrain",
+      "summary": "safety-moderation-pipeline is mostly an ML-in-loop classifier serving funnel (cascade of cheap→expensive classifiers + human-feedback retrain), and could plausibly belong in ml-in-loop rather than ai-infrastructure.",
+      "suggested_fix": "Phase 2: weigh ml-in-loop fit against the LLM-serving framing (streaming early-stop, instruction hierarchy, jailbreak defenses) that anchors it in ai-infrastructure. archetypes.md lists this as a top-3 ai-infra prompt, so default is to keep, but flag the boundary.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "ml-in-loop", "resolved": false}
+    },
+    {
+      "id": "ai-infrastructure-002",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "low",
+      "files": ["docs/coach/problems/prompt-cache-infrastructure.md"],
+      "evidence": "The prompt-cache layer is integrated into the inference serving stack (it's a memory-management overlay, not a separate service) ... cache key is `(prefix_hash, model_version, tenant_salt)`",
+      "summary": "prompt-cache-infrastructure is a caching primitive for transformer KV state; could plausibly belong in infra-primitives (build-the-primitive). The KV-specific semantics keep it AI-flavoured but the framing is primitive-design.",
+      "suggested_fix": "Phase 2: confirm ai-infrastructure placement is correct given the LLM-serving-stack tight coupling (PagedAttention block, model-version cache key, cross-tenant cache_salt) vs. the more generic 'build a cache' framing of infra-primitives.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "infra-primitives", "resolved": false}
+    },
+    {
+      "id": "ai-infrastructure-003",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "low",
+      "files": ["docs/coach/problems/gpu-cluster-scheduler.md"],
+      "evidence": "Produces a basic K8s + nvidia-device-plugin design: pods request `nvidia.com/gpu: 1`, default-scheduler bin-packs across nodes, autoscaler adds nodes when pending pods accumulate ... gang scheduling ... topology awareness (NVLink within node, InfiniBand / RoCE across)",
+      "summary": "gpu-cluster-scheduler is a build-the-primitive problem (resource scheduler with gang/topology/preemption); shape mirrors the kubernetes-scheduler entry in infra-primitives. Could plausibly live there.",
+      "suggested_fix": "Phase 2: compare to `kubernetes-scheduler` (already in infra-primitives) and decide whether the GPU-specific framing (heterogeneous fleet, training↔inference borrowing) is enough to keep this in ai-infrastructure.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "infra-primitives", "resolved": false}
+    },
+    {
+      "id": "ai-infrastructure-004",
+      "category": "pattern_gap",
+      "severity": "medium",
+      "confidence": "high",
+      "files": [
+        "docs/coach/problems/gpu-cluster-scheduler.md",
+        "docs/coach/problems/training-cluster-fault-tolerance.md"
+      ],
+      "evidence": "ai-infra.md sections are: Continuous batching, PagedAttention, Prefix caching, Speculative decoding, Model-router gateways, MoE, Semantic caching, Eval pipelines, Parallel Safety Pipelines, Distributed training.",
+      "summary": "Pattern file ai-infra.md has no entry for gang scheduling / topology-aware GPU scheduling or for training-cluster fault tolerance (async checkpointing, NCCL Flight Recorder, SDC defense). The Distributed-training entry mentions FSDP/Megatron but does not cover the scheduler or fault-tolerance design pressures.",
+      "suggested_fix": "Phase 2: either add 'Gang scheduling + topology-aware GPU placement' and 'Async checkpoint + SDC defense' entries to ai-infra.md, or accept the gap and flag these two problems as exploration-stretch with no canonical pattern entry.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "ai-infrastructure-005",
+      "category": "pattern_gap",
+      "severity": "medium",
+      "confidence": "high",
+      "files": [
+        "docs/coach/problems/long-context-kv-management.md",
+        "docs/coach/problems/prefill-decode-disaggregation.md"
+      ],
+      "evidence": "Names MLA (Multi-head Latent Attention, DeepSeek-V3) as the compression beyond GQA. Names sequence parallelism / Ring Attention for cross-GPU long-context attention. Names HEADINFER ... Names chunked prefill as the answer to long-prefill HOL blocking.",
+      "summary": "ai-infra.md PagedAttention entry covers KV-cache blocks but not the long-context techniques (MLA, Ring Attention/sequence parallelism, HEADINFER, chunked prefill, prefill/decode disaggregation, KV transfer plane) that two problems treat as Staff+ depth.",
+      "suggested_fix": "Phase 2: add pattern entries for 'Chunked prefill + sequence parallelism', 'Prefill/decode disaggregation (DistServe/Splitwise + NIXL/MoonCake KV transport)', and 'MLA / GQA KV-cache compression' so these two problems have canonical pattern references.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "ai-infrastructure-006",
+      "category": "pattern_gap",
+      "severity": "medium",
+      "confidence": "high",
+      "files": [
+        "docs/coach/problems/agentic-tool-orchestrator.md",
+        "docs/coach/problems/sandboxed-agent-execution.md"
+      ],
+      "evidence": "Names Anthropic's Managed Agents 3-tier architecture (Harness brain / Sandbox hands / Session log) ... MCP as the tool protocol with lazy tool-discovery ... Firecracker microVM for untrusted-code-execution tools (125ms cold start, hardware-virtualized isolation); gVisor or bubblewrap for tools with weaker threat models.",
+      "summary": "ai-infra.md has no pattern entry for durable agent loops, MCP tool protocol, or sandbox isolation primitives (Firecracker / gVisor / bubblewrap). Two agent-related problems lean heavily on this material but it is not codified as a pattern.",
+      "suggested_fix": "Phase 2: add 'Durable agent loop + MCP tool protocol' and 'Sandbox isolation primitives for code-exec agents' to ai-infra.md, OR move these two agent problems to a new agent-platform sub-archetype.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "ai-infrastructure-007",
+      "category": "pattern_gap",
+      "severity": "low",
+      "confidence": "high",
+      "files": [
+        "docs/coach/problems/multi-tenant-lora-serving.md",
+        "docs/coach/problems/embedding-service-at-scale.md",
+        "docs/coach/problems/multimodal-realtime-serving.md"
+      ],
+      "evidence": "Names S-LoRA Unified Paging (base + adapter weights + KV cache in one memory pool) and Punica SGMV kernel ... Matryoshka truncation ... GPT-4o Realtime specifics: WebSocket persistent session, PCM16/24kHz/mono",
+      "summary": "ai-infra.md does not cover multi-tenant LoRA serving (Unified Paging, SGMV), embedding-service scaling (Matryoshka, online/offline pool split), or realtime multi-modal serving (WebSocket voice, vision-token asymmetry) as distinct patterns.",
+      "suggested_fix": "Phase 2: consider adding 'Multi-tenant LoRA serving (Unified Paging + SGMV)', 'Embedding service (online query vs offline corpus pools)', and 'Realtime multimodal session (WebSocket voice + vision tokens)' pattern entries; or accept that these three problems are exploration-stretch with no canonical pattern reference.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "ai-infrastructure-008",
+      "category": "duplicate",
+      "severity": "low",
+      "confidence": "medium",
+      "files": [
+        "docs/coach/problems/moe-serving.md",
+        "docs/coach/problems/model-cascade-router.md"
+      ],
+      "evidence": "model-cascade-router deep-dive 3: 'MoE serving as intra-model routing. DeepSeek-V3: 671B total parameters, 37B activated per token, 58 MoE layers × 256 routed + 1 shared expert each → 14,848 routed experts ... routing collapse ... DeepSeek's defense: auxiliary-loss-free dynamic bias adjustment ... MoETuner reports 9.3-17.5% speedup'",
+      "summary": "model-cascade-router deep-dive #3 (MoE serving) is essentially a recap of moe-serving's central content (same DeepSeek-V3 numbers, same routing-collapse defense, same MoETuner anchor). Significant content overlap, though framing differs.",
+      "suggested_fix": "Phase 2: tighten model-cascade-router deep-dive #3 to focus on the cascade↔MoE-routing analogy (or replace it with a different deep-dive); avoid duplicating moe-serving's primary depth content.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "ai-infrastructure-009",
+      "category": "duplicate",
+      "severity": "low",
+      "confidence": "medium",
+      "files": [
+        "docs/coach/problems/inference-batching.md",
+        "docs/coach/problems/prompt-cache-infrastructure.md"
+      ],
+      "evidence": "inference-batching deep-dive 3: 'Prompt cache topology and per-tenant isolation (fleet) ... per-pod prefix tree (RadixAttention, SGLang) ... shared cache cluster ... cache_salt per tenant mixed into the cache key'",
+      "summary": "inference-batching deep-dive #3 covers prompt-cache topology + per-tenant isolation + cross-version invalidation — substantially the same Staff+ content as prompt-cache-infrastructure's three deep-dives. Two problems should not have overlapping Staff+ commit points.",
+      "suggested_fix": "Phase 2: either trim inference-batching deep-dive #3 to a one-paragraph pointer to prompt-cache-infrastructure, or refactor prompt-cache-infrastructure to focus on the parts not already in inference-batching (e.g., partial-cache-hits, multi-tier eviction).",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "ai-infrastructure-010",
+      "category": "other",
+      "severity": "low",
+      "confidence": "high",
+      "files": ["docs/coach/problems/inference-batching.md"],
+      "evidence": "Connection economics is the recurring gap (per `state/observed.md` from the uber session). At 11.4M concurrent connections (ChatGPT scale), per-connection memory in the gateway tier drives pod sizing",
+      "summary": "inference-batching coach-notes reference `state/observed.md` (private state path) — likely fine internally, but worth confirming the file isn't expected to be public/repo-relative when the catalog ships outside the alexey branch.",
+      "suggested_fix": "Phase 2: verify whether the `state/observed.md` reference belongs in a published problem file or should be reworded to remove the cross-session-state mention.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    }
+  ],
+  "self_report": {
+    "problems_count_in_index": 17,
+    "problems_count_files_found": 17,
+    "files_not_in_index": [],
+    "index_entries_with_no_file": []
+  },
+  "status": "ok"
+}

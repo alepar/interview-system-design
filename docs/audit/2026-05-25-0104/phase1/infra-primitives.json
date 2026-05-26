@@ -1,0 +1,138 @@
+{
+  "archetype": "infra-primitives",
+  "problems_reviewed": [
+    "etcd",
+    "aurora",
+    "ad-click-aggregator",
+    "dynamodb",
+    "prometheus",
+    "pulsar",
+    "kafka",
+    "spanner",
+    "memcached",
+    "colossus",
+    "stripe-payments",
+    "google-pubsub",
+    "kubernetes-scheduler",
+    "zookeeper",
+    "s3",
+    "stripe-rate-limiter",
+    "snowflake-id"
+  ],
+  "patterns_reviewed": ["storage-databases.md", "architectural.md"],
+  "findings": [
+    {
+      "id": "infra-primitives-001",
+      "category": "mis_categorization",
+      "severity": "high",
+      "confidence": "high",
+      "files": ["docs/coach/problems/ad-click-aggregator.md"],
+      "evidence": "Top-3 prompts. Design a YouTube recommendation engine · Design CTR prediction · Design Ad Click Aggregator. (from archetypes.md §9 ML-in-the-loop serving)",
+      "summary": "ad-click-aggregator is explicitly named as a top-3 prompt of archetype 9 (ML-in-the-loop) but filed in archetype 10 (infra-primitives); content is an application-level streaming-batch reconciliation pipeline, not a primitive build",
+      "suggested_fix": "Move file to ml-in-loop archetype OR re-frame archetype 9's top-3 prompts to remove this. The file's own bar-anchors describe lambda-vs-kappa for ad billing (application-level), not a primitive build like 'design Kafka' or 'design Redis'.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "ml-in-loop", "resolved": false}
+    },
+    {
+      "id": "infra-primitives-002",
+      "category": "mis_categorization",
+      "severity": "medium",
+      "confidence": "medium",
+      "files": ["docs/coach/problems/stripe-payments.md"],
+      "evidence": "Process a payment: charge user's payment method, credit merchant's balance, record the transaction ... Exactly-once execution despite network retries, client crashes, server crashes",
+      "summary": "stripe-payments is an application-level exactly-once payment workflow (idempotency-key + double-entry ledger + webhooks + Saga), not a primitive build like Kafka/Redis/DynamoDB",
+      "suggested_fix": "Consider concurrent-resource archetype (file uses idempotency keys + ledger writes, archetype 4's design pressure is exactly OCC/lock/idempotency for limited-resource contention) OR keep here but explicitly document the boundary that 'application-grade exactly-once systems' belong in infra-primitives.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "concurrent-resource", "resolved": false}
+    },
+    {
+      "id": "infra-primitives-003",
+      "category": "mis_categorization",
+      "severity": "low",
+      "confidence": "low",
+      "files": ["docs/coach/problems/kubernetes-scheduler.md"],
+      "evidence": "Accept job submissions (services, batch jobs, cron jobs, distributed batch with gang semantics) — no GPU-specific framing ... Allocate resources subject to fairness, capacity, and node-constraint policies",
+      "summary": "kubernetes-scheduler is workload-agnostic resource scheduling (N jobs competing for M resources with gang/fairness/preemption) — conceptually overlaps with concurrent-resource archetype (‘N consumers competing for M units of inventory’)",
+      "suggested_fix": "Likely keep here (the framing is ‘build the scheduler primitive’, like Borg/Mesos/K8s) but flag for Phase 2 boundary analysis with concurrent-resource. Bar-anchors are explicitly about primitive build, so primitive framing is reasonable.",
+      "cross_archetype_check": {"needed": true, "candidate_archetype": "concurrent-resource", "resolved": false}
+    },
+    {
+      "id": "infra-primitives-004",
+      "category": "pattern_gap",
+      "severity": "medium",
+      "confidence": "high",
+      "files": [
+        "docs/coach/patterns/storage-databases.md",
+        "docs/coach/patterns/architectural.md"
+      ],
+      "evidence": "Names ZooKeeper's Zab protocol (or Raft for etcd) for consensus ... articulates Multi-Paxos vs Raft vs Zab trade-offs (from zookeeper.md bar-anchors)",
+      "summary": "Neither referenced pattern file covers consensus protocols (Raft/Paxos/Zab/Multi-Paxos) explicitly, yet etcd/zookeeper/spanner/kafka(KRaft)/aurora all depend on consensus as their substrate at Staff+ bar",
+      "suggested_fix": "Add a consensus section to architectural.md or storage-databases.md (Replication has one paragraph but doesn't cover Raft/Paxos/Zab as a substrate), or reference an additional pattern file. Several Staff+ bar-anchors in this archetype hinge on naming the consensus protocol.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "infra-primitives-005",
+      "category": "pattern_gap",
+      "severity": "low",
+      "confidence": "medium",
+      "files": [
+        "docs/coach/problems/snowflake-id.md",
+        "docs/coach/problems/spanner.md",
+        "docs/coach/patterns/storage-databases.md",
+        "docs/coach/patterns/architectural.md"
+      ],
+      "evidence": "TrueTime + commit-wait gives strict serializability at ~4ms commit-wait cost ... HLC structure: 48-bit physical timestamp + 16-bit logical counter (from snowflake-id.md)",
+      "summary": "Time/clock primitives (TrueTime, HLC, NTP-skew handling) are critical for spanner.md and snowflake-id.md Staff+ bar-anchors but not covered by either referenced pattern file",
+      "suggested_fix": "Either add a clocks/time section to storage-databases.md (since it sits alongside isolation levels) or accept that these are problem-local depth probes that don't need a pattern home.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "infra-primitives-006",
+      "category": "pattern_gap",
+      "severity": "low",
+      "confidence": "medium",
+      "files": [
+        "docs/coach/problems/stripe-rate-limiter.md",
+        "docs/coach/patterns/storage-databases.md",
+        "docs/coach/patterns/architectural.md"
+      ],
+      "evidence": "Names GCRA (Generic Cell Rate Algorithm) as Stripe's specific token-bucket variant ... single Theoretical Arrival Time (TAT) field per key (from stripe-rate-limiter.md)",
+      "summary": "Rate-limiting algorithms (token-bucket, GCRA, sliding-window, leaky-bucket) are the central pressure of stripe-rate-limiter.md but absent from both referenced pattern files",
+      "suggested_fix": "Consider referencing reliability-observability.md or load-balancing.md from this archetype's Patterns line (the rate-limiter problem fits more naturally with those pattern subjects).",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "infra-primitives-007",
+      "category": "other",
+      "severity": "low",
+      "confidence": "medium",
+      "files": [
+        "docs/coach/problems/s3.md",
+        "docs/coach/problems/colossus.md"
+      ],
+      "evidence": "No `colossus` overlap concern at L6+: the Colossus filesystem problem (file-system semantics: open/append/close + L4 SSD cache + 1MB chunks) is genuinely distinct from the S3 object-store problem (from s3.md coach notes)",
+      "summary": "s3.md and colossus.md cover storage substrates that are close in shape; both files explicitly call out the boundary, so they are distinct, but worth verifying coach notes consistency",
+      "suggested_fix": "Not a real duplicate; both files explicitly distinguish object-store vs filesystem semantics. Phase 2 can confirm both are kept.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    },
+    {
+      "id": "infra-primitives-008",
+      "category": "other",
+      "severity": "low",
+      "confidence": "medium",
+      "files": [
+        "docs/coach/problems/zookeeper.md",
+        "docs/coach/problems/etcd.md"
+      ],
+      "evidence": "Distinct from `zookeeper` problem by workload framing. `zookeeper` is the coordination service (locks, leader election, fencing tokens with 93% KeepAlive workload); `etcd` is the configuration store (from etcd.md coach notes)",
+      "summary": "zookeeper.md and etcd.md cover overlapping consensus-KV substrate; both files explicitly call out the workload-framing distinction, but a reader could conflate them",
+      "suggested_fix": "Both files include redirect language for the coach; verify the distinction is sharp enough in Phase 2. Low priority — likely fine as-is.",
+      "cross_archetype_check": {"needed": false, "candidate_archetype": null, "resolved": false}
+    }
+  ],
+  "self_report": {
+    "problems_count_in_index": 17,
+    "problems_count_files_found": 17,
+    "files_not_in_index": [],
+    "index_entries_with_no_file": []
+  },
+  "status": "ok"
+}
