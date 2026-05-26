@@ -78,3 +78,6 @@ sources:
 - **The viewport-scoped subscription is the canonical Staff+ unlock.** Mid-senior candidates subscribe to all posts ever seen; Staff+ candidates subscribe only to visible posts and unsubscribe on scroll-off.
 - **The submit-time idempotency key is the depth probe.** Mid-senior candidates use send-time; Staff+ candidates name submit-time because retries from different network attempts must hash to same key.
 - **Adversarial probe: "user posts; network drops mid-request; user clicks Retry. What happens?"** Strong answer: submit-time idempotency key reused on retry; server sees second request with same key → returns cached response (the original post) → no duplicate. Local UI replaces tempId with server ID; opacity normalizes. Weak answer: "we retry" without addressing the dedup mechanism.
+
+## (Delineation note)
+`news-feed-client` is the **full social-feed app** problem — it assumes foundational infinite-scroll concerns (IntersectionObserver pagination, virtualization, cursor pagination, scroll restoration) covered in `infinite-scroll-feed` and focuses on the social-feed-specific layer: hybrid pull-push with viewport-scoped WebSocket, optimistic post creation, ad-slot policy, three-tier code-split via GraphQL `@match`. Reference `infinite-scroll-feed` for the foundations; don't re-derive them here.

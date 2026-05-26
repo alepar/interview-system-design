@@ -72,3 +72,6 @@ sources:
 - **The infinite-scroll-vs-virtualization distinction is the canonical Staff+ unlock.** Mid-senior candidates conflate them; Staff+ candidates separate "fetch policy" from "render policy."
 - **Scroll restoration on back-nav is the deep-cut.** Mid-senior candidates assume browser handles it; Staff+ candidates name `history.scrollRestoration = 'manual'` + `history.state` serialization as the explicit pattern.
 - **Adversarial probe: "user scrolls to post #500, clicks a post, comes back. What's loaded?"** Strong answer: from `history.state` restore `{cursor, scrollTop, mountedPages}`; rehydrate from IndexedDB cache before any network call; restore exact scroll offset; pages 1-10 still mounted. Weak answer: "we save scroll position" without addressing the multi-page-mount problem.
+
+## (Delineation note)
+`infinite-scroll-feed` is the **foundational generic-list** problem in the frontend archetype — applies to any infinite-scrolling UI (search results, chat history, mailbox, file listings), not just social feeds. The full social-feed app (with WebSocket live updates, optimistic posting, ad slots, three-tier code-split) is `news-feed-client`; `news-feed-client` assumes these foundations rather than re-deriving them.
