@@ -3,6 +3,9 @@ slug: ticketmaster
 archetype: concurrent-resource
 sources:
   hello_interview: hellointerview.com/learn/system-design/problem-breakdowns/ticketmaster
+  ticketmaster_verified_fan: business.ticketmaster.com/business-solutions/verified-fan/
+  queueit_waiting_room: queue-it.com/blog/what-is-a-virtual-waiting-room/
+  cloudflare_waiting_room: blog.cloudflare.com/cloudflare-waiting-room/
 ---
 
 # Ticketmaster (Event Ticketing with Seat Reservation)
@@ -64,3 +67,6 @@ For hot events, a virtual waiting room sits in front of the booking service: use
 1. **Redis split-brain during distributed lock** — Under a Redis network partition, Redlock may issue the same lock to two processes simultaneously if a node is unreachable. Both processes believe they hold the lock and both attempt the Postgres write. Mitigation: use fencing tokens — the lock grants a monotonically increasing token; the Postgres UPDATE includes `WHERE lock_token = :expected`; the lower-token write loses and retries. Alternatively, rely solely on Postgres OCC (version column) as the single source of truth and treat Redis as a best-effort contention reducer, not a correctness guarantee.
 2. **Payment succeeds but booking write fails** — Network timeout or Postgres failure between Stripe charge and the `INSERT INTO bookings` write leaves the user charged with no booking. Mitigation: idempotent Stripe PaymentIntent (charge is created before DB write, idempotency_key matches); a reconciliation job runs every 5 minutes, joining Stripe charges to bookings table; orphaned charges (charge exists, no booking) trigger automatic refund and notification. Additionally, the booking flow uses a Postgres savepoint so the Stripe call happens inside the transaction boundary where feasible (use Stripe async confirm to allow rollback).
 3. **Hold expiry race vs booking commit** — A hold expires (swept by background job) at the exact moment a user submits payment. The sweeper resets the seat to `available`; a second user places a hold; the first user's booking commit succeeds anyway (old hold_id still in DB for a brief window). Mitigation: the booking transaction checks `holds.expires_at > NOW()` inside the same atomic Postgres transaction as the status promotion. If the hold is expired, the transaction aborts with a 410 Gone; the user is prompted to re-select seats. Background sweeper uses a two-phase approach: mark hold as `expiring` first, then confirm no booking references it before resetting the seat.
+
+## (Delineation note)
+`ticketmaster` is the **seat-hold + virtual-waiting-room** variant of the concurrent-resource archetype — strict no-oversell seat reservations with a hold-then-book flow and FIFO admission control during hot drops. The extreme-contention raw-inventory variant is `flash-sale`; the bot-fairness raffle variant is `sneaker-drop`; the concurrent-bidding variant is `online-auction`; the deliberate-overbooking variant is `airline-seat-booking`; the steady-state inventory variant is `ecommerce-inventory`. The payment engine is `stripe-payments`; admission-control patterns are detailed in `docs/coach/patterns/admission-control.md` — reference, don't re-derive.

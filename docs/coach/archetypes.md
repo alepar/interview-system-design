@@ -80,6 +80,8 @@ v1 archetypes (11, 12, and 13) are documented inline below pending guide updates
 
 **Patterns.** See `docs/coach/patterns/search.md` and `data-structures.md`.
 
+> **Note.** `spell-correction` and `incremental-indexing` are ~25-minute follow-up problems (best paired with a primary problem like `autocomplete` or `google-search`), not full 50-minute solo slots.
+
 **Problems in catalog.** `google-search` · `web-crawler` · `elasticsearch` · `twitter-search` · `autocomplete` · `log-search` · `github-code-search` · `image-search` · `enterprise-search` · `hybrid-search` · `incremental-indexing` · `amazon-product-search` · `spell-correction` · `geo-place-search`.
 
 ## 8. Conflict resolution / collaborative systems
