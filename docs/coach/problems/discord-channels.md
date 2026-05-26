@@ -1,6 +1,6 @@
 ---
 slug: discord-channels
-archetype: realtime-messaging
+archetype: interactive-messaging
 sources:
   discord_trillions: discord.com/blog/how-discord-stores-trillions-of-messages
   discord_billions: discord.com/blog/how-discord-stores-billions-of-messages

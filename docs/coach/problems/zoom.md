@@ -1,6 +1,6 @@
 ---
 slug: zoom
-archetype: realtime-messaging
+archetype: interactive-messaging
 sources:
   zoom_geographic_routing: zoom.us/docs (Zoom Tech Blog) "How Zoom Optimizes Connections via Geographic-Aware Routing"
   scallop_paper: arxiv.org/abs/2503.11649 (Scallop SDN measurement of Zoom)

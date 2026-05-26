@@ -1,6 +1,6 @@
 ---
 slug: mls-group
-archetype: realtime-messaging
+archetype: interactive-messaging
 sources:
   rfc_9420: datatracker.ietf.org/doc/rfc9420 ("The Messaging Layer Security (MLS) Protocol")
   rfc_9750: datatracker.ietf.org/doc/rfc9750 ("MLS Architecture")

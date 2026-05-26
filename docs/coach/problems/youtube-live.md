@@ -1,6 +1,6 @@
 ---
 slug: youtube-live
-archetype: realtime-messaging
+archetype: live-media-broadcast
 sources:
   youtube_live_dash: developers.google.com/youtube/live-streaming
   dash_if_ll: dashif.org "Low-Latency Live Streaming with MPEG-DASH and CMAF"

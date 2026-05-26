@@ -1,6 +1,6 @@
 ---
 slug: discord-presence
-archetype: realtime-messaging
+archetype: interactive-messaging
 sources:
   discord_5m_elixir: discord.com/blog/how-discord-scaled-elixir-to-5-000-000-concurrent-users
   discord_rust_sorted_set: discord.com/blog/using-rust-to-scale-elixir-for-11-million-concurrent-users

@@ -1,6 +1,6 @@
 ---
 slug: audio-rooms
-archetype: realtime-messaging
+archetype: live-media-broadcast
 sources:
   discord_stages_10k: Medium "How Discord Stage Channels Handle 10,000 People"
   twitter_spaces_til: Simon Willison TILs on Twitter Spaces HLS architecture

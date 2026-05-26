@@ -1,6 +1,6 @@
 ---
 slug: twilio
-archetype: realtime-messaging
+archetype: infra-primitives
 sources:
   twilio_messaging_api: twilio.com/en-us/messaging/apis/programmable-messaging-api
   twilio_docs: twilio.com/docs

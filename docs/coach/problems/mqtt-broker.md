@@ -1,6 +1,6 @@
 ---
 slug: mqtt-broker
-archetype: realtime-messaging
+archetype: infra-primitives
 sources:
   mqtt_v5_spec: docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html
   aws_iot_core: docs.aws.amazon.com/iot

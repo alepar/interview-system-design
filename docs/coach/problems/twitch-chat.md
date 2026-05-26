@@ -1,6 +1,6 @@
 ---
 slug: twitch-chat
-archetype: realtime-messaging
+archetype: live-media-broadcast
 sources:
   twitch_engineering_overview: blog.twitch.tv/en/2015/12/18/twitch-engineering-an-introduction-and-overview
   twitch_irc_docs: dev.twitch.tv/docs/irc

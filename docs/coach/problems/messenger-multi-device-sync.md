@@ -1,6 +1,6 @@
 ---
 slug: messenger-multi-device-sync
-archetype: realtime-messaging
+archetype: interactive-messaging
 sources:
   whatsapp_multi_device: engineering.fb.com/2021/07/14/security/whatsapp-multi-device
   signal_protocol: signal.org/docs/specifications/x3dh

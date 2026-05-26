@@ -1,6 +1,6 @@
 ---
 slug: push-notification
-archetype: realtime-messaging
+archetype: interactive-messaging
 sources:
   apns_docs: developer.apple.com/documentation/usernotifications
   fcm_docs: firebase.google.com/docs/cloud-messaging

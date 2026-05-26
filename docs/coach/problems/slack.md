@@ -1,6 +1,6 @@
 ---
 slug: slack
-archetype: realtime-messaging
+archetype: interactive-messaging
 sources:
   slack_flannel: slack.engineering/flannel-an-application-level-edge-cache-to-make-slack-scale
   slack_shared_channels: slack.engineering/how-slack-built-shared-channels

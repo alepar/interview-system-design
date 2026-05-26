@@ -1,6 +1,6 @@
 ---
 slug: telegram
-archetype: realtime-messaging
+archetype: interactive-messaging
 sources:
   mtproto_spec: core.telegram.org/mtproto
   techcrunch_950m: techcrunch.com/2024/07/23/telegram-says-it-now-has-950-million-users

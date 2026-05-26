@@ -1,6 +1,6 @@
 ---
 slug: twitch-streaming
-archetype: realtime-messaging
+archetype: live-media-broadcast
 sources:
   twitch_engineering_overview: blog.twitch.tv/en/2015/12/18/twitch-engineering-an-introduction-and-overview
   twitch_low_latency: blog.twitch.tv 2021-10-25 "Low Latency, High Reach" (Yueshi Shen)

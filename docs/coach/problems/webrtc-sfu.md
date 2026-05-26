@@ -1,6 +1,6 @@
 ---
 slug: webrtc-sfu
-archetype: realtime-messaging
+archetype: infra-primitives
 sources:
   webrtc_rfc8825: datatracker.ietf.org/doc/rfc8825
   ice_rfc8839: datatracker.ietf.org/doc/rfc8839

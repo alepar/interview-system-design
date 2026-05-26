@@ -1,6 +1,6 @@
 ---
 slug: signal-protocol
-archetype: realtime-messaging
+archetype: interactive-messaging
 sources:
   x3dh: signal.org/docs/specifications/x3dh
   double_ratchet: signal.org/docs/specifications/doubleratchet

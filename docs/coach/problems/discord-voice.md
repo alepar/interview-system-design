@@ -1,6 +1,6 @@
 ---
 slug: discord-voice
-archetype: realtime-messaging
+archetype: interactive-messaging
 sources:
   discord_2_5m_voice: discord.com/blog/how-discord-handles-two-and-half-million-concurrent-voice-users-using-webrtc
   discord_dave: discord.com/blog/meet-dave-our-new-end-to-end-encryption-for-audio-video

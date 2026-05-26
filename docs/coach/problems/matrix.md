@@ -1,6 +1,6 @@
 ---
 slug: matrix
-archetype: realtime-messaging
+archetype: interactive-messaging
 sources:
   matrix_spec: spec.matrix.org
   synapse_scaling: matrix.org/blog (Synapse worker-based scaling 2020)

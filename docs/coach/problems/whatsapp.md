@@ -1,6 +1,6 @@
 ---
 slug: whatsapp
-archetype: realtime-messaging
+archetype: interactive-messaging
 sources:
   whatsapp_2m_connections: blog.whatsapp.com/1-million-is-so-2011
   reed_erlang_factory: Rick Reed "Scaling to Millions of Simultaneous Connections" Erlang Factory SF 2012

@@ -1,6 +1,6 @@
 ---
 slug: stripe-payments
-archetype: infra-primitives
+archetype: concurrent-resource
 sources:
   codetodeploy_stripe: medium.com/codetodeploy/the-stripe-system-design-question-that-separates-senior-from-staff-engineers-b39f1f1a05cf
   stripe_idempotency: stripe.com/blog/idempotency

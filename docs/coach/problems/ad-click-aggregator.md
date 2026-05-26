@@ -1,6 +1,6 @@
 ---
 slug: ad-click-aggregator
-archetype: infra-primitives
+archetype: ml-in-loop
 sources:
   bytebytego_vol2: bytebytego.com (Vol 2 Chapter 6: Ad Click Event Aggregation)
   hello_interview_ad: hellointerview.com/learn/system-design/problem-breakdowns/ad-click-aggregator
