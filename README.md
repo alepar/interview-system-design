@@ -53,7 +53,7 @@ The coach plays the *interviewee* on a problem you supply. It narrates reasoning
 
 **Invocation:**
 
-- `/practice-problem tinyurl` — work through one of the catalog problems with a reference answer (currently: `tinyurl`, `twitter-timeline`, `uber`, `ticketmaster`, `dropbox`).
+- `/practice-problem tinyurl` — work through one of the ~200 catalog problems with a reference answer (e.g. `tinyurl`, `twitter-timeline`, `uber`, `ticketmaster`, `dropbox`; see `docs/coach/problems/` for the full set).
 - `/practice-problem` — bring your own problem. The coach asks you to state it in your own words and proceeds without a reference answer.
 
 **The refusal gate** is the central feature. The coach will not produce a complete design until *you* have typed:
@@ -137,7 +137,7 @@ The coach reads only `profile.md`, `observed.md`, and the last 3 session summari
 - **Take the calibration step in `/mock-loop` seriously.** Predicting your score before you see the grade builds metacognition. After 5+ sessions, the prediction-vs-actual delta is itself a signal — if you consistently over-predict by 1 rubric point, you're over-confident; the opposite means you're under-selling and probably leaving signal on the table in real interviews.
 - **Run multiple problems in the same archetype before declaring it solved.** Pattern fluency transfers, but problem-shape fluency doesn't always.
 - **Re-run `/mock-loop` on the same problem after a week.** Your delta on the second pass shows what stuck.
-- **Bring your own problems too.** The catalog has 5 problems with reference answers; the coach handles freeform problems too (it just downgrades its grading confidence and tells you).
+- **Bring your own problems too.** The catalog has ~200 problems with reference answers; the coach handles freeform problems too (it just downgrades its grading confidence and tells you).
 
 ---
 
